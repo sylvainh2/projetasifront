@@ -1,0 +1,46 @@
+.findGallery{
+    margin-top:10rem;
+    margin-bottom:5rem;
+    text-align: center;
+    min-height: 52vh;
+
+    .findInput{
+        margin-right: 1rem;
+    }
+
+    .imageGallery{
+        margin-top:2rem;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        .upImage{
+            margin-top: 1rem;
+            &:first-child{
+                font-size: 2rem;
+                font-weight: bold;
+            }
+        }
+        .uploadTitre{
+            width:40vw;
+        }
+        .upImageBtn{
+            padding:0.5rem 1.5rem;
+            border-radius: 15px;
+            background-color: $bleum;
+            font-weight: bold;
+        }
+    }
+
+    .uplDirect{
+        text-decoration: none;
+        color:$noir;
+        margin:2rem;
+        background-color: $bleum;
+        border-radius: 15px;
+        padding:1rem;
+    }
+    #search{
+        margin-bottom: 2rem;
+    }
+}

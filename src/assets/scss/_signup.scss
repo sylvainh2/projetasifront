@@ -1,0 +1,52 @@
+.signup{
+    margin-top: 9rem;
+    .signupContent{
+        background: linear-gradient(184deg, rgba(183,226,253,1) 0%, rgba(21,165,239,1) 100%);
+        margin: 0 15rem 2rem 15rem;
+        padding: 2rem;
+        .signupForm{
+            display:flex;
+            flex-direction: column;
+    
+            .inputsign{
+                display:block;
+                margin-bottom:1rem;
+                width:97%;
+            }
+            
+        }
+    }
+
+}
+.signCity{
+    display:flex;
+    flex-direction: row;
+}
+.signupCP{
+    width:100%;
+    margin-bottom: 1rem;
+    margin-right:1rem;
+}
+.infoSign{
+    display: flex;
+    flex-direction:row;
+}
+.signupBtnContent{
+    display:block;
+    margin:0 auto;
+}
+.lsBox{
+    margin-right:1rem;
+}
+.infoSign{
+    margin-bottom: 1rem;
+}
+.inputCity{
+    width:91%;
+}
+.inputsignBD{
+    margin-bottom: 1rem;
+}
+.inputsignTel{
+    margin-bottom: 1rem;
+}

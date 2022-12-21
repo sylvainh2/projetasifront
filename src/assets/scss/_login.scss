@@ -1,0 +1,34 @@
+.login{
+    margin-top:10rem;
+    min-height:63vh;
+    text-align: center;
+    display:flex;
+    justify-content: center;
+
+    .loginForm{
+        position:relative;
+        width:25%;
+        background: linear-gradient(184deg, rgba(183,226,253,1) 0%, rgba(21,165,239,1) 100%);
+        display:flex;
+        flex-direction: column;
+        max-height:30vh;
+        padding: 0 1rem 0 1rem;
+        .inputLog:nth-child(2n+1){
+            margin-top:1rem;
+            text-align: left;
+        }
+
+    }
+    .loginBtn{
+        position:absolute;
+        bottom:10%;
+        left:50%;
+        transform:translate(-50%,0);
+        // margin-left: 3.2rem;
+        width:25%;
+    
+    }
+    .loginError{
+        margin-top:15rem;
+    }
+}

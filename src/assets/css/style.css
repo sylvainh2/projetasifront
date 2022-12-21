@@ -1,0 +1,229 @@
+body {
+  font-family: "Segoe UI";
+}
+
+header {
+  position: fixed;
+  background-color: white;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  z-index: 2;
+}
+
+.navbar-item {
+  z-index: 10;
+}
+
+.navbar-brand > img {
+  width: 100px;
+}
+
+.navbar_image {
+  background-image: url(../img/headerasi.jpg);
+  min-height: 110px;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.navbar_image .nav-link {
+  color: black;
+  font-size: 1.3rem;
+}
+.navbar_image .nav-item:nth-child(5) .nav-link {
+  background-color: white;
+  border-radius: 20px;
+  font-size: 1rem;
+  margin-top: 0.2rem;
+}
+@media screen and (max-width: 768px) {
+  .navbar_image .nav-item:nth-child(5) .nav-link {
+    width: 30%;
+  }
+}
+.navbar_image .nav-item:nth-child(5) span {
+  margin-left: 0.5rem;
+}
+@media screen and (min-width: 768px) {
+  .navbar_image .nav-item:nth-child(6) {
+    margin-left: 1.5rem;
+  }
+}
+.navbar_image .nav-item:nth-child(6) .nav-link {
+  background-color: white;
+  border-radius: 20px;
+  font-size: 1rem;
+  margin-top: 0.2rem;
+}
+@media screen and (max-width: 768px) {
+  .navbar_image .nav-item:nth-child(6) .nav-link {
+    width: 30%;
+  }
+}
+.navbar_image .nav-item:nth-child(6) span {
+  margin-left: 0.5rem;
+}
+
+.titrePageAccueil {
+  text-align: center;
+  margin: 10rem 15rem 2rem 15rem;
+  font-size: 3.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+@media screen and (max-width: 768px) {
+  .titrePageAccueil {
+    font-size: 1.5rem;
+    margin: 10rem 0 2rem 0;
+  }
+}
+
+.imageAccueil {
+  position: relative;
+  background-image: url(../img/accueil.jpg);
+  width: 100vw;
+  height: 60vh;
+  background-size: 120%;
+  background-position: 30% 50%;
+  background-repeat: no-repeat;
+  margin-bottom: 5rem;
+}
+@media screen and (max-width: 768px) {
+  .imageAccueil {
+    margin-bottom: 2rem;
+    height: 40vh;
+  }
+}
+
+.btnPlusAccueil {
+  position: absolute;
+  bottom: 1%;
+  right: 15%;
+  text-decoration: none;
+  color: black;
+  background-color: white;
+  border-radius: 20px;
+  padding: 0.2rem 1.5rem 0.2rem 1.5rem;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+@media screen and (max-width: 768px) {
+  .btnPlusAccueil {
+    bottom: 43%;
+  }
+}
+
+.grilleAccueil {
+  background-color: white;
+}
+.grilleAccueil .wrapperAccueil {
+  padding: 0;
+  display: grid;
+  grid-gap: 0px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  height: 150vh;
+  margin-bottom: 4rem;
+}
+@media screen and (max-width: 768px) {
+  .grilleAccueil .wrapperAccueil {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(8, 1fr);
+    gap: 10px;
+    height: 300vh;
+  }
+  .grilleAccueil .wrapperAccueil .contGrille1Accueil {
+    order: 1;
+  }
+  .grilleAccueil .wrapperAccueil .contGrille2Accueil {
+    order: 2;
+  }
+  .grilleAccueil .wrapperAccueil .contGrille3Accueil {
+    order: 4;
+  }
+  .grilleAccueil .wrapperAccueil .contGrille4Accueil {
+    order: 3;
+  }
+  .grilleAccueil .wrapperAccueil .contGrille5Accueil {
+    order: 5;
+  }
+  .grilleAccueil .wrapperAccueil .contGrille6Accueil {
+    order: 6;
+  }
+  .grilleAccueil .wrapperAccueil .contGrille7Accueil {
+    order: 8;
+  }
+  .grilleAccueil .wrapperAccueil .contGrille8Accueil {
+    order: 7;
+  }
+}
+.grilleAccueil .wrapperAccueil .imgAccueil {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.grilleAccueil .wrapperAccueil .imgAccueil[alt=entrainements] {
+  object-position: 0 -360px;
+}
+@media screen and (max-width: 768px) {
+  .grilleAccueil .wrapperAccueil .imgAccueil[alt=entrainements] {
+    object-position: 0 -200px;
+    gap: 10px;
+  }
+}
+.grilleAccueil .wrapperAccueil .textAccueil {
+  text-align: center;
+  font-family: "Segoe UI";
+}
+.grilleAccueil .wrapperAccueil .textAccueil h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 1rem 0 1rem;
+}
+.grilleAccueil .wrapperAccueil .textAccueil p {
+  margin: 0 2rem;
+  font-weight: bold;
+  color: #707070;
+}
+
+footer {
+  background-color: #9F9D9D;
+  padding-top: 1rem;
+}
+footer ul {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+footer ul li {
+  list-style-type: none;
+}
+footer ul li a {
+  color: black;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+@media screen and (min-width: 768px) {
+  footer ul li a:hover {
+    color: white;
+  }
+}
+footer ul img {
+  width: 45px;
+}
+footer ul .logo {
+  width: 70px;
+}
+
+@media screen and (min-width: 768px) {
+  .foot {
+    width: 70%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+}
+
+/*# sourceMappingURL=style.css.map */

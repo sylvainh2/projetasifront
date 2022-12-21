@@ -1,0 +1,32 @@
+.savoirMainContent{
+   
+    
+}
+
+.savoirContent{
+    display:inline-block;
+    min-height:60vh;
+    margin:0 10rem 0 10rem;
+    font-size: 1rem;
+    font-weight:600;
+}
+
+.savoirTitre{
+    font-family:'Segoe UI';
+    text-align: center;
+    margin: 9rem 0 2rem 0;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+.savoirBtn{
+    display:inline-block;
+    text-decoration: none;
+    color: $noir;
+    background-color: $bleum;
+    margin: 3rem;
+    padding: 0.5rem 1rem;
+    border-radius: 15px;;
+}
+.savoirBtnContent{
+    text-align: center;
+}

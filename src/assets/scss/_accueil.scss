@@ -1,0 +1,119 @@
+.accueil{
+    min-height:100vh;
+}
+.titrePageAccueil{
+    text-align: center;
+    margin:10rem 15rem 2rem 15rem;
+    font-size: 3.5rem;
+    @media screen and (max-width:768px){
+        font-size: 1.5rem;
+        margin:10rem 0 2rem 0;
+    }
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.imageAccueil{
+        position:relative;
+        background-image: url(../img/accueil.jpg);
+        width:100vw;
+        height:60vh;
+        background-size: 120%;
+        background-position: 30%  50%;
+        background-repeat: no-repeat;
+        margin-bottom:5rem;
+        @media screen and (max-width:768px){
+            margin-bottom: 2rem;
+            height:40vh;
+        
+        }
+    }
+    
+    .btnPlusAccueil{
+        position:absolute;
+        bottom: 1%;
+        @media screen and (max-width:768px){
+            bottom: 43%;
+        }
+        right: 15%;
+        text-decoration: none;
+        color:$noir;
+        background-color: $blanc;
+        border-radius: 20px;
+        padding:0.2rem 1.5rem 0.2rem 1.5rem;
+        font-weight: bold;
+        font-size:1.2rem
+}
+    .grilleAccueil{
+
+    background-color: $blanc;
+
+    .wrapperAccueil{
+        padding:0;
+        display:grid;
+        grid-gap:0px;
+        grid-template-columns: repeat(2,1fr);
+        grid-template-rows: repeat(4,1fr);
+        height: 150vh;
+        margin-bottom: 4rem;
+        @media  screen and (max-width:768px) {
+            grid-template-columns: 1fr;
+            grid-template-rows: repeat(8,1fr);
+            gap:10px;
+            height: 300vh;
+            .contGrille1Accueil{
+                    order:1;
+                    }
+            .contGrille2Accueil{
+                order:2;
+            }
+            .contGrille3Accueil{
+                order:4;
+            }
+            .contGrille4Accueil{
+                order:3;
+            }
+            .contGrille5Accueil{
+                order:5;
+            }
+            .contGrille6Accueil{
+                order:6;
+            }
+            .contGrille7Accueil{
+                order:8;
+            }
+            .contGrille8Accueil{
+                order:7;
+            }
+        }
+
+        .imgAccueil{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            object-position: center;
+        }
+        .imgAccueil[alt=entrainements]{
+            object-position: 0 -360px;
+            @media screen and (max-width:768px){
+                object-position:0 -200px;
+                gap: 10px;
+            }
+        }
+        .textAccueil{
+            text-align: center;
+            font-family: 'Segoe UI';
+            h2{
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin: 1rem 0 1rem;
+            }
+            p{
+                margin:0 2rem;
+                font-weight: bold;
+                color:$gris;
+            }
+
+        }
+    }
+}
