@@ -2,7 +2,7 @@
     margin-top: 9rem;
     .signupContent{
         background: linear-gradient(184deg, rgba(183,226,253,1) 0%, rgba(21,165,239,1) 100%);
-        margin: 0 15rem 2rem 15rem;
+        margin: 0 22rem 2rem 22rem;
         padding: 2rem;
         .signupForm{
             display:flex;
@@ -23,9 +23,14 @@
     flex-direction: row;
 }
 .signupCP{
+    display:flex;
+    flex-direction: column;
     width:100%;
     margin-bottom: 1rem;
     margin-right:1rem;
+}
+.signupCP:nth-child(2){
+    margin-left: -15rem;
 }
 .infoSign{
     display: flex;
@@ -33,7 +38,7 @@
 }
 .signupBtnContent{
     display:block;
-    margin:0 auto;
+    margin:2rem auto 0 ;
 }
 .lsBox{
     margin-right:1rem;
@@ -42,7 +47,10 @@
     margin-bottom: 1rem;
 }
 .inputCity{
-    width:91%;
+    width:98%;
+}
+.inputCP{
+    width:30%;
 }
 .inputsignBD{
     margin-bottom: 1rem;

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-// import jwt_decode from "jwt-decode";
+import jwt_decode from "jwt-decode";
 
-// const fileUpload = require('express-fileupload');
 
 function Gallery () {
 
@@ -15,7 +14,7 @@ function Gallery () {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJzeWx2YWluY3JvdXppZXJAZnJlZS5mciIsInJvbGVzIjoiYWRtaW4iLCJpYXQiOjE2NzE2NTgzMjAsImV4cCI6NDc5NTg2MDcyMH0.ec31wTwwn_XdtzlzFhXHTc8Og4lOZd7H03G8VGBhpxs"
+                    "Authorization": "Bearer "+jwtData
                 }
             })
     
@@ -38,7 +37,7 @@ function Gallery () {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJzeWx2YWluY3JvdXppZXJAZnJlZS5mciIsInJvbGVzIjoiYWRtaW4iLCJpYXQiOjE2NzE2NTgzMjAsImV4cCI6NDc5NTg2MDcyMH0.ec31wTwwn_XdtzlzFhXHTc8Og4lOZd7H03G8VGBhpxs"
+                    "Authorization": "Bearer "+jwtData
                 }
             })
 
@@ -50,7 +49,7 @@ function Gallery () {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJzeWx2YWluY3JvdXppZXJAZnJlZS5mciIsInJvbGVzIjoiYWRtaW4iLCJpYXQiOjE2NzE2NTgzMjAsImV4cCI6NDc5NTg2MDcyMH0.ec31wTwwn_XdtzlzFhXHTc8Og4lOZd7H03G8VGBhpxs"
+                    "Authorization": "Bearer "+jwtData
                 }
             })
 
@@ -62,7 +61,7 @@ function Gallery () {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJzeWx2YWluY3JvdXppZXJAZnJlZS5mciIsInJvbGVzIjoiYWRtaW4iLCJpYXQiOjE2NzE2NTgzMjAsImV4cCI6NDc5NTg2MDcyMH0.ec31wTwwn_XdtzlzFhXHTc8Og4lOZd7H03G8VGBhpxs"
+                    "Authorization": "Bearer "+jwtData
                 }
             })
 
@@ -73,78 +72,65 @@ function Gallery () {
 
     const handleSubmitPost = async(event)=> {
         event.preventDefault();
-        // const title = event.target.titreImgUp.value;
-        // const gallery = event.target.uploadGallery.value;
-        // const picture = event.target.imageSubmit.value;
+        const title = event.target.titreImgUp.value;
+        const name = event.target.uploadGallery.value;
+        const picture = event.target.imageSubmit.value;
         
-        // const gallery_id= await fetch("http://localhost:8080/api/photos/galleryupload/"+gallery,{
-        //     method: "GET",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //         "Authorization": "Bearer "+jwtData
-        //     },
-        //     body: JSON.stringify({
-        //         gallery
-        //     })
-        // })
+        console.log(name);
 
-// console.log(title,gallery,picture); 
+        const gallery_id= await fetch("http://localhost:8080/api/galleryupload/"+name,{
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer "+jwtData
+            }
+        })
+        const responseGallery = await gallery_id.json();
+        console.log(responseGallery); 
 
-        // if(!gallery_id){
-        //     const create_gallery = await fetch("https//localhost:8080/api/photos/galleryupload/"+gallery,{
-        //         method: "PUT",
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //             "Authorization": "Bearer "+jwtData
-        //         },
-        //         body: JSON.stringify({
-        //             gallery
-        //         })
-        //     })
-        //     if(!create_gallery){
-        //         alert("Problème lors de la création de la gallerie");
-        //     } else {
-        //         const gallery_id = create_gallery.id;
-        //         const user_id = (jwt_decode(jwtData)).id;
-        //         const push_picture = await fetch("http://localhost:8080/api/photos/photoupload",{
-        //             method: "PUT",
-        //             headers:{
-        //                 "Content-Type": "application/json",
-        //                 "Authorization": "Bearer "+jwtData
-        //             },
-        //             body: JSON.stringify({
-        //                 picture,
-        //                 gallery_id,
-        //                 user_id,
-        //                 title
-        //             })
-        //         })
-        //     }
-        // }
-        // et on contine les autres conditions
-
-        // app.use(fileUpload());
-
-        // app.post('/upload', function(req, res) {
-        // let sampleFile;
-        // let uploadPath;
-
-        // if (!req.files || Object.keys(req.files).length === 0) {
-        //     return res.status(400).send('No files were uploaded.');
-        // }
-
-        // // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-        // sampleFile = req.files.sampleFile;
-        // uploadPath = __dirname + '/somewhere/on/your/server/' + sampleFile.name;
-
-        // // Use the mv() method to place the file somewhere on your server
-        // sampleFile.mv(uploadPath, function(err) {
-        //     if (err)
-        //     return res.status(500).send(err);
-
-        //     res.send('File uploaded!');
-        // });
-        // });
+        if(responseGallery.length==0){
+            const create_gallery = await fetch("https//localhost:8080/api/galleryupload/"+name,{
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+                },
+                body: JSON.stringify({
+                    name
+                })
+            })
+            const responseCreateGallery = await create_gallery.json();
+            if(!responseCreateGallery || responseCreateGallery.length===0){
+                alert("Problème lors de la création de la gallerie");
+            } else {
+                const gallery_id = responseCreateGallery.id_gall;
+                const user_id = (jwt_decode(jwtData)).id;
+                const add_picture = await fetch("http://localhost:8080/api/photos",{
+                    method: "PUT",
+                    headers:{
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer "+jwtData
+                    },
+                    body: JSON.stringify({
+                        picture,
+                        gallery_id,
+                        user_id,
+                        title
+                    })
+                });
+                const responseAdd_picture = await add_picture.json();
+                if(!responseAdd_picture){
+                    alert("Problème à l'upload de la photo");
+                } 
+                // else {
+                //     const up_picture = await fetch("http://localhost:8080/api/upload",{
+                //         method:"POST",
+                //     })
+                // }
+                //on appelle ici pour allez dans le back charger l'image
+            }
+        }
+       
     };
 
     return(

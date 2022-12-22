@@ -69,11 +69,11 @@ function Signup() {
                         <input className="inputsignBD" type="date" name="birthdate" />
                     </div>
                     <label className="labelsign">Adresse:</label>
-                    <textarea className="inputsign" cols="50" rows="5" type="text" name="address" />
+                    <textarea className="inputsign" cols="50" rows="3" type="text" name="address" />
                     <div className="signCity">
                         <div className="signupCP">
                             <label className="">Code Postal:</label>
-                            <input className="" type="text" name="postcode" />
+                            <input className="inputCP" type="text" name="postcode" />
                         </div>
                         <div className="signupCP">
                             <label className="">Ville:</label>
