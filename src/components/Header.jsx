@@ -45,10 +45,10 @@ function Header() {
                       <a className={"nav-link "+disableNav} href="#">Adhérents</a>
                     </li>
                     <li className="nav-item ms-lg-auto ">
-                      <Link to={"/login"} className="text-center nav-link" href="#">connexion<span><i className="fa-regular fa-user"></i></span></Link>
+                      <Link to={"/login"} className="text-center nav-link" >connexion<span><i className="fa-regular fa-user"></i></span></Link>
                     </li>
                     <li className="nav-item">
-                      <Link to={"/signup"} className="text-center nav-link" href="#">s'inscrire<span><i className="fa-solid fa-pencil"></i></span></Link>
+                      <Link to={"/signup"} className="text-center nav-link" >s'inscrire<span><i className="fa-solid fa-pencil"></i></span></Link>
                     </li>
                   </ul> 
                 </div>

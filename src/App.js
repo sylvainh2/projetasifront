@@ -7,6 +7,7 @@ import PicturesShow from './pages/PicturesShow';
 import LoginShow from './pages/LoginShow';
 import SavoirShow from './pages/SavoirShow';
 import SignupShow from './pages/SignupShow';
+import CgShow from './pages/CgShow';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/login" element={<LoginShow />}/>
           <Route path="/savoir" element={<SavoirShow />}/>
           <Route path="/signup" element={<SignupShow />}/>
+          <Route path="cg" element={<CgShow />}/>
         </Routes>
       </BrowserRouter>
     </>

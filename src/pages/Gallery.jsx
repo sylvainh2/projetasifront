@@ -1,10 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import jwt_decode from "jwt-decode";
+import { upload } from "@testing-library/user-event/dist/upload";
 
 
 function Gallery () {
 
     const [images, setImages] = useState([]);
+
+    // si oon veut utiliser directement les données pour afficher l'image après l'upload
+    // on utilisera les 3 lignes suivantes: 
+    // const [upLoadGallery,setUpLoadGallery] = useState("");
+    const [isUploaded,setIsUploaded] = useState(false);
+    const [serverData,setServerData] = useState({});
+
+    // const formRef = useRef(null);
+
     const jwtData = window.localStorage.getItem('jwt');
 
 
@@ -74,22 +84,56 @@ function Gallery () {
         event.preventDefault();
         const title = event.target.titreImgUp.value;
         const name = event.target.uploadGallery.value;
-        const picture = event.target.imageSubmit.value;
+        const pictureTemp = event.target.imageSubmit.value;        
         
-        console.log(name);
+        if(name=="" || pictureTemp==""){
+            alert('veuillez remplir le champs gallerie et charger un fichier SVP');
+            return;
+        }
+        
+        const pictureTrunc = pictureTemp.slice(12,pictureTemp.length);
+        // const picture = Date.now()+pictureTrunc;
+        const picture = pictureTrunc;
+        console.log(title,name,picture); 
 
-        const gallery_id= await fetch("http://localhost:8080/api/galleryupload/"+name,{
+        const upload = async()=> {
+            const up_picture = await fetch("http://localhost:8081/upload",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+jwtData
+            },
+            body: JSON.stringify({
+                picture
+            })
+            
+        });
+        const responseUpPicture = await up_picture.json();
+        if(!responseUpPicture){
+            alert("Problème à l'enregistrement de l'image");
+            return;
+        }
+            alert("Photo enregistrée");
+            event.target.titreImgUp.value="";
+            event.target.uploadGallery.value="";
+            event.target.imageSubmit.value="";
+            return;
+        }
+        
+
+        const galleryId= await fetch("http://localhost:8080/api/galleryupload/"+name,{
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer "+jwtData
             }
-        })
-        const responseGallery = await gallery_id.json();
-        console.log(responseGallery); 
+        });
+        console.log("galleryId",galleryId);
+        const responseGallery = await galleryId.json(); 
 
-        if(responseGallery.length==0){
-            const create_gallery = await fetch("https//localhost:8080/api/galleryupload/"+name,{
+        if(!galleryId || galleryId.length==0 || galleryId.status==404){
+    
+            const createGallery = await fetch("http://localhost:8080/api/galleryupload/"+name,{
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -98,13 +142,15 @@ function Gallery () {
                 body: JSON.stringify({
                     name
                 })
-            })
-            const responseCreateGallery = await create_gallery.json();
+            });
+            const responseCreateGallery = await createGallery.json();
+            console.log(responseCreateGallery,createGallery);
             if(!responseCreateGallery || responseCreateGallery.length===0){
                 alert("Problème lors de la création de la gallerie");
             } else {
                 const gallery_id = responseCreateGallery.id_gall;
                 const user_id = (jwt_decode(jwtData)).id;
+                console.log(picture,gallery_id,user_id,title);
                 const add_picture = await fetch("http://localhost:8080/api/photos",{
                     method: "PUT",
                     headers:{
@@ -122,14 +168,47 @@ function Gallery () {
                 if(!responseAdd_picture){
                     alert("Problème à l'upload de la photo");
                 } 
-                // else {
-                //     const up_picture = await fetch("http://localhost:8080/api/upload",{
-                //         method:"POST",
-                //     })
-                // }
-                //on appelle ici pour allez dans le back charger l'image
+                upload();
             }
+        } else {
+            const gallery_id = responseGallery.id_gall;
+            const user_id = (jwt_decode(jwtData)).id;
+            console.log(picture,gallery_id,user_id,title);
+            const add_picture = await fetch("http://localhost:8080/api/photos",{
+                method: "PUT",
+                headers:{
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+                },
+                body: JSON.stringify({
+                    picture,
+                    gallery_id,
+                    user_id,
+                    title
+                })
+            });
+            const responseAdd_picture = await add_picture.json();
+                if(!responseAdd_picture){
+                    alert("Problème à l'upload de la photo");
+                } 
+                upload();
         }
+                    // 
+
+                    //upload photo
+                    // if(!formRef){
+                    //     return;
+                    // }
+                    // console.log(formRef,formRef.current.action);
+                    // const responseUpload = fetch(formRef.current.action,{
+                    //     method:"POST",
+                    //     body: new FormData(formRef.current)
+                    // })
+                    // console.log(responseUpload);
+                    // const json = await responseUpload.json();
+                    // setServerData (json);
+                    // setIsUploaded (true);
+        
        
     };
 
@@ -143,12 +222,14 @@ function Gallery () {
                     <input className="findInput" type="date" name="date" />
                     <button type="submit">Rechercher</button>
                 </form>
+                <div className="uplDirectContent">
                 <a className="uplDirect" href="#upl"><i className="fa-sharp fa-solid fa-arrow-down"></i> Poster Une Image <i className="fa-sharp fa-solid fa-arrow-down"></i></a>
+                </div>
                 <>
                 {images.map((imageDisplay)=>{
                     return (
-                        <div className="imageGallery">
-                            <img key={imageDisplay.id} src={"/upload/"+imageDisplay.picture} alt="images"></img>
+                        <div key={imageDisplay.id} className="imageGallery">
+                            <img src={"/uploads/"+imageDisplay.picture} alt="images"></img>
                             <p>{imageDisplay.title}</p>
                             <p>{imageDisplay.name}</p>
                         </div>

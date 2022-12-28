@@ -28,17 +28,19 @@
             padding:0.5rem 1.5rem;
             border-radius: 15px;
             background-color: $bleum;
-            font-weight: bold;
+            font-weight: bold;    
         }
     }
 
     .uplDirect{
         text-decoration: none;
         color:$noir;
-        margin:2rem;
         background-color: $bleum;
         border-radius: 15px;
         padding:1rem;
+    }
+    .uplDirectContent{
+        margin: 4rem 0 4rem 0;
     }
     #search{
         margin-bottom: 2rem;
