@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import jwt_decode from "jwt-decode";
-import { upload } from "@testing-library/user-event/dist/upload";
+// import { upload } from "@testing-library/user-event/dist/upload";
 
 
 function Gallery () {
@@ -92,21 +92,20 @@ function Gallery () {
         }
         
         const pictureTrunc = pictureTemp.slice(12,pictureTemp.length);
-        // const picture = Date.now()+pictureTrunc;
-        const picture = pictureTrunc;
+        const picture = Date.now()+pictureTrunc;
+        // const picture = pictureTrunc;
         console.log(title,name,picture); 
 
         const upload = async()=> {
-            const up_picture = await fetch("http://localhost:8081/upload",{
+            let body = new FormData();
+            console.log(event.target.imageSubmit.files[0]);
+            body.append('file', event.target.imageSubmit.files[0]);
+            const up_picture = await fetch("http://localhost:8080/api/upload",{
             method:"POST",
             headers:{
-                "Content-Type":"application/json",
                 "Authorization":"Bearer "+jwtData
             },
-            body: JSON.stringify({
-                picture
-            })
-            
+            body: body
         });
         const responseUpPicture = await up_picture.json();
         if(!responseUpPicture){

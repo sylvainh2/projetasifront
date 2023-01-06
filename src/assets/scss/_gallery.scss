@@ -6,8 +6,17 @@
 
     .findInput{
         margin-right: 1rem;
+        margin-left: 1rem;
+        @media screen and (max-width:768px) {
+            margin-bottom: 1rem;
+        }
     }
 
+    .findInputBtn{
+        @media screen and (max-width:768px) {
+            margin:0 5.5rem 1rem;
+        }
+    }
     .imageGallery{
         margin-top:2rem;
         display:flex;
@@ -23,6 +32,9 @@
         }
         .uploadTitre{
             width:40vw;
+            @media screen and (max-width:768px) {
+                width:60vw;
+            }
         }
         .upImageBtn{
             padding:0.5rem 1.5rem;
@@ -44,5 +56,10 @@
     }
     #search{
         margin-bottom: 2rem;
+        @media screen and (max-width:768px) {
+            display:flex;
+            flex-direction: column;
+            margin: 0 4rem;
+        }
     }
 }

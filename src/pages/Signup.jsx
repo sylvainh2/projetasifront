@@ -76,8 +76,8 @@ function Signup() {
                             <input className="inputCP" type="text" name="postcode" />
                         </div>
                         <div className="signupCP">
-                            <label className="">Ville:</label>
-                            <input className="inputCity" type="text" name="city" />
+                            <label className="signupCity">Ville:</label>
+                            <input className="inputCity signupCity" type="text" name="city" />
                         </div>
                     </div>
                     <label className="labelsign">Numéro de Téléphone:</label>

@@ -3,6 +3,9 @@
     .signupContent{
         background: linear-gradient(184deg, rgba(183,226,253,1) 0%, rgba(21,165,239,1) 100%);
         margin: 0 22rem 2rem 22rem;
+        @media screen and (max-width:768px) {
+            margin:0 0 0 0;
+        }
         padding: 2rem;
         .signupForm{
             display:flex;
@@ -21,6 +24,9 @@
 .signCity{
     display:flex;
     flex-direction: row;
+    @media screen and (max-width:768px) {
+        flex-direction: column;
+    }
 }
 .signupCP{
     display:flex;
@@ -57,4 +63,9 @@
 }
 .inputsignTel{
     margin-bottom: 1rem;
+}
+.signupCity{
+    @media screen and (max-width:768px) {
+        margin-left:15rem;        
+    }
 }

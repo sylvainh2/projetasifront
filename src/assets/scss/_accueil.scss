@@ -31,11 +31,11 @@
     
     .btnPlusAccueil{
         position:absolute;
-        bottom: 1%;
+        bottom: 60px;
         @media screen and (max-width:768px){
-            bottom: 43%;
+            bottom: 80px;
         }
-        right: 15%;
+        right: 10%;
         text-decoration: none;
         color:$noir;
         background-color: $blanc;
