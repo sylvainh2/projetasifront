@@ -9,10 +9,8 @@ function Accueil() {
             <div className="container">
                 <div className="row col-md-12">
                     <div className="imageAccueil">
-                    {/* </div>
-                        <div> */}
-                            <Link to={"/savoir"} className="btnPlusAccueil" href="">En savoir +</Link>
-                        </div>
+                        <Link to={"/savoir"} className="btnPlusAccueil" href="">En savoir +</Link>
+                    </div>
                 </div>
             </div>
         </section>

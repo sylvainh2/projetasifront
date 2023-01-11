@@ -1,19 +1,15 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
-// import { upload } from "@testing-library/user-event/dist/upload";
-
 
 function Gallery () {
 
     const [images, setImages] = useState([]);
-
-    // si oon veut utiliser directement les données pour afficher l'image après l'upload
+    const [serverBack, setServerBack] = useState("http://localhost:8080");
+    // si on veut utiliser directement les données pour afficher l'image après l'upload
     // on utilisera les 3 lignes suivantes: 
     // const [upLoadGallery,setUpLoadGallery] = useState("");
-    const [isUploaded,setIsUploaded] = useState(false);
-    const [serverData,setServerData] = useState({});
-
-    // const formRef = useRef(null);
+    // const [isUploaded,setIsUploaded] = useState(false);
+    // const [serverData,setServerData] = useState({});
 
     const jwtData = window.localStorage.getItem('jwt');
 
@@ -84,22 +80,35 @@ function Gallery () {
         event.preventDefault();
         const title = event.target.titreImgUp.value;
         const name = event.target.uploadGallery.value;
-        const pictureTemp = event.target.imageSubmit.value;        
+        const pictureTemp = event.target.imageSubmit.files[0].name;
+        const MIME_TYPES = {
+            'image/jpg': 'jpg',
+            'image/jpeg': 'jpg',
+            'image/png': 'png'
+        }        
         
         if(name=="" || pictureTemp==""){
             alert('veuillez remplir le champs gallerie et charger un fichier SVP');
             return;
         }
-        
-        const pictureTrunc = pictureTemp.slice(12,pictureTemp.length);
-        const picture = Date.now()+pictureTrunc;
-        // const picture = pictureTrunc;
+        let pictureTps = pictureTemp.split(' ').join('_');
+        console.log("ici",event.target.imageSubmit.files[0].type);
+        const extension = MIME_TYPES[event.target.imageSubmit.files[0].type];
+       
+        // on enlève l'extension qui sera traitée par la suite
+        const pictureTp = pictureTps.split('.');
+        pictureTps = pictureTp[0];
+        // on rajoute un time devant le nom pour le rendre quasi unique et l'extension
+        const picture = Date.now()+pictureTps+"."+extension;
+    
         console.log(title,name,picture); 
 
         const upload = async()=> {
             let body = new FormData();
             console.log(event.target.imageSubmit.files[0]);
-            body.append('file', event.target.imageSubmit.files[0]);
+            // on passe dans le body le nom du fichier modifié sous la form formData
+            body.append('file', event.target.imageSubmit.files[0],picture);
+            console.log(body);
             const up_picture = await fetch("http://localhost:8080/api/upload",{
             method:"POST",
             headers:{
@@ -107,6 +116,7 @@ function Gallery () {
             },
             body: body
         });
+
         const responseUpPicture = await up_picture.json();
         if(!responseUpPicture){
             alert("Problème à l'enregistrement de l'image");
@@ -167,7 +177,7 @@ function Gallery () {
                 if(!responseAdd_picture){
                     alert("Problème à l'upload de la photo");
                 } 
-                upload();
+                upload(picture);
             }
         } else {
             const gallery_id = responseGallery.id_gall;
@@ -190,24 +200,8 @@ function Gallery () {
                 if(!responseAdd_picture){
                     alert("Problème à l'upload de la photo");
                 } 
-                upload();
+                upload(picture);
         }
-                    // 
-
-                    //upload photo
-                    // if(!formRef){
-                    //     return;
-                    // }
-                    // console.log(formRef,formRef.current.action);
-                    // const responseUpload = fetch(formRef.current.action,{
-                    //     method:"POST",
-                    //     body: new FormData(formRef.current)
-                    // })
-                    // console.log(responseUpload);
-                    // const json = await responseUpload.json();
-                    // setServerData (json);
-                    // setIsUploaded (true);
-        
        
     };
 
@@ -218,17 +212,17 @@ function Gallery () {
                     <label>Gallerie</label>
                     <input className="findInput" type="text" name="gallery" />
                     <label>Date</label>
-                    <input className="findInput" type="date" name="date" />
-                    <button type="submit">Rechercher</button>
+                    <input className="findInput findInputBtn" type="date" name="date" />
+                    <button className="findInputBtn" type="submit">Rechercher</button>
                 </form>
                 <div className="uplDirectContent">
-                <a className="uplDirect" href="#upl"><i className="fa-sharp fa-solid fa-arrow-down"></i> Poster Une Image <i className="fa-sharp fa-solid fa-arrow-down"></i></a>
+                    <a className="uplDirect" href="#upl"><i className="fa-sharp fa-solid fa-arrow-down"></i> Poster Une Image <i className="fa-sharp fa-solid fa-arrow-down"></i></a>
                 </div>
                 <>
                 {images.map((imageDisplay)=>{
                     return (
                         <div key={imageDisplay.id} className="imageGallery">
-                            <img src={"/uploads/"+imageDisplay.picture} alt="images"></img>
+                            <img src={serverBack+"/uploads/"+imageDisplay.picture} alt="images"></img>
                             <p>{imageDisplay.title}</p>
                             <p>{imageDisplay.name}</p>
                         </div>

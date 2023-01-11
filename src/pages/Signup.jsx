@@ -50,7 +50,10 @@ function Signup() {
             })
         })
         if(responseSign){
-            console.log(responseSign);
+            const responseSignData = await responseSign.json();
+            // on obtient ici le token... à voir si on peut en avoir besoin par la suite
+            // mais vu qu'il faut que le compte soit validé par un admin pour etre actif...
+            // mais sait-on jamais si une nouvelle fonctionnalité n'ayant pas besoin de validation est implantée...
         }
         navigate('/');
     }
@@ -69,7 +72,7 @@ function Signup() {
                         <input className="inputsignBD" type="date" name="birthdate" />
                     </div>
                     <label className="labelsign">Adresse:</label>
-                    <textarea className="inputsign" cols="50" rows="3" type="text" name="address" />
+                    <textarea className="inputsign textA" cols="50" rows="3" type="text" name="address" />
                     <div className="signCity">
                         <div className="signupCP">
                             <label className="">Code Postal:</label>

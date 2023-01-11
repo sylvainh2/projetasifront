@@ -1,16 +1,16 @@
 import Header from "../components/Header";
-import Savoir from "./Savoir";
+import User from "./User";
 import Footer from "../components/Footer";
 
-function SavoirShow() {
+function UserShow() {
 
     return(
         <>
             <Header />
-            <Savoir />
+            <User />
             <Footer />
         </>
     )
 };
 
-export default SavoirShow;
+export default UserShow;
