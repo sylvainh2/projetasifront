@@ -7,7 +7,14 @@ function Login() {
 
 
     const navigate = useNavigate();
-
+    useEffect(()=>{
+        const connectData = window.localStorage.getItem("connect");
+        if(connectData == "déconnexion"){
+            window.localStorage.clear("connect");
+            window.localStorage.clear("jwt");
+            navigate('/');
+        }
+    });
     const handleSubmitAuth = async (event)=>{
         event.preventDefault();
         const email = event.target.email.value;
@@ -29,8 +36,10 @@ function Login() {
 
         if ("access_token" in tokenResponse) {
             window.localStorage.setItem("jwt",tokenResponse.access_token);
+            window.localStorage.setItem("connect","déconnexion");
             navigate('/');
         } else {
+            window.localStorage.setItem("connect","connexion");
             setError("Mauvais Email ou Password");
             error && (
                 alert(error)

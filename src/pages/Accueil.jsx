@@ -9,7 +9,7 @@ function Accueil() {
             <div className="container">
                 <div className="row col-md-12">
                     <div className="imageAccueil">
-                        <Link to={"/savoir"} className="btnPlusAccueil" href="">En savoir +</Link>
+                        <Link to={"/savoir"} className="btnPlusAccueil" href="#">En savoir +</Link>
                     </div>
                 </div>
             </div>
@@ -18,7 +18,8 @@ function Accueil() {
             <div className="container">
                 <div className="row col-md-12">
                     <div className="wrapperAccueil">
-                        <img className="contGrille1Accueil imgAccueil" src="/img/FB_IMG_1665583425942.jpg" alt="ambiance"/>
+                            <img className="contGrille1Accueil imgAccueil" src="/img/FB_IMG_1665583425942.jpg" alt="ambiance"/>
+                        
                         <article className="textAccueil contGrille2Accueil">
                             <h2>Motivation, Bonne ambiance, Entraide.</h2>
                             <p>Pas envie de courir seul, baisse de motivation!!</p>

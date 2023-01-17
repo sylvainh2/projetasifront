@@ -6,10 +6,10 @@ function Gallery () {
     const [images, setImages] = useState([]);
     const [serverBack, setServerBack] = useState("http://localhost:8080");
     // si on veut utiliser directement les données pour afficher l'image après l'upload
-    // on utilisera les 3 lignes suivantes: 
-    // const [upLoadGallery,setUpLoadGallery] = useState("");
-    // const [isUploaded,setIsUploaded] = useState(false);
-    // const [serverData,setServerData] = useState({});
+    // on utilisera la ligne suivante: 
+   
+    const [uploaded,setUploaded] = useState(false);
+    
 
     const jwtData = window.localStorage.getItem('jwt');
 
@@ -127,6 +127,7 @@ function Gallery () {
             event.target.uploadGallery.value="";
             event.target.imageSubmit.value="";
             return;
+    
         }
         
 
@@ -221,8 +222,10 @@ function Gallery () {
                 <>
                 {images.map((imageDisplay)=>{
                     return (
-                        <div key={imageDisplay.id} className="imageGallery">
-                            <img src={serverBack+"/uploads/"+imageDisplay.picture} alt="images"></img>
+                        <div key={imageDisplay.id}>
+                            {/* <div > */}
+                            <img className="imageGalleryPic" src={serverBack+"/uploads/"+imageDisplay.picture} alt="images"></img>
+                            {/* </div> */}
                             <p>{imageDisplay.title}</p>
                             <p>{imageDisplay.name}</p>
                         </div>
@@ -234,7 +237,7 @@ function Gallery () {
                     <label className="upImage">Poster Une Image</label>
                     <label className="upImage">Titre de l'image</label>
                     <input className="uploadTitre" type="text" name="titreImgUp" />
-                    <label className="upImage">Gallerie</label>
+                    <label className="upImage">Galerie</label>
                     <input className="uploadTitre" type="text" name="uploadGallery" />
                     <label className="upImage">Fichier</label>
                     <input className="uploadInput upImage" type="file" name="imageSubmit" />

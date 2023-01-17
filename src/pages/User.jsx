@@ -1,74 +1,88 @@
 import jwt_decode from "jwt-decode";
 import {useNavigate} from 'react-router';
 import {useState, useEffect} from "react";
-import e from "cors";
+// import { Next } from "react-bootstrap/esm/PageItem";
+
 
 function User() {
 
-    const [role,setRole] = useState("admin");
-    const [responseData,setResponseData]=useState([]);
+    const [role,setRole] = useState("");
     const [demand,setdemand] = useState("");
+    const [responseData,setResponseData]=useState([]);
+    const [validate, setValidate] = useState("");
+    const [validateAdmin,setValidateAdmin] = useState([]);
     const navigate = useNavigate();
     const jwtData = window.localStorage.getItem("jwt");
+    // const jwtData = "";
     const cbox = {
-        "0":"off",
-        "1":"on"
+        "0":"",
+        "1":"checked"
     };
     const chekbox = {
-        "off": 0,
-        "on": 1
+        "off": "0",
+        "on": "1",
+        "checked":"1"
     }
     
+    // if(!jwtData){
+    //     alert("Vous devez être connecté pour accéder à cet espace");
+    //     navigate('/');
+    // } else {
+    //     const roleDecoded = jwt_decode(jwtData).role;
+    //     setRole(roleDecoded);
+    //     Next();
+    // }
+    
+    
 
-    // const roleData = "";
-
-    // useEffect(()=>{
-    //     (()=>{
-    //         if (jwtData) {
-                // const role=(jwt_decode(jwtData)).roles;
-    //             console.log("role",role);
-    //             setRole(role);
-    //             console.log(role!=="admin",role!=="user");
-    //             console.log(role !== "admin" && role !== "user");
-    //             if(role !== "admin" && role !== "user"){
-    //               alert("Pour accéder à cet espace vous devez être connecté");
-    //               navigate("/");
-    //             } 
-    //         } else {
-    //             alert("Allllerte Pour accéder à cet espace vous devez être connecté");
-    //             navigate("/");
-    //         }
-    //     })()
-
-    // },[navigate])
-
+    useEffect(()=>{
+            if (jwtData) {
+                const roleD=(jwt_decode(jwtData)).roles;
+                const validityD=(jwt_decode(jwtData)).validity;
+                console.log("role",roleD);
+                setRole(roleD);
+                console.log(role!=="admin",role!=="user");
+                console.log(role !== "admin" && role !== "user");
+                if(roleD !== "admin" && roleD !== "user"){
+                  window.alert("Pour accéder à cet espace vous devez être connecté");
+                  retourAccueil();
+                } 
+            } else {
+                window.alert("Pour accéder à cet espace vous devez être connecté");
+                retourAccueil();
+            }
+        },[jwtData])
+    function retourAccueil() {
+        navigate('/');
+    }
     const handleSubmitUser = async(event)=>{
         event.preventDefault();
-
+        setValidate("");
+        setValidateAdmin("");
         const demand = event.target.userDemand.value;
         setdemand(demand);
         console.log(demand);
 
         if(demand == "Modifier votre profil"){
-
-            const email = (jwt_decode(jwtData)).email;
+            
+            const id = (jwt_decode(jwtData)).id;
             console.log(jwtData);
-            const response = await fetch('http://localhost:8080/api/users/user',{
-                method: "POST",
+            const response = await fetch('http://localhost:8080/api/users/'+id,{
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": "Bearer "+jwtData
-                },
-                body: JSON.stringify({
-                    email
-            })
+                }
+            });
 
-            })
             let responseData = await response.json();
-            responseData.birthdate = (responseData.birthdate).slice(0,10);
+            const dateUTC = new Date(responseData.birthdate);
+            const offsetCET = 1; // CET est UTC+1
+            const dateCET = new Date(dateUTC.getTime() + offsetCET * 60 * 60 * 1000);
+            const dateTz= (JSON.stringify(dateCET));
+            responseData.birthdate = (dateTz).slice(1,11);
             responseData.share_infos = cbox[responseData.share_infos]; 
             setResponseData(responseData);
-            console.log("yes",responseData);
         }
 
         
@@ -86,7 +100,6 @@ function User() {
         const city = modify.cityMod.value || responseData.city;
         const tel = modify.telMod.value || responseData.tel;
         const share_infos = chekbox[modify.share_infosMod.value];
-        const password = modify.passwordMod.value;
        
         const responseMod = await fetch('http://localhost:8080/api/users/user/'+responseData.id,{
             method: "PATCH",
@@ -102,14 +115,7 @@ function User() {
                 postcode,
                 city,
                 tel,
-                share_infos,
-                email: responseData.email,
-                profil_picture: responseData.profil_picture,
-                certif_med: responseData.certif_med,
-                validity: responseData.validity,
-                roles: responseData.roles,
-                validity_certif_date: responseData.validity_certif_date,
-                password
+                share_infos
             })
             }
         )
@@ -127,42 +133,112 @@ function User() {
         const e = event.target;
         const name = e.nameDel.value;
         const first_name = e.first_nameDel.value;
-        console.log(name,first_name);
-        let suppress = window.confirm("êtes vous sûr de vouloir supprimer "+name+" "+first_name);
-        if(suppress){
-            const responseSup = await fetch('http://localhost:8080/api/users/user/'+name,{
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                },
-                body: JSON.stringify({
-                    name,
-                    first_name
-                })
-            })
-            const responseSupData = await responseSup.json();
-            console.log(responseSupData.id);
-            if(responseSupData){
-                const id = responseSupData.id;
+        
+        if(name && first_name){
 
-                const responseDel = await fetch('http://localhost:8080/api/users/user/'+id,{
-                    method: "DELETE",
-                    headers:  {
+            let suppress = window.confirm("êtes vous sûr de vouloir supprimer "+name+" "+first_name);
+            if(suppress){
+                const responseSup = await fetch('http://localhost:8080/api/users/user/'+name+"&"+first_name,{
+                    method: "GET",
+                    headers: {
                         "Content-Type": "application/json",
                         "Authorization": "Bearer "+jwtData
                     }
                 })
-                alert("Adhérent supprimé");
-                e.nameDel.value="";
-                e.first_nameDel.value="";
-            } else {
-                alert("Adhérent inconnu!!");
+                const responseSupData = await responseSup.json();
+                console.log(responseSupData.id);
+                if(responseSupData){
+                    const id = responseSupData.id;
+
+                    const responseDel = await fetch('http://localhost:8080/api/users/user/'+id,{
+                        method: "DELETE",
+                        headers:  {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer "+jwtData
+                        }
+                    })
+                    alert("Adhérent supprimé");
+                    e.nameDel.value="";
+                    e.first_nameDel.value="";
+                } else {
+                    alert("Adhérent inconnu!!");
+                }
             }
         }
-
     }
+    const handleSubmitValidA = async(event)=>{
+        event.preventDefault();
 
+        const validElement ={
+            "Valider":"1",
+            "Invalider":"0"
+        };
+
+        const validRep ={
+            "Valider":"validé",
+            "Invalider":"invalidé"
+        };
+
+        const e = event.target;
+        const name = e.nameVal.value;
+        const first_name = e.first_nameVal.value;
+
+        if(name && first_name){
+
+            const roles = "";
+            const rep = event.nativeEvent.submitter.defaultValue
+            const validity = validElement[rep];
+            console.log(event.nativeEvent.submitter.defaultValue, validity, roles);
+            const responseVal = await fetch('http://localhost:8080/api/users/user',{
+                method: "PATCH",
+                headers: {
+                    "Content-Type":"application/json",
+                    "Authorization": "Bearer "+jwtData
+                },
+                body:JSON.stringify({
+                    name,
+                    first_name,
+                    validity,
+                    roles
+                })
+            })
+            setValidate(validRep[rep]);
+        }
+    }
+    const handleSubmitValidAdmin = async(event)=>{
+        event.preventDefault();
+
+        const validElement ={
+            "User":"user",
+            "Admin":"admin"
+        };
+
+        const e = event.target;
+        const name = e.nameVal.value;
+        const first_name = e.first_nameVal.value;
+
+        if(name && first_name){
+
+            const validity = "";
+            const rep = event.nativeEvent.submitter.defaultValue
+            const roles = validElement[rep];
+            console.log(event.nativeEvent.submitter.defaultValue, validity, roles);
+            const responseVal = await fetch('http://localhost:8080/api/users/user',{
+                method: "PATCH",
+                headers: {
+                    "Content-Type":"application/json",
+                    "Authorization": "Bearer "+jwtData
+                },
+                body:JSON.stringify({
+                    name,
+                    first_name,
+                    validity,
+                    roles
+                })
+            })
+            setValidateAdmin(validElement[rep]);
+        }
+    }
   
 
     return(
@@ -173,11 +249,13 @@ function User() {
                         <select className="userform" type="text" name="userDemand" id="userdemand">
                             <option value="Modifier votre profil">Modifier votre profil</option>
                             <option value="Rechercher un adhérent">Rechercher un adhérent</option>
+                            <option value="Trombinoscope">Trombinoscope</option>
                             {role=="admin" &&
                                 <>
                                     <option value="______________________" disabled></option>
                                     <option value="Supprimer un adhérent">Supprimer un adhérent</option>
                                     <option value="Valider un adhérent">Valider un adhérent</option>
+                                    <option value="Valider un admin">Valider un admin</option>
                                 </>
                             }
                         </select>
@@ -192,19 +270,46 @@ function User() {
                         <input className="userInpForm" type="text" name="postcodeMod" defaultValue={responseData.postcode} />
                         <input className="userInpForm" type="text" name="cityMod" defaultValue={responseData.city} />
                         <input className="userInpForm" type="text" name="telMod" defaultValue={responseData.tel} />
-                        <label className="userInpForm" >Partage des informations personnelles</label>
-                        <input className="userInpForm" type="checkbox" name="share_infosMod" defaultValue={responseData.share_infos} />
-                        <input className="userInpForm" type="password" name="passwordMod" defaultValue="password" />
+                        <label className="userInpForm userShareInf" >Partage des informations personnelles</label>
+                        <input className="userInpForm" type="checkbox" name="share_infosMod" defaultChecked={responseData.share_infos} />
+                        <label className="userInpForm">Password</label>
+                        <input type="password" name="passwordMod" defaultValue="" />
                         <button className="userInpForm uIFBtn" type="submit">ENVOYER</button>
                     </form>
                     }
                     {demand=="Supprimer un adhérent" &&
                     <form className="deleteForm" id="formulsup" onSubmit={handleSubmitDelete}>
                         <div className="userDelCont">
-                        <label className="userDel">Nom:<input type="text" name="nameDel" /></label>
+                        <label className="userDel">Nom:<input className="userDelLab" type="text" name="nameDel" /></label>
                         <label className="userDel">Prénom:<input type="text" name="first_nameDel" /></label>
                         <button className="userDel" type="submit">Supprimer</button>
                         </div>
+                    </form>
+                    }
+                    {demand=="Valider un adhérent" &&
+                    <form className="validForm" id="formulval" onSubmit={handleSubmitValidA}>
+                        <div className="userDelCont">
+                        <label className="userDel">Nom:<input className="userDelLab" type="text" name="nameVal" /></label>
+                        <label className="userDel">Prénom:<input type="text" name="first_nameVal" /></label>
+                        <div>
+                            <input className="userVal" type="submit" value="Valider" />
+                            <input className="userVal" type="submit" value="Invalider" />
+                        </div>
+                        </div>
+                        <h2 className="userValidate">{validate}</h2>
+                    </form>
+                    }
+                    {demand=="Valider un admin" &&
+                    <form className="validForm" id="formulval" onSubmit={handleSubmitValidAdmin}>
+                        <div className="userDelCont">
+                        <label className="userDel">Nom:<input className="userDelLab" type="text" name="nameVal" /></label>
+                        <label className="userDel">Prénom:<input type="text" name="first_nameVal" /></label>
+                        <div>
+                            <input className="userVal" type="submit" value="Admin" />
+                            <input className="userVal" type="submit" value="User" />
+                        </div>
+                        </div>
+                        <h2 className="userValidate">{validateAdmin}</h2>
                     </form>
                     }
                 </div>

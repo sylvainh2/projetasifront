@@ -30,7 +30,7 @@ function Signup() {
         
         console.log(email,password,repassword,name,first_name,birthdate,address,postcode,city,tel,share_infos);
         
-        const responseSign = await fetch('http://localhost:8080/api/login/signup',{
+        const responseSign = await fetch('http://localhost:8080/api/signup',{
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

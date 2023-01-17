@@ -7,18 +7,20 @@ function Header() {
   let disableNav = 'disabled'
 
   const roleData = window.localStorage.getItem("jwt");
+  let connectData = window.localStorage.getItem("connect");
 
   if (roleData) {
     const role = (jwt_decode(roleData)).roles;
+    const validity = (jwt_decode(roleData)).validity;
+    console.log(validity);
 
-
-    if(role==="admin" || role==="user"){
+    if((role==="admin" || role==="user") && validity=="1"){
       disableNav = "";
      } 
   }
-
-
-  
+  if (!connectData){
+    connectData = "connexion";
+  }
     return (
         <>
         <header>
@@ -45,7 +47,7 @@ function Header() {
                       <Link to={"/users"} className={"nav-link "+disableNav} href="#">Adhérents</Link>
                     </li>
                     <li className="nav-item ms-lg-auto ">
-                      <Link to={"/login"} className="text-center nav-link" >connexion<span><i className="fa-regular fa-user"></i></span></Link>
+                      <Link to={"/login"} className="text-center nav-link" >{connectData}<span><i className="fa-regular fa-user"></i></span></Link>
                     </li>
                     <li className="nav-item">
                       <Link to={"/signup"} className="text-center nav-link" >s'inscrire<span><i className="fa-solid fa-pencil"></i></span></Link>
