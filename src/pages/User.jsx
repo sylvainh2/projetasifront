@@ -1,8 +1,6 @@
 import jwt_decode from "jwt-decode";
 import {useNavigate} from 'react-router';
 import {useState, useEffect} from "react";
-// import { Next } from "react-bootstrap/esm/PageItem";
-
 
 function User() {
 
@@ -13,7 +11,7 @@ function User() {
     const [validateAdmin,setValidateAdmin] = useState([]);
     const navigate = useNavigate();
     const jwtData = window.localStorage.getItem("jwt");
-    // const jwtData = "";
+
     const cbox = {
         "0":"",
         "1":"checked"
@@ -23,26 +21,15 @@ function User() {
         "on": "1",
         "checked":"1"
     }
-    
-    // if(!jwtData){
-    //     alert("Vous devez être connecté pour accéder à cet espace");
-    //     navigate('/');
-    // } else {
-    //     const roleDecoded = jwt_decode(jwtData).role;
-    //     setRole(roleDecoded);
-    //     Next();
-    // }
-    
-    
 
     useEffect(()=>{
             if (jwtData) {
                 const roleD=(jwt_decode(jwtData)).roles;
                 const validityD=(jwt_decode(jwtData)).validity;
-                console.log("role",roleD);
+                // console.log("role",roleD);
                 setRole(roleD);
-                console.log(role!=="admin",role!=="user");
-                console.log(role !== "admin" && role !== "user");
+                // console.log(role!=="admin",role!=="user");
+                // console.log(role !== "admin" && role !== "user");
                 if(roleD !== "admin" && roleD !== "user"){
                   window.alert("Pour accéder à cet espace vous devez être connecté");
                   retourAccueil();
@@ -57,6 +44,7 @@ function User() {
     }
     const handleSubmitUser = async(event)=>{
         event.preventDefault();
+
         setValidate("");
         setValidateAdmin("");
         const demand = event.target.userDemand.value;
@@ -77,7 +65,8 @@ function User() {
 
             let responseData = await response.json();
             const dateUTC = new Date(responseData.birthdate);
-            const offsetCET = 1; // CET est UTC+1
+            const offsetCET = -(new Date().getTimezoneOffset())/60;
+            console.log(offsetCET);
             const dateCET = new Date(dateUTC.getTime() + offsetCET * 60 * 60 * 1000);
             const dateTz= (JSON.stringify(dateCET));
             responseData.birthdate = (dateTz).slice(1,11);

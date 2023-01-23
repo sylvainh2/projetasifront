@@ -28,7 +28,7 @@ function Signup() {
             share_infos=0;
         }
         
-        console.log(email,password,repassword,name,first_name,birthdate,address,postcode,city,tel,share_infos);
+        // console.log(email,password,repassword,name,first_name,birthdate,address,postcode,city,tel,share_infos);
         
         const responseSign = await fetch('http://localhost:8080/api/signup',{
             method: "POST",

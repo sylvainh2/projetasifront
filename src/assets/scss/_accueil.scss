@@ -59,72 +59,56 @@
 
         .contGrille1Accueil{
             grid-area: 1/1/2/2;
-                order:1;
                 }
         .contGrille2Accueil{
             grid-area:1/2/2/3;
-            order:2;
         }
         .contGrille3Accueil{
             grid-area:2/1/3/2;
-            order:3;
         }
         .contGrille4Accueil{
             grid-area:2/2/3/3;
-            order:4;
         }
         .contGrille5Accueil{
             grid-area:3/1/4/2;
-            order:5;
         }
         .contGrille6Accueil{
             grid-area:3/2/4/3;
-            order:6;
         }
         .contGrille7Accueil{
             grid-area:4/1/5/2;
-            order:7;
         }
         .contGrille8Accueil{
             grid-area:4/2/5/3;
-            order:8;
         }
         @media  screen and (max-width:768px) {
             grid-template-columns: 100%;
             grid-template-rows: repeat(8,12.5%);
             gap:10px;
-            min-height: 450vh;
+            min-height: 350vh;
             .contGrille1Accueil{
                 grid-area: 1/1/2/2;
-                // order:1;
                     }
             .contGrille2Accueil{
                 grid-area:2/1/3/2;
-                // order:2;
             }
             .contGrille3Accueil{
                 grid-area:4/1/5/2;
-                // order:4;
             }
             .contGrille4Accueil{
                 grid-area:3/1/4/2;
-                // order:3;
             }
             .contGrille5Accueil{
                 grid-area:5/1/6/2;
-                // order:5;
             }
             .contGrille6Accueil{
                 grid-area:6/1/7/2;
-                // order:6;
             }
             .contGrille7Accueil{
                 grid-area:8/1/9/2;
-                // order:8;
             }
             .contGrille8Accueil{
                 grid-area:7/1/8/2;
-                // order:7;
             }
         }
             .imgAccueil{

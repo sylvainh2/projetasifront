@@ -24,56 +24,68 @@ function Gallery () {
                 }
             })
     
-            const images = await responseImage.json();
-            setImages(images);
+            const imagesD = await responseImage.json();
+            setImages(imagesD);
         })()
     }, [])
 
     const handleSubmitSearch = async (event)=>{
         event.preventDefault();
+                let gallery = event.target.gallery.value;
+                let date = event.target.date.value;
+                if(gallery==""){gallery=false};
+                if(date==""){date=false};
 
-        let gallery = event.target.gallery.value;
-        let date = event.target.date.value;
-        if(gallery==""){gallery=false};
-        if(date==""){date=false};
+            
+                if(gallery && !date){
+                const responseGallery = await fetch("http://localhost:8080/api/photos/gallery/"+gallery, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer "+jwtData
+                        }
+                    })
 
-    
-        if(gallery && !date){
-           const responseGallery = await fetch("http://localhost:8080/api/photos/gallery/"+gallery, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
+                    const responseGalleryData = await responseGallery.json();
+                    console.log(responseGalleryData);
+                    setImages(responseGalleryData);
+                };
+                if(!gallery && date){
+                    const responseDate = await fetch("http://localhost:8080/api/photos/date/"+date, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer "+jwtData
+                        }
+                    })
+
+                    const responseDateData = await responseDate.json();
+                    setImages(responseDateData);
+                };
+                if(gallery != "" && date !=""){
+                    const responseGalleryDate = await fetch("http://localhost:8080/api/photos/gallery&date/"+gallery+"&"+date, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer "+jwtData
+                        }
+                    })
+
+                    const responseGalleryDateData = await responseGalleryDate.json();
+                    setImages(responseGalleryDateData);
+                };
+                if(!gallery && !date){
+                    const responseImage = await fetch('http://localhost:8080/api/photos',{
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer "+jwtData
+                        }
+                    })
+            
+                    const imagesD = await responseImage.json();
+                    setImages(imagesD);
                 }
-            })
-
-            const responseGalleryData = await responseGallery.json();
-            console.log(responseGalleryData);
-        };
-        if(!gallery && date){
-            const responseDate = await fetch("http://localhost:8080/api/photos/date/"+date, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                }
-            })
-
-            const responseDateData = await responseDate.json();
-            console.log(responseDateData);
-        };
-        if(gallery != "" && date !=""){
-            const responseGalleryDate = await fetch("http://localhost:8080/api/photos/gallery&date/"+gallery+"&"+date, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                }
-            })
-
-            const responseGalleryDateData = await responseGalleryDate.json();
-            console.log(responseGalleryDateData);
-        };
     };
 
     const handleSubmitPost = async(event)=> {
@@ -115,22 +127,22 @@ function Gallery () {
                 "Authorization":"Bearer "+jwtData
             },
             body: body
-        });
+            });
 
-        const responseUpPicture = await up_picture.json();
-        if(!responseUpPicture){
-            alert("Problème à l'enregistrement de l'image");
-            return;
-        }
-            alert("Photo enregistrée");
-            event.target.titreImgUp.value="";
-            event.target.uploadGallery.value="";
-            event.target.imageSubmit.value="";
-            return;
+            const responseUpPicture = await up_picture.json();
+            if(!responseUpPicture){
+                alert("Problème à l'enregistrement de l'image");
+                return;
+            }
+                alert("Photo enregistrée");
+                event.target.titreImgUp.value="";
+                event.target.uploadGallery.value="";
+                event.target.imageSubmit.value="";
+                return;
     
         }
         
-
+        // on fait un appel fetch en GET pour voir si la galerie existe 
         const galleryId= await fetch("http://localhost:8080/api/galleryupload/"+name,{
             method: "GET",
             headers: {
@@ -142,7 +154,8 @@ function Gallery () {
         const responseGallery = await galleryId.json(); 
 
         if(!galleryId || galleryId.length==0 || galleryId.status==404){
-    
+            
+            // si la galerie n'existe pas on la crée avec un appel fetch en PUT
             const createGallery = await fetch("http://localhost:8080/api/galleryupload/"+name,{
                 method: "PUT",
                 headers: {
@@ -158,6 +171,8 @@ function Gallery () {
             if(!responseCreateGallery || responseCreateGallery.length===0){
                 alert("Problème lors de la création de la gallerie");
             } else {
+                //une fois la galerie créée on crée les données liées à l'immage dans la BDD
+                // avec un appel fetch en méthode PUT.
                 const gallery_id = responseCreateGallery.id_gall;
                 const user_id = (jwt_decode(jwtData)).id;
                 console.log(picture,gallery_id,user_id,title);
@@ -178,9 +193,12 @@ function Gallery () {
                 if(!responseAdd_picture){
                     alert("Problème à l'upload de la photo");
                 } 
+                // et on upload l'image
                 upload(picture);
             }
         } else {
+            // si la galerie existe, on enregistre directement les données liées à l'image dans la BDD
+            // grace à un appel fetch en méthode PUT  
             const gallery_id = responseGallery.id_gall;
             const user_id = (jwt_decode(jwtData)).id;
             console.log(picture,gallery_id,user_id,title);
@@ -201,6 +219,7 @@ function Gallery () {
                 if(!responseAdd_picture){
                     alert("Problème à l'upload de la photo");
                 } 
+                // et on upload
                 upload(picture);
         }
        
@@ -210,7 +229,7 @@ function Gallery () {
         <>
             <main className="findGallery">
                 <form onSubmit={handleSubmitSearch} id="search">
-                    <label>Gallerie</label>
+                    <label>Galerie</label>
                     <input className="findInput" type="text" name="gallery" />
                     <label>Date</label>
                     <input className="findInput findInputBtn" type="date" name="date" />
@@ -223,9 +242,7 @@ function Gallery () {
                 {images.map((imageDisplay)=>{
                     return (
                         <div key={imageDisplay.id}>
-                            {/* <div > */}
                             <img className="imageGalleryPic" src={serverBack+"/uploads/"+imageDisplay.picture} alt="images"></img>
-                            {/* </div> */}
                             <p>{imageDisplay.title}</p>
                             <p>{imageDisplay.name}</p>
                         </div>
