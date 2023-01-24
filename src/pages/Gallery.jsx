@@ -152,9 +152,9 @@ function Gallery () {
         });
         console.log("galleryId",galleryId);
         const responseGallery = await galleryId.json(); 
-
+        console.log(galleryId.status,responseGallery);
         if(!galleryId || galleryId.length==0 || galleryId.status==404){
-            
+            console.log("iiiiiccciiii");
             // si la galerie n'existe pas on la crée avec un appel fetch en PUT
             const createGallery = await fetch("http://localhost:8080/api/galleryupload/"+name,{
                 method: "PUT",
