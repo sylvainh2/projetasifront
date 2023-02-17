@@ -1,12 +1,19 @@
 .userMain{
     margin-top: 10rem;
-    min-height: 64vh;
+    min-height: 62.8vh;
     text-align: center;
     @media screen and (min-height:800px) {
-        min-height: 70vh;
+        min-height: 69.7vh;
+        // font-size: 0.8rem;
+    }
+    @media screen and (max-width:768px) {
+        font-size:0.7rem;
     }
     .userform{
         margin-right:1rem;
+    }
+    .opForm{
+        line-height: 0.5rem;
     }
     .modifyForm{
         display:flex;
@@ -74,4 +81,41 @@
 }
 .userValidate{
     text-transform: uppercase ;
+}
+
+.trombi{
+    margin-top:4rem;
+    display:flex;
+    flex-wrap:wrap;
+    .trombiImg{
+        width:20%;
+        @media screen and (max-width:768px) {
+            width:50%;
+        }
+        .trombiPic{
+            width:50%;
+        }
+    }
+}
+.searchPic{
+    width:20%;
+}
+.profilForm{
+    margin-top:2rem;
+}
+.prevCont{
+    position:relative;
+    .preview{
+        width:20%;
+        margin-top: 2rem;
+        @media screen and (max-width:768px) {
+            width:40%;
+        }
+    }
+    .profilCheck{
+        position:absolute;
+        top:20%;
+        color:green;
+    }
+
 }

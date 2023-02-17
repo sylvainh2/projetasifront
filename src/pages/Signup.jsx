@@ -50,12 +50,21 @@ function Signup() {
             })
         })
         if(responseSign){
+            if(responseSign.status>=400){
+                const erreur = await responseSign.json();
+                if((erreur.message)==undefined){
+                    alert(erreur[0].message);
+                } else {
+                    alert(erreur.message);
+                }
+            } else {
             const responseSignData = await responseSign.json();
+            alert("nouveau profil créé");
             // on obtient ici le token... à voir si on peut en avoir besoin par la suite
             // mais vu qu'il faut que le compte soit validé par un admin pour etre actif...
             // mais sait-on jamais si une nouvelle fonctionnalité n'ayant pas besoin de validation est implantée...
-        }
-        navigate('/');
+            navigate('/');
+        }}
     }
 
     return(

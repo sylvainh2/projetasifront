@@ -4,16 +4,19 @@ import jwt_decode from "jwt-decode";
 function Gallery () {
 
     const [images, setImages] = useState([]);
+    const [menuDeroul, setMenuDeroul] = useState([]);
     const [serverBack, setServerBack] = useState("http://localhost:8080");
+    const [offTab, setOffTab] = useState([]);
     // si on veut utiliser directement les données pour afficher l'image après l'upload
     // on utilisera la ligne suivante: 
-   
     const [uploaded,setUploaded] = useState(false);
     
-
+    
     const jwtData = window.localStorage.getItem('jwt');
+    const [role, setRole] = useState(jwt_decode(jwtData).roles);
 
-
+    
+    
     useEffect(() => {
         (async() => {
             const responseImage = await fetch('http://localhost:8080/api/photos',{
@@ -23,12 +26,26 @@ function Gallery () {
                     "Authorization": "Bearer "+jwtData
                 }
             })
-    
             const imagesD = await responseImage.json();
-            setImages(imagesD);
-        })()
+            let longPic=(Object.values(imagesD[1]))[0];
+            setImages(imagesD[0]);
+            md();
+        })(menuDeroul)
     }, [])
-
+    const md = async()=>{
+        const menuData = await fetch('http://localhost:8080/api/menu',{
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer "+jwtData
+            }
+        })
+        const menuDrl = await menuData.json();
+        console.log("mdrl",menuDrl[0]);
+        setMenuDeroul(menuDrl[0]);
+    }
+   
+    // console.log(menuDeroul);
     const handleSubmitSearch = async (event)=>{
         event.preventDefault();
                 let gallery = event.target.gallery.value;
@@ -47,8 +64,12 @@ function Gallery () {
                     })
 
                     const responseGalleryData = await responseGallery.json();
-                    console.log(responseGalleryData);
-                    setImages(responseGalleryData);
+                    if(responseGalleryData.message){
+                        alert("Pas de photo dans cette galerie");
+                    } else {
+                        console.log(responseGalleryData);
+                        setImages(responseGalleryData);
+                    }
                 };
                 if(!gallery && date){
                     const responseDate = await fetch("http://localhost:8080/api/photos/date/"+date, {
@@ -60,7 +81,12 @@ function Gallery () {
                     })
 
                     const responseDateData = await responseDate.json();
-                    setImages(responseDateData);
+                    console.log(responseDateData);
+                    if(responseDateData.message){
+                        alert("Pas de photo à cette date");
+                    } else {
+                        setImages(responseDateData);                        
+                    }
                 };
                 if(gallery != "" && date !=""){
                     const responseGalleryDate = await fetch("http://localhost:8080/api/photos/gallery&date/"+gallery+"&"+date, {
@@ -72,7 +98,12 @@ function Gallery () {
                     })
 
                     const responseGalleryDateData = await responseGalleryDate.json();
-                    setImages(responseGalleryDateData);
+                    console.log(responseGalleryDateData);
+                    if(responseGalleryDateData.message){
+                        alert("Pas de photo dans cette galerie et/ou à cette date");
+                    } else {
+                        setImages(responseGalleryDateData);
+                    }
                 };
                 if(!gallery && !date){
                     const responseImage = await fetch('http://localhost:8080/api/photos',{
@@ -134,7 +165,7 @@ function Gallery () {
                 alert("Problème à l'enregistrement de l'image");
                 return;
             }
-                alert("Photo enregistrée");
+                // alert("Photo enregistrée");
                 event.target.titreImgUp.value="";
                 event.target.uploadGallery.value="";
                 event.target.imageSubmit.value="";
@@ -154,7 +185,6 @@ function Gallery () {
         const responseGallery = await galleryId.json(); 
         console.log(galleryId.status,responseGallery);
         if(!galleryId || galleryId.length==0 || galleryId.status==404){
-            console.log("iiiiiccciiii");
             // si la galerie n'existe pas on la crée avec un appel fetch en PUT
             const createGallery = await fetch("http://localhost:8080/api/galleryupload/"+name,{
                 method: "PUT",
@@ -195,6 +225,7 @@ function Gallery () {
                 } 
                 // et on upload l'image
                 upload(picture);
+                setImages(responseAdd_picture[0]);
             }
         } else {
             // si la galerie existe, on enregistre directement les données liées à l'image dans la BDD
@@ -221,16 +252,52 @@ function Gallery () {
                 } 
                 // et on upload
                 upload(picture);
+                setImages(responseAdd_picture[0]);
         }
        
     };
-
+    const handleClic = async (event) =>{
+        function imgTD(data) {
+            return data.picture==imgToDelete;
+        }
+        console.log(event);
+        const imgToDelete = (event.target.parentNode.previousElementSibling.currentSrc).replace("http://localhost:8080/uploads/","");
+        console.log(images);
+        const imgTDId = images[images.findIndex(imgTD)].id_pic;
+        const subBtn = event.target.innerHTML;
+        if(subBtn=="supprimer"){
+            let supPhoto = window.confirm("êtes vous sûr de vouloir supprimer cette photo");
+            if(supPhoto){
+                const delPhoto = await fetch('http://localhost:8080/api/photos/'+imgTDId,{
+                    method: "DELETE",
+                    headers: {"Content-Type": "application/json",
+                            "Authorization": "Bearer "+jwtData
+            }});
+            if(delPhoto){
+                const delPhotoD = await delPhoto.json();
+                console.log("resultat",delPhotoD);
+                // alert("photo supprimée");
+                setImages(delPhotoD[0]);
+            }
+        }};
+        console.log(images,imgToDelete);
+        console.log(imgTDId);
+    }
+    
     return(
         <>
             <main className="findGallery">
-                <form onSubmit={handleSubmitSearch} id="search">
+                {/* <Arrowmove offtab={offtab} /> */}
+                    <form onSubmit={handleSubmitSearch} id="search">
                     <label>Galerie</label>
-                    <input className="findInput" type="text" name="gallery" />
+                    <input className="findInput" type="search" name="gallery" list="searchList" />
+                    <datalist id="searchList">
+                        {menuDeroul.map((menuList)=>{
+                            return(
+                                <option key={menuList.id_gall} value={menuList.name_gal}/>
+                            )
+                        })}
+                    </datalist>
                     <label>Date</label>
                     <input className="findInput findInputBtn" type="date" name="date" />
                     <button className="findInputBtn" type="submit">Rechercher</button>
@@ -238,18 +305,29 @@ function Gallery () {
                 <div className="uplDirectContent">
                     <a className="uplDirect" href="#upl"><i className="fa-sharp fa-solid fa-arrow-down"></i> Poster Une Image <i className="fa-sharp fa-solid fa-arrow-down"></i></a>
                 </div>
-                <>
+                <div onClick={handleClic}>
                 {images.map((imageDisplay)=>{
                     return (
-                        <div key={imageDisplay.id}>
+                        <div key={imageDisplay.id_pic}>
+                            <div className="imgTitleGallery">
+                                <p>{imageDisplay.title}</p>
+                                <p>{imageDisplay.first_name+" "+imageDisplay.name}</p>
+                                <p>{imageDisplay.name_gal}</p>
+                            </div>
                             <img className="imageGalleryPic" src={serverBack+"/uploads/"+imageDisplay.picture} alt="images"></img>
-                            <p>{imageDisplay.title}</p>
-                            <p>{imageDisplay.name}</p>
+                                <div className="imgsup">
+                                    {/* <i className="fa-regular fa-trash-can fa-3x"></i> */}
+                                    <button>commenter</button>
+                                    {role=="admin" && 
+                                        <button>supprimer</button>
+                                    }
+                                </div>           
+                            
                         </div>
                         
                     );
                 })}
-                </>
+                </div>
                 <form id="upl" className="imageGallery" onSubmit={handleSubmitPost}>
                     <label className="upImage">Poster Une Image</label>
                     <label className="upImage">Titre de l'image</label>

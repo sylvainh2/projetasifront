@@ -10,7 +10,7 @@ function Footer(){
                         <div className="foot">
                             <li><a href="#">contact</a> </li>
                             <li><Link to="/cg" >conditions générales</Link> </li>
-                            <li><a href="#">partenaires</a> </li>
+                            <li><Link to="/partenaires">partenaires</Link> </li>
                         </div>
                         <li><a href="#"><img className="logo" src="/img/ASI-logo-01b.png" alt="logo"/> </a> </li>
                     </ul>

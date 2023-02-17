@@ -9,6 +9,7 @@ import SavoirShow from './pages/SavoirShow';
 import SignupShow from './pages/SignupShow';
 import CgShow from './pages/CgShow';
 import UserShow from './pages/UserShow';
+import PartShow from './pages/PartShow';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path="/signup" element={<SignupShow />}/>
           <Route path="/cg" element={<CgShow />}/>
           <Route path="/users" element={<UserShow />}/>
+          <Route path="/partenaires" element={<PartShow />}/>
         </Routes>
       </BrowserRouter>
     </>

@@ -14,7 +14,7 @@
 
     .findInputBtn{
         @media screen and (max-width:768px) {
-            margin:0 5.5rem 1rem;
+            margin:0 3.5rem 1rem;
         }
     }
     .imageGallery{
@@ -64,6 +64,55 @@
     }
 }
 
+.imgTitleGallery{
+    position:relative;
+    z-index: 1;
+    display:flex;
+    justify-content: space-between;
+    line-height: 1.5rem;
+    // border: 1px solid;
+    // box-shadow: 5px 0px 5px grey;
+    padding: 0 2vw 0 2vw;
+    width:80%;
+    margin:0 auto;
+    @media screen and (max-width:768px) {
+        font-size:0.7rem;
+    }
+    p{
+        border: 1px solid #E3E3E3;
+        box-shadow: 2px 2px #91919A;
+        background-color: $grisc;
+        padding:0rem 2vw 0rem 2vw;
+        line-height: 1.5rem;
+        @media screen and (max-width:768px) {
+            line-height:0.7rem;
+            box-shadow: 1px 1px #91919a;
+            font-size: 0.5rem;
+        }
+    }
+}
+
 .imageGalleryPic{
-    width:70%;
+    width:80%;
+    margin:-2.7rem 0 -2rem 0;
+    // border: 1px solid;
+    // box-shadow: 5px 0px 5px grey;
+    @media screen and (max-width:768px) {
+        margin: -2rem 0 -1.5rem 0;
+    }
+}
+
+.imgsup{
+    z-index:1;
+    display:flex;
+    justify-content: space-between;
+    width:80%;
+    margin:0 auto;
+    // border: 1px solid;
+    // box-shadow: 5px 3px 5px grey;
+    padding: 0rem 2vw 0rem 2vw;
+    margin-bottom: 2rem;
+    @media screen and (max-width:768px) {
+        font-size:0.7rem;
+    }
 }

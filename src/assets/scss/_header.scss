@@ -12,8 +12,14 @@ header{
 .navbar-item{
     z-index:10;
 }
+@keyframes rotateAnim {
+    from {transform: rotateY(0);}
+    to {transform: rotateY(360deg);}
+}
 .navbar-brand>img{
     width:100px;
+    animation: rotateAnim 4s linear infinite;
+    
 }
 .navbar_image{
     background-image: url(../img/headerasi.jpg);

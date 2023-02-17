@@ -9,6 +9,12 @@ function User() {
     const [responseData,setResponseData]=useState([]);
     const [validate, setValidate] = useState("");
     const [validateAdmin,setValidateAdmin] = useState([]);
+    const [serverBack,setServerBack] = useState("http://localhost:8080");
+    const [trombiD,setTrombiD] = useState([]);
+    const [trombiImg,setTrombiImg] = useState([]);
+    const [profilPicture,setProfilPicture] = useState("");
+    const [profilFile,setProfilFile] = useState("");
+    const [check,setCheck] = useState(false);
     const navigate = useNavigate();
     const jwtData = window.localStorage.getItem("jwt");
 
@@ -47,6 +53,9 @@ function User() {
 
         setValidate("");
         setValidateAdmin("");
+        setTrombiImg([]);
+        setProfilPicture("");
+        setCheck(false);
         const demand = event.target.userDemand.value;
         setdemand(demand);
         console.log(demand);
@@ -73,13 +82,32 @@ function User() {
             responseData.share_infos = cbox[responseData.share_infos]; 
             setResponseData(responseData);
         }
-
+        if(demand == "Trombinoscope"){
+            setTrombiImg([]);
+            const responseT = await fetch('http://localhost:8080/api/users/',{
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+                }
+            });
+            const responseDataS = await responseT.json();
+            // let allUsers = responseDataS.sort( function compare(a,b){
+            //     if(a.name<b.name)
+            //         return -1
+            //     if(a.name>b.name)
+            //         return 1
+            //     return 0
+            // });
+            // setTrombiD(allUsers);
+            setTrombiD(responseDataS);
+        }
         
     }
     const handleSubmitModify = async(event)=>{
         event.preventDefault();
 
-
+        setTrombiImg([]);
         const modify = event.target;
         const name = modify.nameMod.value || responseData.name;
         const first_name = modify.first_nameMod.value || responseData.first_name;
@@ -107,7 +135,7 @@ function User() {
                 share_infos
             })
             }
-        )
+        );
         const responseModData = await responseMod.json();
         if(responseModData){
             document.getElementById("formulaire").reset();
@@ -118,7 +146,7 @@ function User() {
     }
     const handleSubmitDelete = async(event) =>{
         event.preventDefault();
-
+        setTrombiImg([]);
         const e = event.target;
         const name = e.nameDel.value;
         const first_name = e.first_nameDel.value;
@@ -133,7 +161,7 @@ function User() {
                         "Content-Type": "application/json",
                         "Authorization": "Bearer "+jwtData
                     }
-                })
+                });
                 const responseSupData = await responseSup.json();
                 console.log(responseSupData.id);
                 if(responseSupData){
@@ -145,7 +173,7 @@ function User() {
                             "Content-Type": "application/json",
                             "Authorization": "Bearer "+jwtData
                         }
-                    })
+                    });
                     alert("Adhérent supprimé");
                     e.nameDel.value="";
                     e.first_nameDel.value="";
@@ -157,7 +185,7 @@ function User() {
     }
     const handleSubmitValidA = async(event)=>{
         event.preventDefault();
-
+        setTrombiImg([]);
         const validElement ={
             "Valider":"1",
             "Invalider":"0"
@@ -175,7 +203,7 @@ function User() {
         if(name && first_name){
 
             const roles = "";
-            const rep = event.nativeEvent.submitter.defaultValue
+            const rep = event.nativeEvent.submitter.defaultValue;
             const validity = validElement[rep];
             console.log(event.nativeEvent.submitter.defaultValue, validity, roles);
             const responseVal = await fetch('http://localhost:8080/api/users/user',{
@@ -190,13 +218,13 @@ function User() {
                     validity,
                     roles
                 })
-            })
+            });
             setValidate(validRep[rep]);
         }
     }
     const handleSubmitValidAdmin = async(event)=>{
         event.preventDefault();
-
+        setTrombiImg([]);
         const validElement ={
             "User":"user",
             "Admin":"admin"
@@ -209,7 +237,7 @@ function User() {
         if(name && first_name){
 
             const validity = "";
-            const rep = event.nativeEvent.submitter.defaultValue
+            const rep = event.nativeEvent.submitter.defaultValue;
             const roles = validElement[rep];
             console.log(event.nativeEvent.submitter.defaultValue, validity, roles);
             const responseVal = await fetch('http://localhost:8080/api/users/user',{
@@ -228,7 +256,91 @@ function User() {
             setValidateAdmin(validElement[rep]);
         }
     }
-  
+    const handleSubmitSearch = async(event)=>{
+        event.preventDefault();
+        const e = event.target;
+        const name = e.nameSearch.value;
+        const first_name = e.first_nameSearch.value;
+
+        if(name && first_name){
+            const responseSearch = await fetch('http://localhost:8080/api/users/user/'+name+"&"+first_name,{
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+            }});
+            if (responseSearch){
+                const responseSearchData = await responseSearch.json();
+                console.log(responseSearchData);
+                setTrombiImg(responseSearchData);
+            }
+        }
+    }
+    const picPreview = async(event)=>{
+        event.preventDefault();
+        console.log(event.target.files[0].name);
+        const objectUrl = URL.createObjectURL(event.target.files[0]);
+        setProfilFile(event.target.files[0].name);
+        setCheck(false);
+        setProfilPicture(objectUrl);
+    }
+    const handleSubmitProfilPic = async(event)=>{
+        event.preventDefault();
+        const pictureTemp = event.target.profilePic.files[0].name;
+        if(pictureTemp){
+            const id = (jwt_decode(jwtData)).id;
+            const response = await fetch('http://localhost:8080/api/users/'+id,{
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+                }
+            });
+
+            let responseData = await response.json();
+            const oldName = responseData.profil_picture;
+
+            const MIME_TYPES = {
+                'image/jpg': 'jpg',
+                'image/jpeg': 'jpg',
+                'image/png': 'png'
+            }
+            let pictureTps = pictureTemp.split(' ').join('_');
+            const extension = MIME_TYPES[event.target.profilePic.files[0].type];
+            // on enlève l'extension qui sera traitée par la suite
+            const pictureTp = pictureTps.split('.');
+            pictureTps = pictureTp[0];
+            // on rajoute un time devant le nom pour le rendre quasi unique et l'extension
+            const picture = Date.now()+pictureTps+"."+extension;
+            let body = new FormData();
+            console.log(event.target.profilePic.files[0]);
+            // on passe dans le body le nom du fichier modifié sous la form formData
+            body.append('file', event.target.profilePic.files[0],picture);
+            // ici on mettra la partie se chargeant du nom et de l'extension du fichier
+            // ainsi que la partie s'occupant de compresser l'image (browser-image-compression sur npm)
+            console.log("jwt",jwtData);
+            console.log("body",body);
+            const responseProPic = await fetch('http://localhost:8080/api/fileup/propic/',{
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer "+jwtData
+                },
+                body: body
+            });
+            const responseProPicDel = await fetch(serverBack+'/api/fileup/propic/',{
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+                },
+                body:JSON.stringify({
+                    oldName
+                })
+            });
+            setCheck(true);
+        }
+    }
+console.log(trombiImg);  
 
     return(
             <main className="userMain">
@@ -236,15 +348,17 @@ function User() {
                     <form onSubmit={handleSubmitUser}>
                         <label className="userform" htmlFor="userdemand">Action sur profil</label>
                         <select className="userform" type="text" name="userDemand" id="userdemand">
-                            <option value="Modifier votre profil">Modifier votre profil</option>
-                            <option value="Rechercher un adhérent">Rechercher un adhérent</option>
-                            <option value="Trombinoscope">Trombinoscope</option>
+                            <option className="opForm" value="Modifier votre profil">Modifier votre profil</option>
+                            <option className="opForm" value="Modifier photo de profil">Modifier photo de profil</option>
+                            <option className="opForm" value="Ajouter certificat médical">Ajouter certificat médical</option>
+                            <option className="opForm" value="Rechercher un adhérent">Rechercher un adhérent</option>
+                            <option className="opForm" value="Trombinoscope">Trombinoscope</option>
                             {role=="admin" &&
                                 <>
-                                    <option value="______________________" disabled></option>
-                                    <option value="Supprimer un adhérent">Supprimer un adhérent</option>
-                                    <option value="Valider un adhérent">Valider un adhérent</option>
-                                    <option value="Valider un admin">Valider un admin</option>
+                                    <option className="opForm" value="______________________" disabled></option>
+                                    <option className="opForm" value="Supprimer un adhérent">Supprimer un adhérent</option>
+                                    <option className="opForm" value="Valider un adhérent">Valider un adhérent</option>
+                                    <option className="opForm" value="Valider un admin">Valider un admin</option>
                                 </>
                             }
                         </select>
@@ -300,6 +414,51 @@ function User() {
                         </div>
                         <h2 className="userValidate">{validateAdmin}</h2>
                     </form>
+                    }
+                    {demand=="Trombinoscope" &&
+                    <div className="trombi">
+                    {trombiD.map((oneUser)=>{
+                        return(
+                            <div className="trombiImg" key={oneUser.id}>
+                                <img className="trombiPic" src={serverBack+"/profiles/"+oneUser.profil_picture}/>
+                                <p>{oneUser.name}</p>
+                                <p>{oneUser.first_name}</p>
+                            </div>
+                        )
+                    })}
+                    </div>}
+                    {demand=="Rechercher un adhérent" &&
+                    <>
+                        <form className="searchForm" id="formulsearch" onSubmit={handleSubmitSearch}>
+                            <div className="userDelCont">
+                            <label className="userDel">Nom:<input className="userDelLab" type="text" name="nameSearch" /></label>
+                            <label className="userDel">Prénom:<input type="text" name="first_nameSearch" /></label>
+                            <button className="userDel" type="submit">Chercher</button>
+                            </div>
+                        </form>
+                        {trombiImg.length !=0 ?
+                            <div className="searchImg">
+                                <img className="searchPic" src={serverBack+"/profiles/"+trombiImg.profil_picture}/>
+                                <p>{trombiImg.name}</p>
+                                <p>{trombiImg.first_name}</p>
+                            </div>:
+                        <>
+                        </>
+                        }
+                    </>
+                    }
+                    {demand=="Modifier photo de profil" &&
+                    <>
+                        <form className="profilForm" onSubmit={handleSubmitProfilPic}>
+                            <label>Image de profil<input type="file" name="profilePic" accept="image/png, image/jpg, image/jpeg" onChange={picPreview}/></label>
+                            <button className="userDel" type="submit">Choisir</button>
+                        </form>
+                        <div className="prevCont">
+                        <img className="preview" src={profilPicture} />
+                        {check==true &&
+                            <i className="fa-solid fa-check fa-3x profilCheck"></i>} 
+                            </div>
+                    </>    
                     }
                 </div>
             </main>
