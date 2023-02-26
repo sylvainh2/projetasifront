@@ -1,20 +1,24 @@
 import jwt_decode from "jwt-decode";
 import {useNavigate} from 'react-router';
 import {useState, useEffect} from "react";
+import imageCompression from 'browser-image-compression';
 
 function User() {
 
     const [role,setRole] = useState("");
     const [demand,setdemand] = useState("");
     const [responseData,setResponseData]=useState([]);
-    const [validate, setValidate] = useState("");
-    const [validateAdmin,setValidateAdmin] = useState([]);
     const [serverBack,setServerBack] = useState("http://localhost:8080");
     const [trombiD,setTrombiD] = useState([]);
     const [trombiImg,setTrombiImg] = useState([]);
     const [profilPicture,setProfilPicture] = useState("");
     const [profilFile,setProfilFile] = useState("");
+    const [certPicture,setCertPicture] = useState("");
+    const [certFile,setCertFile] = useState("");
     const [check,setCheck] = useState(false);
+    const [checkC,setCheckC] = useState(false);
+    const [gest,setGest] = useState([]);
+    const [imageCert,setImageCert] = useState(false);
     const navigate = useNavigate();
     const jwtData = window.localStorage.getItem("jwt");
 
@@ -50,19 +54,17 @@ function User() {
     }
     const handleSubmitUser = async(event)=>{
         event.preventDefault();
-
-        setValidate("");
-        setValidateAdmin("");
         setTrombiImg([]);
         setProfilPicture("");
         setCheck(false);
+        setCheckC(false);
         const demand = event.target.userDemand.value;
         setdemand(demand);
-        console.log(demand);
+        console.log("demand",demand);
 
-        if(demand == "Modifier votre profil"){
+        if(demand == "Modifier vos données"){
             
-            const id = (jwt_decode(jwtData)).id;
+            let id = (jwt_decode(jwtData)).id;
             console.log(jwtData);
             const response = await fetch('http://localhost:8080/api/users/'+id,{
                 method: "GET",
@@ -92,15 +94,42 @@ function User() {
                 }
             });
             const responseDataS = await responseT.json();
-            // let allUsers = responseDataS.sort( function compare(a,b){
-            //     if(a.name<b.name)
-            //         return -1
-            //     if(a.name>b.name)
-            //         return 1
-            //     return 0
-            // });
-            // setTrombiD(allUsers);
-            setTrombiD(responseDataS);
+            let trombArray = responseDataS;
+            let index=responseDataS.findIndex(data=>(data.id==13));
+            let trombData = trombArray.splice(index,1);
+            setTrombiD(trombArray);
+        }
+        if(demand == "Gestion des profils"){
+            setTrombiImg([]);
+            const responseG = await fetch('http://localhost:8080/api/users/',{
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+                }
+            });
+            const responseDataS = await responseG.json();
+            let gestArray = await responseDataS;
+            let index=responseDataS.findIndex(data=>(data.id==13));
+            let trombData = gestArray.splice(index,1);
+            console.log("gestion",gestArray);
+            setGest(gestArray);
+        }
+        if(demand == "Ajouter certificat médical"){
+            setCertPicture("");
+            let id = (jwt_decode(jwtData)).id;
+            console.log("le jwt",jwtData);
+            const responseC = await fetch('http://localhost:8080/api/users/'+id,{
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+                }
+            });
+
+            let responseData = await responseC.json();
+            console.log('oldcertif',responseData.certif_med);
+            setCertPicture(responseData.certif_med);
         }
         
     }
@@ -144,118 +173,6 @@ function User() {
             setResponseData([]);
         }
     }
-    const handleSubmitDelete = async(event) =>{
-        event.preventDefault();
-        setTrombiImg([]);
-        const e = event.target;
-        const name = e.nameDel.value;
-        const first_name = e.first_nameDel.value;
-        
-        if(name && first_name){
-
-            let suppress = window.confirm("êtes vous sûr de vouloir supprimer "+name+" "+first_name);
-            if(suppress){
-                const responseSup = await fetch('http://localhost:8080/api/users/user/'+name+"&"+first_name,{
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer "+jwtData
-                    }
-                });
-                const responseSupData = await responseSup.json();
-                console.log(responseSupData.id);
-                if(responseSupData){
-                    const id = responseSupData.id;
-
-                    const responseDel = await fetch('http://localhost:8080/api/users/user/'+id,{
-                        method: "DELETE",
-                        headers:  {
-                            "Content-Type": "application/json",
-                            "Authorization": "Bearer "+jwtData
-                        }
-                    });
-                    alert("Adhérent supprimé");
-                    e.nameDel.value="";
-                    e.first_nameDel.value="";
-                } else {
-                    alert("Adhérent inconnu!!");
-                }
-            }
-        }
-    }
-    const handleSubmitValidA = async(event)=>{
-        event.preventDefault();
-        setTrombiImg([]);
-        const validElement ={
-            "Valider":"1",
-            "Invalider":"0"
-        };
-
-        const validRep ={
-            "Valider":"validé",
-            "Invalider":"invalidé"
-        };
-
-        const e = event.target;
-        const name = e.nameVal.value;
-        const first_name = e.first_nameVal.value;
-
-        if(name && first_name){
-
-            const roles = "";
-            const rep = event.nativeEvent.submitter.defaultValue;
-            const validity = validElement[rep];
-            console.log(event.nativeEvent.submitter.defaultValue, validity, roles);
-            const responseVal = await fetch('http://localhost:8080/api/users/user',{
-                method: "PATCH",
-                headers: {
-                    "Content-Type":"application/json",
-                    "Authorization": "Bearer "+jwtData
-                },
-                body:JSON.stringify({
-                    name,
-                    first_name,
-                    validity,
-                    roles
-                })
-            });
-            setValidate(validRep[rep]);
-        }
-    }
-    const handleSubmitValidAdmin = async(event)=>{
-        event.preventDefault();
-        setTrombiImg([]);
-        const validElement ={
-            "User":"user",
-            "Admin":"admin"
-        };
-
-        const e = event.target;
-        const name = e.nameVal.value;
-        const first_name = e.first_nameVal.value;
-
-        if(name && first_name){
-
-            const validity = "";
-            const rep = event.nativeEvent.submitter.defaultValue;
-            const roles = validElement[rep];
-            console.log(event.nativeEvent.submitter.defaultValue, validity, roles);
-            const responseVal = await fetch('http://localhost:8080/api/users/user',{
-                method: "PATCH",
-                headers: {
-                    "Content-Type":"application/json",
-                    "Authorization": "Bearer "+jwtData
-                },
-                body:JSON.stringify({
-                    name,
-                    first_name,
-                    validity,
-                    roles
-                })
-            })
-            setValidateAdmin(validElement[rep]);
-        }
-    }
     const handleSubmitSearch = async(event)=>{
         event.preventDefault();
         const e = event.target;
@@ -283,6 +200,14 @@ function User() {
         setProfilFile(event.target.files[0].name);
         setCheck(false);
         setProfilPicture(objectUrl);
+    }
+    const certPreview = async(event)=>{
+        event.preventDefault();
+        console.log("funcprev",event.target.files[0].name);
+        const objectUrl = URL.createObjectURL(event.target.files[0]);
+        setCertFile(event.target.files[0].name);
+        setCheckC(false);
+        setCertPicture(objectUrl);
     }
     const handleSubmitProfilPic = async(event)=>{
         event.preventDefault();
@@ -312,22 +237,35 @@ function User() {
             pictureTps = pictureTp[0];
             // on rajoute un time devant le nom pour le rendre quasi unique et l'extension
             const picture = Date.now()+pictureTps+"."+extension;
-            let body = new FormData();
             console.log(event.target.profilePic.files[0]);
-            // on passe dans le body le nom du fichier modifié sous la form formData
-            body.append('file', event.target.profilePic.files[0],picture);
+            const imageFile = event.target.profilePic.files[0];
+            const options = {
+                maxSizeMB: 1,
+                maxWidthOrHeight: 1080,
+                useWebWorker: true
+            }
+            try {
+                const compressedFile = await imageCompression(imageFile, options);
+                console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+                console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+            
+                let body = new FormData();
+                console.log(event.target.profilePic.files[0]);
+                // on passe dans le body le nom du fichier modifié sous la form formData
+                body.append('file', compressedFile,picture);
+                console.log(body);
             // ici on mettra la partie se chargeant du nom et de l'extension du fichier
             // ainsi que la partie s'occupant de compresser l'image (browser-image-compression sur npm)
             console.log("jwt",jwtData);
             console.log("body",body);
-            const responseProPic = await fetch('http://localhost:8080/api/fileup/propic/',{
+            const responseProPic = await fetch('http://localhost:8080/api/profile/',{
                 method: "POST",
                 headers: {
                     "Authorization": "Bearer "+jwtData
                 },
                 body: body
             });
-            const responseProPicDel = await fetch(serverBack+'/api/fileup/propic/',{
+            const responseProPicDel = await fetch(serverBack+'/api/profile/',{
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -338,9 +276,188 @@ function User() {
                 })
             });
             setCheck(true);
+            } catch (error) {
+                console.log(error);
+            }
         }
     }
-console.log(trombiImg);  
+    console.log(trombiImg); 
+    const handleSubmitCertifPic = async(event)=>{
+        event.preventDefault();
+        const certifTemp = event.target.certifPic.files[0].name;
+        console.log('certifTemp',certifTemp);
+        async function Change (body, oldNameC){
+            console.log(body);
+            // ici on mettra la partie se chargeant du nom et de l'extension du fichier
+            // ainsi que la partie s'occupant de compresser l'image (browser-image-compression sur npm)
+            console.log("jwt",jwtData);
+            console.log("body",body);
+            const responseCertPic = await fetch(serverBack+'/api/certif/',{
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer "+jwtData
+                },
+                body: body
+            });
+            const responseCertPicDel = await fetch(serverBack+'/api/certif/',{
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+                },
+                body:JSON.stringify({
+                    oldNameC
+                })
+            });
+            return
+        }
+        if(certifTemp){
+            const id = (jwt_decode(jwtData)).id;
+            const response = await fetch('http://localhost:8080/api/users/'+id,{
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+                }
+            });
+
+            let responseData = await response.json();
+            const oldNameC = responseData.certif_med;
+            const MIME_TYPES = {
+                'image/jpg': 'jpg',
+                'image/jpeg': 'jpg',
+                'image/png': 'png',
+                'application/pdf': 'pdf'
+            }
+            let certifTps = certifTemp.split(' ').join('_');
+            const extension = MIME_TYPES[event.target.certifPic.files[0].type];
+            // on enlève l'extension qui sera traitée par la suite
+            const certifTp = certifTps.split('.');
+            certifTps = certifTp[0];
+            // on rajoute un time devant le nom pour le rendre quasi unique et l'extension
+            const picture = Date.now()+certifTps+"."+extension;
+            console.log("nom de fichier",event.target.certifPic.files[0]);
+            const imageFile = event.target.certifPic.files[0];
+            const options = {
+                maxSizeMB: 2,
+                maxWidthOrHeight: 1080,
+                useWebWorker: true
+            }
+            try {
+                if(extension=='jpg' || extension=='png'){
+                    const compressedFile = await imageCompression(imageFile, options);
+                    console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+                    console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+                    let body = new FormData();
+                    console.log(event.target.certifPic.files[0]);
+                    // on passe dans le body le nom du fichier modifié sous la form formData
+                    body.append('file', compressedFile,picture);
+                    Change(body,oldNameC);
+                    setImageCert(true);
+                } else {
+                    let body = new FormData();
+                    console.log(event.target.certifPic.files[0]);
+                    // on passe dans le body le nom du fichier modifié sous la form formData
+                    body.append('file', imageFile,picture);
+                    Change(body,oldNameC);
+                    setImageCert(false);
+                }
+            console.log('checkc');    
+            setCheckC(true);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
+    const gestProfile = async(event)=>{
+        event.preventDefault();
+        setTrombiImg([]);
+        const validElement ={
+            "valide":"0",
+            "invalide":"1",
+            "user":"admin",
+            "admin":"user"
+        };
+        let gestionProf = event.target.name;
+        let gestionProfName = event.target.parentNode.parentNode.outerText;
+        if(!gestionProf){
+            gestionProf = event.target.parentElement.name;
+            gestionProfName = event.target.parentNode.parentNode.parentNode.outerText;
+        }
+        const GPName= gestionProfName.split('\n\n');
+        const gesPName = GPName[0].toLowerCase();
+        const gesPFName = GPName[1].toLowerCase();
+        console.log(gest);
+        console.log(gesPName,gesPFName,gestionProf);
+        let gestArray=gest;
+        const index=gest.findIndex(data=>(data.name==gesPName && data.first_name==gesPFName));
+        const userTDid = gest[index].id;
+        console.log("id",userTDid);
+        if(gestionProf!="trash" && gestionProf.length!=0){
+            if(jwt_decode(jwtData).id != userTDid){
+                if(gestionProf=="valide" || gestionProf=="invalide"){
+                    gestArray[index].validity=validElement[gestionProf];
+                    if(gestionProf=="valide"){
+                        gestArray[index].roles="user";
+                    }
+                }
+                if(gestionProf=="user" || gestionProf=="admin"){
+                    gestArray[index].roles=validElement[gestionProf];
+                    if(gestionProf=="user"){
+                        gestArray[index].validity="1";
+                    }
+                }
+                console.log(index,gestArray[index].validity,gestArray[index].roles);
+                console.log(userTDid,gesPName,gesPFName,)
+                const responseVal = await fetch('http://localhost:8080/api/users/user',{
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type":"application/json",
+                        "Authorization": "Bearer "+jwtData
+                    },
+                    body:JSON.stringify({
+                        id:userTDid,
+                        name:gesPName,
+                        first_name:gesPFName,
+                        validity:gestArray[index].validity,
+                        roles:gestArray[index].roles
+                    })
+                })
+                setGest(gestArray);
+            } else {
+                alert('Vous ne pouvez pas modifier les status de votre propre compte, passez par un administrateur');
+            }
+        }
+        if(gestionProf=="trash"){
+            if(jwt_decode(jwtData).id != userTDid){
+                let suppress = window.confirm("êtes vous sûr de vouloir supprimer "+gesPName+" "+gesPFName);
+                if(suppress){
+                    const responsePicid = await fetch('http://localhost:8080/api/picture/'+userTDid,{
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type":"application/json",
+                            "Authorization": "Bearer "+jwtData
+                        }
+                    });
+                    
+                    const responseDel = await fetch('http://localhost:8080/api/users/user/'+userTDid,{
+                        method: "DELETE",
+                        headers:  {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer "+jwtData
+                        }
+                    });
+                }
+                let index=gest.findIndex(data=>(data.id==userTDid));
+                console.log("avant",gestArray);
+                let trombData = gestArray.splice(index,1);
+                console.log('delete',gestArray);
+                setGest(gestArray);
+            } else {
+                alert('Vous ne pouvez pas supprimer votre propre compte, passez par un administrateur');
+            }
+        }
+    }
 
     return(
             <main className="userMain">
@@ -348,7 +465,7 @@ console.log(trombiImg);
                     <form onSubmit={handleSubmitUser}>
                         <label className="userform" htmlFor="userdemand">Action sur profil</label>
                         <select className="userform" type="text" name="userDemand" id="userdemand">
-                            <option className="opForm" value="Modifier votre profil">Modifier votre profil</option>
+                            <option className="opForm" value="Modifier vos données">Modifier vos données</option>
                             <option className="opForm" value="Modifier photo de profil">Modifier photo de profil</option>
                             <option className="opForm" value="Ajouter certificat médical">Ajouter certificat médical</option>
                             <option className="opForm" value="Rechercher un adhérent">Rechercher un adhérent</option>
@@ -356,15 +473,13 @@ console.log(trombiImg);
                             {role=="admin" &&
                                 <>
                                     <option className="opForm" value="______________________" disabled></option>
-                                    <option className="opForm" value="Supprimer un adhérent">Supprimer un adhérent</option>
-                                    <option className="opForm" value="Valider un adhérent">Valider un adhérent</option>
-                                    <option className="opForm" value="Valider un admin">Valider un admin</option>
+                                    <option className="opForm" value="Gestion des profils">Gestion des profils</option>
                                 </>
                             }
                         </select>
                         <button className="userform" type="submit">Ok</button>
                     </form>
-                    {demand=="Modifier votre profil" &&
+                    {demand=="Modifier vos données" &&
                     <form className="modifyForm" id="formulaire" onSubmit={handleSubmitModify}>
                         <input className="userInpForm" type="text" name="nameMod" defaultValue={responseData.name} />
                         <input className="userInpForm" type="text" name="first_nameMod" defaultValue={responseData.first_name} />
@@ -378,41 +493,6 @@ console.log(trombiImg);
                         <label className="userInpForm">Password</label>
                         <input type="password" name="passwordMod" defaultValue="" />
                         <button className="userInpForm uIFBtn" type="submit">ENVOYER</button>
-                    </form>
-                    }
-                    {demand=="Supprimer un adhérent" &&
-                    <form className="deleteForm" id="formulsup" onSubmit={handleSubmitDelete}>
-                        <div className="userDelCont">
-                        <label className="userDel">Nom:<input className="userDelLab" type="text" name="nameDel" /></label>
-                        <label className="userDel">Prénom:<input type="text" name="first_nameDel" /></label>
-                        <button className="userDel" type="submit">Supprimer</button>
-                        </div>
-                    </form>
-                    }
-                    {demand=="Valider un adhérent" &&
-                    <form className="validForm" id="formulval" onSubmit={handleSubmitValidA}>
-                        <div className="userDelCont">
-                        <label className="userDel">Nom:<input className="userDelLab" type="text" name="nameVal" /></label>
-                        <label className="userDel">Prénom:<input type="text" name="first_nameVal" /></label>
-                        <div>
-                            <input className="userVal" type="submit" value="Valider" />
-                            <input className="userVal" type="submit" value="Invalider" />
-                        </div>
-                        </div>
-                        <h2 className="userValidate">{validate}</h2>
-                    </form>
-                    }
-                    {demand=="Valider un admin" &&
-                    <form className="validForm" id="formulval" onSubmit={handleSubmitValidAdmin}>
-                        <div className="userDelCont">
-                        <label className="userDel">Nom:<input className="userDelLab" type="text" name="nameVal" /></label>
-                        <label className="userDel">Prénom:<input type="text" name="first_nameVal" /></label>
-                        <div>
-                            <input className="userVal" type="submit" value="Admin" />
-                            <input className="userVal" type="submit" value="User" />
-                        </div>
-                        </div>
-                        <h2 className="userValidate">{validateAdmin}</h2>
                     </form>
                     }
                     {demand=="Trombinoscope" &&
@@ -460,6 +540,52 @@ console.log(trombiImg);
                             </div>
                     </>    
                     }
+                    {demand=="Ajouter certificat médical" &&
+                    <>
+                        <form className="profilForm" onSubmit={handleSubmitCertifPic}>
+                            <label>Certificat médical<input type="file" name="certifPic" accept="application/pdf, image/jpg, image/jpeg" onChange={certPreview}/></label>
+                            <button className="userDel" type="submit">Choisir</button>
+                        </form>
+                        <div className="prevCont">
+                         {imageCert?
+                        <img className="previewC" src={certPicture} />:
+                        <iframe className="previewC" src={certPicture} />
+                         }   
+                        {checkC==true &&
+                            <i className="fa-solid fa-check fa-3x profilCheck"></i>} 
+                            </div>
+                    </>    
+                    }
+                    {(demand=="Gestion des profils" && gest.length!=0) &&
+                    <div className="profileCont">
+                        {gest.map((profile)=>{
+                            return(
+                                <div className="profileGest" key={profile.id} onClick={gestProfile}>
+                                    <div className="profCont">
+                                        <p>{profile.name}</p>
+                                    </div>
+                                    <div className="profCont">
+                                        <p>{profile.first_name}</p>
+                                    </div>
+                                    <div className="profContVal">
+                                        {profile.validity==0?
+                                        <button className="profVal" type="button" name="invalide">invalidé</button>:
+                                        <button className="profInv" type="button" name="valide">validé</button>
+                                        }
+                                    </div>
+                                    <div className="profContVal">
+                                        {profile.roles=="admin"?
+                                        <button className="profAdm" type="button" name="admin">{profile.roles}</button>:
+                                        <button className="profUse" type="button" name="user">{profile.roles}</button>
+                                        }
+                                    </div>
+                                    <div className="profCont">
+                                        <button type="button" name="trash"><i className="fa-solid fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>}
                 </div>
             </main>
     )

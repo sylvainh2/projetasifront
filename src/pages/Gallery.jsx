@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
+import Arrowmove from '../components/Arrowmove';
+import imageCompression from 'browser-image-compression';
 
 function Gallery () {
 
     const [images, setImages] = useState([]);
     const [menuDeroul, setMenuDeroul] = useState([]);
     const [serverBack, setServerBack] = useState("http://localhost:8080");
-    const [offTab, setOffTab] = useState([]);
+    const [offTab, setOffTab] = useState({"offs":0,"longP":0});
+    // const [longPic, setLongPic] = useState(0);
     // si on veut utiliser directement les données pour afficher l'image après l'upload
     // on utilisera la ligne suivante: 
     const [uploaded,setUploaded] = useState(false);
@@ -27,7 +30,14 @@ function Gallery () {
                 }
             })
             const imagesD = await responseImage.json();
-            let longPic=(Object.values(imagesD[1]))[0];
+            console.log('image',imagesD[1]);
+            const ob=(Object.values(imagesD[1]))[0];
+            let offTemp = {"offs":0,"longP":0};
+            let offsTemp = 0;
+            offTemp.offs=offsTemp;
+            offTemp.longP=ob;
+            setOffTab(offTemp);
+            console.log("off",offTab);
             setImages(imagesD[0]);
             md();
         })(menuDeroul)
@@ -115,7 +125,7 @@ function Gallery () {
                     })
             
                     const imagesD = await responseImage.json();
-                    setImages(imagesD);
+                    setImages(imagesD[0]);
                 }
     };
 
@@ -147,30 +157,43 @@ function Gallery () {
         console.log(title,name,picture); 
 
         const upload = async()=> {
-            let body = new FormData();
-            console.log(event.target.imageSubmit.files[0]);
-            // on passe dans le body le nom du fichier modifié sous la form formData
-            body.append('file', event.target.imageSubmit.files[0],picture);
-            console.log(body);
-            const up_picture = await fetch("http://localhost:8080/api/upload",{
-            method:"POST",
-            headers:{
-                "Authorization":"Bearer "+jwtData
-            },
-            body: body
-            });
-
-            const responseUpPicture = await up_picture.json();
-            if(!responseUpPicture){
-                alert("Problème à l'enregistrement de l'image");
-                return;
+            const imageFile = event.target.imageSubmit.files[0];
+            const options = {
+                maxSizeMB: 1,
+                maxWidthOrHeight: 1080,
+                useWebWorker: true
             }
-                // alert("Photo enregistrée");
-                event.target.titreImgUp.value="";
-                event.target.uploadGallery.value="";
-                event.target.imageSubmit.value="";
-                return;
-    
+            try {
+                const compressedFile = await imageCompression(imageFile, options);
+                console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+                console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+            
+                let body = new FormData();
+                console.log(event.target.imageSubmit.files[0]);
+                // on passe dans le body le nom du fichier modifié sous la form formData
+                body.append('file', compressedFile,picture);
+                console.log(body);
+                const up_picture = await fetch("http://localhost:8080/api/upload",{
+                method:"POST",
+                headers:{
+                    "Authorization":"Bearer "+jwtData
+                },
+                body: body
+                });
+
+                const responseUpPicture = await up_picture.json();
+                if(!responseUpPicture){
+                    alert("Problème à l'enregistrement de l'image");
+                    return;
+                }
+                    // alert("Photo enregistrée");
+                    event.target.titreImgUp.value="";
+                    event.target.uploadGallery.value="";
+                    event.target.imageSubmit.value="";
+                    return;
+            } catch (error) {
+                console.log(error);
+              }
         }
         
         // on fait un appel fetch en GET pour voir si la galerie existe 
@@ -225,6 +248,7 @@ function Gallery () {
                 } 
                 // et on upload l'image
                 upload(picture);
+                console.log('picture!!!',responseAdd_picture[0]);
                 setImages(responseAdd_picture[0]);
             }
         } else {
@@ -252,42 +276,53 @@ function Gallery () {
                 } 
                 // et on upload
                 upload(picture);
+                console.log('picture!!!',responseAdd_picture[0]);
                 setImages(responseAdd_picture[0]);
         }
        
     };
     const handleClic = async (event) =>{
-        function imgTD(data) {
-            return data.picture==imgToDelete;
-        }
-        console.log(event);
-        const imgToDelete = (event.target.parentNode.previousElementSibling.currentSrc).replace("http://localhost:8080/uploads/","");
-        console.log(images);
-        const imgTDId = images[images.findIndex(imgTD)].id_pic;
-        const subBtn = event.target.innerHTML;
-        if(subBtn=="supprimer"){
-            let supPhoto = window.confirm("êtes vous sûr de vouloir supprimer cette photo");
-            if(supPhoto){
-                const delPhoto = await fetch('http://localhost:8080/api/photos/'+imgTDId,{
-                    method: "DELETE",
-                    headers: {"Content-Type": "application/json",
-                            "Authorization": "Bearer "+jwtData
-            }});
-            if(delPhoto){
-                const delPhotoD = await delPhoto.json();
-                console.log("resultat",delPhotoD);
-                // alert("photo supprimée");
-                setImages(delPhotoD[0]);
+        if(event.target.parentNode.previousElementSibling.currentSrc){
+            function imgTD(data) {
+                return data.picture==imgToDelete;
             }
-        }};
-        console.log(images,imgToDelete);
-        console.log(imgTDId);
+            console.log(event);
+            const imgToDelete = (event.target.parentNode.previousElementSibling.currentSrc).replace("http://localhost:8080/uploads/","");
+            console.log(images);
+            const imgTDId = images[images.findIndex(imgTD)].id_pic;
+            const subBtn = event.target.innerHTML;
+            if(subBtn=="supprimer"){
+                let supPhoto = window.confirm("êtes vous sûr de vouloir supprimer cette photo");
+                if(supPhoto){
+                    const delPhoto = await fetch('http://localhost:8080/api/photos/'+imgTDId,{
+                        method: "DELETE",
+                        headers: {"Content-Type": "application/json",
+                                "Authorization": "Bearer "+jwtData
+                }});
+                if(delPhoto){
+                    const delPhotoD = await delPhoto.json();
+                    console.log("resultat",delPhotoD);
+                    // alert("photo supprimée");
+                    setImages(delPhotoD[0]);
+                }
+            }};
+            if(subBtn=="commenter"){
+                console.log("commenter");
+            }
+            console.log(images,imgToDelete);
+            console.log(imgTDId);
+            
+        }
     }
+    useEffect(()=>{
+        
+
+    },[]);
     
     return(
         <>
             <main className="findGallery">
-                {/* <Arrowmove offtab={offtab} /> */}
+                <Arrowmove offtab={offTab} />
                     <form onSubmit={handleSubmitSearch} id="search">
                     <label>Galerie</label>
                     <input className="findInput" type="search" name="gallery" list="searchList" />

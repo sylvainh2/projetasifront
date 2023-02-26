@@ -1,17 +1,19 @@
 import { Link } from "react-router-dom";
 import jwt_decode from "jwt-decode";
-
+import {useState,useEffect} from "react";
 
 function Header() {
-
+  
   let disableNav = 'disabled'
-
-  const roleData = window.localStorage.getItem("jwt");
+  
+  const [roleData, setRoleData] = useState(window.localStorage.getItem("jwt"));
   let connectData = window.localStorage.getItem("connect");
+  const [mail, setMail] = useState("");
 
   if (roleData) {
     const role = (jwt_decode(roleData)).roles;
     const validity = (jwt_decode(roleData)).validity;
+
     console.log(validity);
 
     if((role==="admin" || role==="user") && validity=="1"){
@@ -21,6 +23,21 @@ function Header() {
   if (!connectData){
     connectData = "connexion";
   }
+  useEffect(()=>{
+    (()=>{
+      console.log("role:",roleData);
+      if(roleData){
+        let mailData = ((jwt_decode(roleData)).email) ;
+        console.log("mail:",mailData);
+        setMail(mailData);
+      } else {
+        let mailData = "";
+        console.log("mail2:",mailData);
+        setRoleData("");
+        setMail("");
+      }
+  })(mail)
+  },[]);
     return (
         <>
         <header>
@@ -47,7 +64,12 @@ function Header() {
                       <Link to={"/users"} className={"nav-link "+disableNav} href="#">Adhérents</Link>
                     </li>
                     <li className="nav-item ms-lg-auto ">
-                      <Link to={"/login"} className="text-center nav-link" >{connectData}<span><i className="fa-regular fa-user"></i></span></Link>
+                      <div className="nav-connex">
+                        <Link to={"/login"} className="text-center nav-link" >{connectData}<span><i className="fa-regular fa-user"></i></span></Link>
+                        {mail &&
+                        <p className="nav-mail">{mail}</p>
+                        }
+                      </div>
                     </li>
                     <li className="nav-item">
                       <Link to={"/signup"} className="text-center nav-link" >s'inscrire<span><i className="fa-solid fa-pencil"></i></span></Link>

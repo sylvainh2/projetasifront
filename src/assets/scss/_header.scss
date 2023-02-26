@@ -74,3 +74,22 @@ header{
         }
     }
 }
+.navbar-nav{
+    @media screen and (min-width:768px) {
+        align-items: center;
+    }
+}
+.nav-connex{
+    @media screen and (min-width:768px) {
+        position:relative;        
+    }
+}
+.nav-mail{
+    @media screen and (min-width:768px) {
+        position:absolute;
+        background-color: $jaune;
+        // border-radius: 10px;
+        right:50%;
+        transform: translate(50%);        
+    }
+}

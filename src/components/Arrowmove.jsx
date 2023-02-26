@@ -1,20 +1,33 @@
-function arrowmove(props) {
+function Arrowmove(props) {
+    const offst = props.offtab.offs;
+    const long = props.offtab.longP;
+    console.log("arrow",props,offst,long);
     return(
         <>
-            <div>
+            <div className="arrow_cont">
                 {offst>=10 &&
                     <>
-                        <i className="fa-solid fa-arrow-up-to-line arrow"></i>
-                        <i className="fa-solid fa-arrow-up arrow"></i>
+                        <button className="arrow_top" type="button" name="retour_max">
+                            <i className="fa-solid fa-arrow-up"></i>
+                        </button>
+                        <button className="arrow_up" type="button" name="retour">
+                            <i className="fa-solid fa-arrow-up"></i>
+                        </button>
                     </>
                 }
                 {(long-offst)>10 &&
                     <>
-                        <i className="fa-solid fa-arrow-down arrow"></i>
-                        <i className="fa-solid fa-arrow-up-to-line arrow"></i>
+                        <button className="arrow_down" type="button" name="avance">
+                            <i className="fa-solid fa-arrow-down"></i>
+                        </button>
+                        <button className="arrow_bottom" type="button" name="avance_max">
+                            <i className="fa-solid fa-arrow-down"></i>
+                        </button>
                     </>
                 }
             </div>
         </>
     )
 } 
+
+export default Arrowmove;

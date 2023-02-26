@@ -112,10 +112,80 @@
             width:40%;
         }
     }
+    .previewC{
+        width:70vw;
+        height: 350px;
+        margin-top: 2rem;
+    }
     .profilCheck{
         position:absolute;
         top:20%;
         color:green;
     }
 
+}
+.profileCont{
+    margin-top:3rem;
+}
+.profileGest{
+    text-align: center;
+    display:flex;
+    justify-content:space-between;
+    width:70%;
+    margin:0 auto;
+    border: 1px solid black;
+    background-color: #e9e9ed;
+    @media screen and (max-width:768px) {
+        width:90%;
+    }
+
+    .profCont{
+        margin-top:1rem;
+        margin-left: 1rem;;
+        text-align: left;
+        width:10%;
+        text-transform: uppercase;
+        @media screen and (max-width:768px) {
+            width:20%;
+            font-size: 0.55rem;
+            margin-top: 1rem;
+        }
+    }
+    .profCont:last-of-type{
+        @media screen and (max-width:768px) {
+            width:3%;
+            text-align: right;
+            margin:0.7rem 1rem;
+            font-size: 0.8rem;
+        }
+        button{
+            background: $grisc;
+        }
+    }
+}
+.profContVal{
+    margin-top: 1rem;
+    text-align: center;
+    width:7%;
+    @media screen and (max-width:768px) {
+        width:14%;
+        margin-top: 0.8rem;
+    }
+}
+.profVal{
+    width:100%;
+    background-color: rgb(243, 153, 153);
+}
+.profInv{
+    width:100%;
+    background-color: rgb(127, 241, 127);
+}
+.profAdm{
+    width:100%;
+    background-color:$bleu;
+    color: $blanc;
+}
+.profUse{
+    width:100%;
+    background-color: $jaune;
 }

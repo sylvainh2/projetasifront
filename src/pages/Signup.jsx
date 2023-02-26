@@ -98,7 +98,7 @@ function Signup() {
                     </div>
                     <div className="infoSign">
                         <label className="labelsign lsBox">Partage des informations personnelles:</label>
-                        <input className="inputsignBox" type="checkbox" name="share_infos" />
+                        <input className="inputsignBox" type="checkbox" name="share_infos" defaultValue="off" />
                     </div>
                     <label className="labelsign">Email:</label>
                     <input className="inputsign" type="email" name="email" />
