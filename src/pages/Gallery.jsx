@@ -5,6 +5,7 @@ import imageCompression from 'browser-image-compression';
 
 function Gallery () {
 
+
     const [images, setImages] = useState([]);
     const [menuDeroul, setMenuDeroul] = useState([]);
     const [serverBack, setServerBack] = useState("http://localhost:8080");
@@ -18,7 +19,18 @@ function Gallery () {
     const jwtData = window.localStorage.getItem('jwt');
     const [role, setRole] = useState(jwt_decode(jwtData).roles);
 
-    
+    function pushToTop() {
+
+        console.log('hello scroll');
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        })
+      }
+
+    useEffect(() => {
+        pushToTop();
+    })
     
     useEffect(() => {
         (async() => {
@@ -247,9 +259,10 @@ function Gallery () {
                     alert("Problème à l'upload de la photo");
                 } 
                 // et on upload l'image
-                upload(picture);
+                const up = await upload(picture);
                 console.log('picture!!!',responseAdd_picture[0]);
                 setImages(responseAdd_picture[0]);
+                pushToTop();
             }
         } else {
             // si la galerie existe, on enregistre directement les données liées à l'image dans la BDD
@@ -275,9 +288,10 @@ function Gallery () {
                     alert("Problème à l'upload de la photo");
                 } 
                 // et on upload
-                upload(picture);
+                const up= await upload(picture);
                 console.log('picture!!!',responseAdd_picture[0]);
                 setImages(responseAdd_picture[0]);
+                pushToTop();
         }
        
     };
@@ -314,10 +328,7 @@ function Gallery () {
             
         }
     }
-    useEffect(()=>{
-        
 
-    },[]);
     
     return(
         <>

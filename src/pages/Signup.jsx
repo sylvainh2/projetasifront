@@ -22,6 +22,7 @@ function Signup() {
         const city = event.target.city.value;
         const tel = event.target.tel.value;
         let share_infos = event.target.share_infos.value;
+        console.log('partage:',event.target.share_infos.value);
         if(event.target.share_infos.value==="on"){
             share_infos=1;
         } else {

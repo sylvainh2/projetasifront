@@ -1,6 +1,20 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 function Accueil() {
+
+    function pushToTop() {
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        })
+      }
+
+    useEffect(() => {
+        pushToTop();
+    });
+    
     return(
      <>
       <main className="accueil">

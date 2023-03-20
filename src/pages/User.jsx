@@ -4,7 +4,7 @@ import {useState, useEffect} from "react";
 import imageCompression from 'browser-image-compression';
 
 function User() {
-
+    // we declare all the variables use in the react part
     const [role,setRole] = useState("");
     const [demand,setdemand] = useState("");
     const [responseData,setResponseData]=useState([]);
@@ -31,7 +31,7 @@ function User() {
         "on": "1",
         "checked":"1"
     }
-
+    // we look if we have the rights to be here and do the functions
     useEffect(()=>{
             if (jwtData) {
                 const roleD=(jwt_decode(jwtData)).roles;
@@ -49,31 +49,38 @@ function User() {
                 retourAccueil();
             }
         },[jwtData])
+
     function retourAccueil() {
         navigate('/');
     }
+    // we go to choice which function we do on the user profile
     const handleSubmitUser = async(event)=>{
         event.preventDefault();
+        // we declare array variable of profile picture of all users
         setTrombiImg([]);
+        // we declare variable of profile picture of one user
         setProfilPicture("");
+        // we declare variables of check choice of picture's user or medical certif
         setCheck(false);
         setCheckC(false);
-        const demand = event.target.userDemand.value;
+        // we look what is the choiced function
+        const demand = event.target.value;
         setdemand(demand);
         console.log("demand",demand);
 
         if(demand == "Modifier vos données"){
-            
-            let id = (jwt_decode(jwtData)).id;
-            console.log(jwtData);
-            const response = await fetch('http://localhost:8080/api/users/'+id,{
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                }
-            });
-
+            //we take the id and do fetch call with req.params.id to retrieve data about user
+            // let id = (jwt_decode(jwtData)).id;
+            // console.log(jwtData);
+            // const response = await fetch('http://localhost:8080/api/users/'+id,{
+            //     method: "GET",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": "Bearer "+jwtData
+            //     }
+            // });
+            let response = await getOneUser();
+            // we transform utc date to cet date 
             let responseData = await response.json();
             const dateUTC = new Date(responseData.birthdate);
             const offsetCET = -(new Date().getTimezoneOffset())/60;
@@ -86,56 +93,118 @@ function User() {
         }
         if(demand == "Trombinoscope"){
             setTrombiImg([]);
-            const responseT = await fetch('http://localhost:8080/api/users/',{
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                }
-            });
+            // we take all users datas by fetch call
+            // const responseT = await fetch('http://localhost:8080/api/users/',{
+            //     method: "GET",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": "Bearer "+jwtData
+            //     }
+            // });
+            let responseT = await getAllUsers();
+            // we retrieve users datas in array except one which is a ghost user (for a futur soft delete)
+            // and we display their pictures
             const responseDataS = await responseT.json();
+            console.log("trombi0",responseDataS,responseDataS.length);
             let trombArray = responseDataS;
-            let index=responseDataS.findIndex(data=>(data.id==13));
+            let index=responseDataS.findIndex(data=>(data.id==0));
+            console.log("trombi1",trombArray);
             let trombData = trombArray.splice(index,1);
+            console.log("trombi",trombArray);
             setTrombiD(trombArray);
         }
         if(demand == "Gestion des profils"){
             setTrombiImg([]);
-            const responseG = await fetch('http://localhost:8080/api/users/',{
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                }
-            });
+            // // we take all users datas by fetch call to manage validation user/admin and erasure
+            // const responseG = await fetch('http://localhost:8080/api/users/',{
+            //     method: "GET",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": "Bearer "+jwtData
+            //     }
+            // });
+            let responseG = await getAllUsers();
+            // we retrieve users datas in array except one whish is a ghost user (for a futur soft delete)
+            // and we display it
             const responseDataS = await responseG.json();
-            let gestArray = await responseDataS;
-            let index=responseDataS.findIndex(data=>(data.id==13));
+            console.log("gestion0",responseDataS);
+            let gestArray = responseDataS.slice();
+            let index=gestArray.findIndex(data=>(data.id==0));
+            console.log("gestion1",gestArray);
             let trombData = gestArray.splice(index,1);
             console.log("gestion",gestArray);
             setGest(gestArray);
         }
         if(demand == "Ajouter certificat médical"){
             setCertPicture("");
-            let id = (jwt_decode(jwtData)).id;
-            console.log("le jwt",jwtData);
-            const responseC = await fetch('http://localhost:8080/api/users/'+id,{
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                }
-            });
-
+            // // we take the id user by his jwt
+            // let id = (jwt_decode(jwtData)).id;
+            // console.log("le jwt",jwtData);
+            // //we take user data by fetch call
+            // const responseC = await fetch('http://localhost:8080/api/users/'+id,{
+            //     method: "GET",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": "Bearer "+jwtData
+            //     }
+            // });
+            let responseC = await getOneUser();
             let responseData = await responseC.json();
             console.log('oldcertif',responseData.certif_med);
-            setCertPicture(responseData.certif_med);
+            // we try to display the old saved medical certif (doesn't work, maybe must have useEffect or ...)
+            setCertPicture("http://localhost:8080/certifs/"+responseData.certif_med);
         }
-        
+        if(demand == "Modifier photo de profil"){
+            setProfilPicture ("");
+            // // we take the id user by his jwt
+            // let id = (jwt_decode(jwtData)).id;
+            // console.log("le jwt",jwtData);
+            // //we take user data by fetch call
+            // const responseP = await fetch('http://localhost:8080/api/users/'+id,{
+            //     method: "GET",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": "Bearer "+jwtData
+            //     }
+            // });
+            let responseP = await getOneUser();
+            let responseData = await responseP.json();
+            console.log('oldpict',responseData.profil_picture);
+            // we try to display the old saved medical certif (doesn't work, maybe must have useEffect or ...)
+            setProfilPicture("http://localhost:8080/profiles/"+responseData.profil_picture);
+        }
+    }
+    async function getOneUser() {
+         // we take the id user by his jwt
+         let id = (jwt_decode(jwtData)).id;
+         console.log("le jwt",jwtData);
+         //we take user data by fetch call
+         const responseP = await fetch('http://localhost:8080/api/users/'+id,{
+             method: "GET",
+             headers: {
+                 "Content-Type": "application/json",
+                 "Authorization": "Bearer "+jwtData
+             }
+         });
+
+         return responseP;
+    }
+    async function getAllUsers() {
+         // we take all users datas by fetch call to manage validation user/admin and erasure
+         const responseG = await fetch('http://localhost:8080/api/users/',{
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer "+jwtData
+            }
+        });
+        // we retrieve users datas in array except one whish is a ghost user (for a futur soft delete)
+        // and we display it
+        return responseG;
     }
     const handleSubmitModify = async(event)=>{
         event.preventDefault();
-
+        // we retrieve saved datas and new entries
         setTrombiImg([]);
         const modify = event.target;
         const name = modify.nameMod.value || responseData.name;
@@ -146,7 +215,7 @@ function User() {
         const city = modify.cityMod.value || responseData.city;
         const tel = modify.telMod.value || responseData.tel;
         const share_infos = chekbox[modify.share_infosMod.value];
-       
+        // we patch datas by fetch call
         const responseMod = await fetch('http://localhost:8080/api/users/user/'+responseData.id,{
             method: "PATCH",
             headers: {
@@ -166,6 +235,7 @@ function User() {
             }
         );
         const responseModData = await responseMod.json();
+        // we reset the form datas
         if(responseModData){
             document.getElementById("formulaire").reset();
             alert("Profil Modifié");
@@ -206,6 +276,7 @@ function User() {
         console.log("funcprev",event.target.files[0].name);
         const objectUrl = URL.createObjectURL(event.target.files[0]);
         setCertFile(event.target.files[0].name);
+        event.target.files[0].type=="application/pdf"? setImageCert(false):setImageCert(true);
         setCheckC(false);
         setCertPicture(objectUrl);
     }
@@ -232,13 +303,14 @@ function User() {
             }
             let pictureTps = pictureTemp.split(' ').join('_');
             const extension = MIME_TYPES[event.target.profilePic.files[0].type];
-            // on enlève l'extension qui sera traitée par la suite
+            // we cut the extension
             const pictureTp = pictureTps.split('.');
             pictureTps = pictureTp[0];
-            // on rajoute un time devant le nom pour le rendre quasi unique et l'extension
+            // first we add date/time to the picture name to make it unique and the extension
             const picture = Date.now()+pictureTps+"."+extension;
             console.log(event.target.profilePic.files[0]);
             const imageFile = event.target.profilePic.files[0];
+            //if it needs we compress image file
             const options = {
                 maxSizeMB: 1,
                 maxWidthOrHeight: 1080,
@@ -251,31 +323,30 @@ function User() {
             
                 let body = new FormData();
                 console.log(event.target.profilePic.files[0]);
-                // on passe dans le body le nom du fichier modifié sous la form formData
+                // the filename is put in the body by formData format
                 body.append('file', compressedFile,picture);
                 console.log(body);
-            // ici on mettra la partie se chargeant du nom et de l'extension du fichier
-            // ainsi que la partie s'occupant de compresser l'image (browser-image-compression sur npm)
-            console.log("jwt",jwtData);
-            console.log("body",body);
-            const responseProPic = await fetch('http://localhost:8080/api/profile/',{
-                method: "POST",
-                headers: {
-                    "Authorization": "Bearer "+jwtData
-                },
-                body: body
-            });
-            const responseProPicDel = await fetch(serverBack+'/api/profile/',{
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                },
-                body:JSON.stringify({
-                    oldName
-                })
-            });
-            setCheck(true);
+                // we save the profile picture by a fetch call
+                console.log("jwt",jwtData);
+                console.log("body",body);
+                const responseProPic = await fetch('http://localhost:8080/api/profile/',{
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer "+jwtData
+                    },
+                    body: body
+                });
+                const responseProPicDel = await fetch(serverBack+'/api/profile/',{
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer "+jwtData
+                    },
+                    body:JSON.stringify({
+                        oldName
+                    })
+                });
+                setCheck(true);
             } catch (error) {
                 console.log(error);
             }
@@ -312,14 +383,15 @@ function User() {
             return
         }
         if(certifTemp){
-            const id = (jwt_decode(jwtData)).id;
-            const response = await fetch('http://localhost:8080/api/users/'+id,{
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                }
-            });
+            // const id = (jwt_decode(jwtData)).id;
+            // const response = await fetch('http://localhost:8080/api/users/'+id,{
+            //     method: "GET",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": "Bearer "+jwtData
+            //     }
+            // });
+            const response = await getOneUser();
 
             let responseData = await response.json();
             const oldNameC = responseData.certif_med;
@@ -387,10 +459,10 @@ function User() {
         const GPName= gestionProfName.split('\n\n');
         const gesPName = GPName[0].toLowerCase();
         const gesPFName = GPName[1].toLowerCase();
-        console.log(gest);
+        console.log("gestprofile",gest);
         console.log(gesPName,gesPFName,gestionProf);
-        let gestArray=gest;
-        const index=gest.findIndex(data=>(data.name==gesPName && data.first_name==gesPFName));
+        let gestArray=gest.slice();
+        const index=gestArray.findIndex(data=>(data.name==gesPName && data.first_name==gesPFName));
         const userTDid = gest[index].id;
         console.log("id",userTDid);
         if(gestionProf!="trash" && gestionProf.length!=0){
@@ -462,7 +534,7 @@ function User() {
     return(
             <main className="userMain">
                 <div className="userContent">
-                    <form onSubmit={handleSubmitUser}>
+                    <form onChange={handleSubmitUser}>
                         <label className="userform" htmlFor="userdemand">Action sur profil</label>
                         <select className="userform" type="text" name="userDemand" id="userdemand">
                             <option className="opForm" value="Modifier vos données">Modifier vos données</option>
@@ -477,7 +549,7 @@ function User() {
                                 </>
                             }
                         </select>
-                        <button className="userform" type="submit">Ok</button>
+                        {/* <button className="userform" type="submit">Ok</button> */}
                     </form>
                     {demand=="Modifier vos données" &&
                     <form className="modifyForm" id="formulaire" onSubmit={handleSubmitModify}>

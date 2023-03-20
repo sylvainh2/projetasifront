@@ -85,10 +85,14 @@ header{
     }
 }
 .nav-mail{
+    @media screen and (max-width:768px){
+        display:inline-block;
+        background-color: $jaune;
+        border-radius: 10px;
+    }
     @media screen and (min-width:768px) {
         position:absolute;
         background-color: $jaune;
-        // border-radius: 10px;
         right:50%;
         transform: translate(50%);        
     }
