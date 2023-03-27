@@ -3,18 +3,6 @@ import { Link } from "react-router-dom";
 
 function Accueil() {
 
-    function pushToTop() {
-
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        })
-      }
-
-    useEffect(() => {
-        pushToTop();
-    });
-    
     return(
      <>
       <main className="accueil">
@@ -60,9 +48,11 @@ function Accueil() {
             </div>
         </section>
     </main>
-    
+    {window.scrollTo(0,0)}
+    {console.log("longueur Maxi Accueil:",document.body.offsetHeight)}
+    {console.log(window.innerHeight+window.pageYOffset)}
+    {console.log(window.pageYOffset)}
     </>
   );
 }
-
 export default Accueil;

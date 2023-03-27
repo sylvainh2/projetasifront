@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import Arrowmove from '../components/Arrowmove';
 import imageCompression from 'browser-image-compression';
+import PostPicture from "../components/PostPicture";
 
 function Gallery () {
 
@@ -22,19 +23,12 @@ function Gallery () {
     function pushToTop() {
 
         console.log('hello scroll');
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        })
+        window.scrollTo(0,0);
       }
-
-    useEffect(() => {
-        pushToTop();
-    })
     
     useEffect(() => {
         (async() => {
-            const responseImage = await fetch('http://localhost:8080/api/photos',{
+            const responseImage = await fetch(serverBack+'/api/photos',{
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -52,10 +46,12 @@ function Gallery () {
             console.log("off",offTab);
             setImages(imagesD[0]);
             md();
+            console.log("longueur Maxi:",document.body.offsetHeight);
+            pushToTop();
         })(menuDeroul)
     }, [])
     const md = async()=>{
-        const menuData = await fetch('http://localhost:8080/api/menu',{
+        const menuData = await fetch(serverBack+'/api/menu',{
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -66,7 +62,7 @@ function Gallery () {
         console.log("mdrl",menuDrl[0]);
         setMenuDeroul(menuDrl[0]);
     }
-   
+    
     // console.log(menuDeroul);
     const handleSubmitSearch = async (event)=>{
         event.preventDefault();
@@ -77,7 +73,7 @@ function Gallery () {
 
             
                 if(gallery && !date){
-                const responseGallery = await fetch("http://localhost:8080/api/photos/gallery/"+gallery, {
+                const responseGallery = await fetch(serverBack+"/api/photos/gallery/"+gallery, {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
@@ -94,7 +90,7 @@ function Gallery () {
                     }
                 };
                 if(!gallery && date){
-                    const responseDate = await fetch("http://localhost:8080/api/photos/date/"+date, {
+                    const responseDate = await fetch(serverBack+"/api/photos/date/"+date, {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
@@ -111,7 +107,7 @@ function Gallery () {
                     }
                 };
                 if(gallery != "" && date !=""){
-                    const responseGalleryDate = await fetch("http://localhost:8080/api/photos/gallery&date/"+gallery+"&"+date, {
+                    const responseGalleryDate = await fetch(serverBack+"/api/photos/gallery&date/"+gallery+"&"+date, {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
@@ -128,7 +124,7 @@ function Gallery () {
                     }
                 };
                 if(!gallery && !date){
-                    const responseImage = await fetch('http://localhost:8080/api/photos',{
+                    const responseImage = await fetch(serverBack+'/api/photos',{
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
@@ -138,7 +134,9 @@ function Gallery () {
             
                     const imagesD = await responseImage.json();
                     setImages(imagesD[0]);
+
                 }
+                // pushToTop();
     };
 
     const handleSubmitPost = async(event)=> {
@@ -185,7 +183,7 @@ function Gallery () {
                 // on passe dans le body le nom du fichier modifié sous la form formData
                 body.append('file', compressedFile,picture);
                 console.log(body);
-                const up_picture = await fetch("http://localhost:8080/api/upload",{
+                const up_picture = await fetch(serverBack+"/api/upload",{
                 method:"POST",
                 headers:{
                     "Authorization":"Bearer "+jwtData
@@ -209,7 +207,7 @@ function Gallery () {
         }
         
         // on fait un appel fetch en GET pour voir si la galerie existe 
-        const galleryId= await fetch("http://localhost:8080/api/galleryupload/"+name,{
+        const galleryId= await fetch(serverBack+"/api/galleryupload/"+name,{
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -221,7 +219,7 @@ function Gallery () {
         console.log(galleryId.status,responseGallery);
         if(!galleryId || galleryId.length==0 || galleryId.status==404){
             // si la galerie n'existe pas on la crée avec un appel fetch en PUT
-            const createGallery = await fetch("http://localhost:8080/api/galleryupload/"+name,{
+            const createGallery = await fetch(serverBack+"/api/galleryupload/"+name,{
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -241,7 +239,7 @@ function Gallery () {
                 const gallery_id = responseCreateGallery.id_gall;
                 const user_id = (jwt_decode(jwtData)).id;
                 console.log(picture,gallery_id,user_id,title);
-                const add_picture = await fetch("http://localhost:8080/api/photos",{
+                const add_picture = await fetch(serverBack+"/api/photos",{
                     method: "PUT",
                     headers:{
                         "Content-Type": "application/json",
@@ -263,6 +261,7 @@ function Gallery () {
                 console.log('picture!!!',responseAdd_picture[0]);
                 setImages(responseAdd_picture[0]);
                 pushToTop();
+                console.log("longueur Maxi2:",document.body.offsetHeight);
             }
         } else {
             // si la galerie existe, on enregistre directement les données liées à l'image dans la BDD
@@ -270,7 +269,7 @@ function Gallery () {
             const gallery_id = responseGallery.id_gall;
             const user_id = (jwt_decode(jwtData)).id;
             console.log(picture,gallery_id,user_id,title);
-            const add_picture = await fetch("http://localhost:8080/api/photos",{
+            const add_picture = await fetch(serverBack+"/api/photos",{
                 method: "PUT",
                 headers:{
                     "Content-Type": "application/json",
@@ -292,6 +291,7 @@ function Gallery () {
                 console.log('picture!!!',responseAdd_picture[0]);
                 setImages(responseAdd_picture[0]);
                 pushToTop();
+                console.log("longueur Maxi3:",document.body.offsetHeight);
         }
        
     };
@@ -301,14 +301,14 @@ function Gallery () {
                 return data.picture==imgToDelete;
             }
             console.log(event);
-            const imgToDelete = (event.target.parentNode.previousElementSibling.currentSrc).replace("http://localhost:8080/uploads/","");
+            const imgToDelete = (event.target.parentNode.previousElementSibling.currentSrc).replace(serverBack+"/uploads/","");
             console.log(images);
             const imgTDId = images[images.findIndex(imgTD)].id_pic;
             const subBtn = event.target.innerHTML;
             if(subBtn=="supprimer"){
                 let supPhoto = window.confirm("êtes vous sûr de vouloir supprimer cette photo");
                 if(supPhoto){
-                    const delPhoto = await fetch('http://localhost:8080/api/photos/'+imgTDId,{
+                    const delPhoto = await fetch(serverBack+'/api/photos/'+imgTDId,{
                         method: "DELETE",
                         headers: {"Content-Type": "application/json",
                                 "Authorization": "Bearer "+jwtData
@@ -374,16 +374,7 @@ function Gallery () {
                     );
                 })}
                 </div>
-                <form id="upl" className="imageGallery" onSubmit={handleSubmitPost}>
-                    <label className="upImage">Poster Une Image</label>
-                    <label className="upImage">Titre de l'image</label>
-                    <input className="uploadTitre" type="text" name="titreImgUp" />
-                    <label className="upImage">Galerie</label>
-                    <input className="uploadTitre" type="text" name="uploadGallery" />
-                    <label className="upImage">Fichier</label>
-                    <input className="uploadInput upImage" type="file" name="imageSubmit" />
-                    <button className="upImage upImageBtn" type="submit">Poster</button>
-                </form>
+                <PostPicture handleSubmitPost={handleSubmitPost}/>
             </main>
         </>
     )

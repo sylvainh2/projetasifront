@@ -2,6 +2,13 @@ import jwt_decode from "jwt-decode";
 import {useNavigate} from 'react-router';
 import {useState, useEffect} from "react";
 import imageCompression from 'browser-image-compression';
+import CertifMed from '../components/CertifMed';
+import ProfilPic from '../components/ProfilPic';
+import GestProfil from "../components/GestProfil";
+import AdhSearch from "../components/AdhSearch";
+import Trombi from "../components/Trombi";
+import DataMod from "../components/DataMod";
+import ProfilAction from "../components/ProfilAction";
 
 function User() {
     // we declare all the variables use in the react part
@@ -70,15 +77,6 @@ function User() {
 
         if(demand == "Modifier vos données"){
             //we take the id and do fetch call with req.params.id to retrieve data about user
-            // let id = (jwt_decode(jwtData)).id;
-            // console.log(jwtData);
-            // const response = await fetch('http://localhost:8080/api/users/'+id,{
-            //     method: "GET",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         "Authorization": "Bearer "+jwtData
-            //     }
-            // });
             let response = await getOneUser();
             // we transform utc date to cet date 
             let responseData = await response.json();
@@ -94,13 +92,6 @@ function User() {
         if(demand == "Trombinoscope"){
             setTrombiImg([]);
             // we take all users datas by fetch call
-            // const responseT = await fetch('http://localhost:8080/api/users/',{
-            //     method: "GET",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         "Authorization": "Bearer "+jwtData
-            //     }
-            // });
             let responseT = await getAllUsers();
             // we retrieve users datas in array except one which is a ghost user (for a futur soft delete)
             // and we display their pictures
@@ -116,13 +107,6 @@ function User() {
         if(demand == "Gestion des profils"){
             setTrombiImg([]);
             // // we take all users datas by fetch call to manage validation user/admin and erasure
-            // const responseG = await fetch('http://localhost:8080/api/users/',{
-            //     method: "GET",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         "Authorization": "Bearer "+jwtData
-            //     }
-            // });
             let responseG = await getAllUsers();
             // we retrieve users datas in array except one whish is a ghost user (for a futur soft delete)
             // and we display it
@@ -138,16 +122,6 @@ function User() {
         if(demand == "Ajouter certificat médical"){
             setCertPicture("");
             // // we take the id user by his jwt
-            // let id = (jwt_decode(jwtData)).id;
-            // console.log("le jwt",jwtData);
-            // //we take user data by fetch call
-            // const responseC = await fetch('http://localhost:8080/api/users/'+id,{
-            //     method: "GET",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         "Authorization": "Bearer "+jwtData
-            //     }
-            // });
             let responseC = await getOneUser();
             let responseData = await responseC.json();
             console.log('oldcertif',responseData.certif_med);
@@ -157,16 +131,6 @@ function User() {
         if(demand == "Modifier photo de profil"){
             setProfilPicture ("");
             // // we take the id user by his jwt
-            // let id = (jwt_decode(jwtData)).id;
-            // console.log("le jwt",jwtData);
-            // //we take user data by fetch call
-            // const responseP = await fetch('http://localhost:8080/api/users/'+id,{
-            //     method: "GET",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         "Authorization": "Bearer "+jwtData
-            //     }
-            // });
             let responseP = await getOneUser();
             let responseData = await responseP.json();
             console.log('oldpict',responseData.profil_picture);
@@ -283,16 +247,9 @@ function User() {
     const handleSubmitProfilPic = async(event)=>{
         event.preventDefault();
         const pictureTemp = event.target.profilePic.files[0].name;
+        console.log('nom de fichier:',pictureTemp);
         if(pictureTemp){
-            const id = (jwt_decode(jwtData)).id;
-            const response = await fetch('http://localhost:8080/api/users/'+id,{
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                }
-            });
-
+            const response = await getOneUser();
             let responseData = await response.json();
             const oldName = responseData.profil_picture;
 
@@ -383,14 +340,6 @@ function User() {
             return
         }
         if(certifTemp){
-            // const id = (jwt_decode(jwtData)).id;
-            // const response = await fetch('http://localhost:8080/api/users/'+id,{
-            //     method: "GET",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         "Authorization": "Bearer "+jwtData
-            //     }
-            // });
             const response = await getOneUser();
 
             let responseData = await response.json();
@@ -534,130 +483,35 @@ function User() {
     return(
             <main className="userMain">
                 <div className="userContent">
-                    <form onChange={handleSubmitUser}>
-                        <label className="userform" htmlFor="userdemand">Action sur profil</label>
-                        <select className="userform" type="text" name="userDemand" id="userdemand">
-                            <option className="opForm" value="Modifier vos données">Modifier vos données</option>
-                            <option className="opForm" value="Modifier photo de profil">Modifier photo de profil</option>
-                            <option className="opForm" value="Ajouter certificat médical">Ajouter certificat médical</option>
-                            <option className="opForm" value="Rechercher un adhérent">Rechercher un adhérent</option>
-                            <option className="opForm" value="Trombinoscope">Trombinoscope</option>
-                            {role=="admin" &&
-                                <>
-                                    <option className="opForm" value="______________________" disabled></option>
-                                    <option className="opForm" value="Gestion des profils">Gestion des profils</option>
-                                </>
-                            }
-                        </select>
-                        {/* <button className="userform" type="submit">Ok</button> */}
-                    </form>
+                    <ProfilAction handleSubmitUser={handleSubmitUser} role={role}/>
                     {demand=="Modifier vos données" &&
-                    <form className="modifyForm" id="formulaire" onSubmit={handleSubmitModify}>
-                        <input className="userInpForm" type="text" name="nameMod" defaultValue={responseData.name} />
-                        <input className="userInpForm" type="text" name="first_nameMod" defaultValue={responseData.first_name} />
-                        <input className="userInpForm" type="date" name="birthdateMod" defaultValue={responseData.birthdate} />
-                        <textarea className="userInpForm textA" cols="50" rows="3" type="text" name="addressMod" defaultValue={responseData.address} />
-                        <input className="userInpForm" type="text" name="postcodeMod" defaultValue={responseData.postcode} />
-                        <input className="userInpForm" type="text" name="cityMod" defaultValue={responseData.city} />
-                        <input className="userInpForm" type="text" name="telMod" defaultValue={responseData.tel} />
-                        <label className="userInpForm userShareInf" >Partage des informations personnelles</label>
-                        <input className="userInpForm" type="checkbox" name="share_infosMod" defaultChecked={responseData.share_infos} />
-                        <label className="userInpForm">Password</label>
-                        <input type="password" name="passwordMod" defaultValue="" />
-                        <button className="userInpForm uIFBtn" type="submit">ENVOYER</button>
-                    </form>
+                    <>
+                        <DataMod handleSubmitModify={handleSubmitModify} responseData={responseData}/>
+                    </>
                     }
                     {demand=="Trombinoscope" &&
-                    <div className="trombi">
-                    {trombiD.map((oneUser)=>{
-                        return(
-                            <div className="trombiImg" key={oneUser.id}>
-                                <img className="trombiPic" src={serverBack+"/profiles/"+oneUser.profil_picture}/>
-                                <p>{oneUser.name}</p>
-                                <p>{oneUser.first_name}</p>
-                            </div>
-                        )
-                    })}
-                    </div>}
+                        <Trombi trombiD={trombiD} serverBack={serverBack}/>
+                    }
                     {demand=="Rechercher un adhérent" &&
                     <>
-                        <form className="searchForm" id="formulsearch" onSubmit={handleSubmitSearch}>
-                            <div className="userDelCont">
-                            <label className="userDel">Nom:<input className="userDelLab" type="text" name="nameSearch" /></label>
-                            <label className="userDel">Prénom:<input type="text" name="first_nameSearch" /></label>
-                            <button className="userDel" type="submit">Chercher</button>
-                            </div>
-                        </form>
-                        {trombiImg.length !=0 ?
-                            <div className="searchImg">
-                                <img className="searchPic" src={serverBack+"/profiles/"+trombiImg.profil_picture}/>
-                                <p>{trombiImg.name}</p>
-                                <p>{trombiImg.first_name}</p>
-                            </div>:
-                        <>
-                        </>
-                        }
+                        <AdhSearch trombiImg={trombiImg} handleSubmitSearch={handleSubmitSearch} serverBack={serverBack}/>
                     </>
                     }
                     {demand=="Modifier photo de profil" &&
                     <>
-                        <form className="profilForm" onSubmit={handleSubmitProfilPic}>
-                            <label>Image de profil<input type="file" name="profilePic" accept="image/png, image/jpg, image/jpeg" onChange={picPreview}/></label>
-                            <button className="userDel" type="submit">Choisir</button>
-                        </form>
-                        <div className="prevCont">
-                        <img className="preview" src={profilPicture} />
-                        {check==true &&
-                            <i className="fa-solid fa-check fa-3x profilCheck"></i>} 
-                            </div>
+                        <ProfilPic check={check} handleSubmitProfilPic={handleSubmitProfilPic} picPreview={picPreview} profilPicture={profilPicture}/>
                     </>    
                     }
                     {demand=="Ajouter certificat médical" &&
                     <>
-                        <form className="profilForm" onSubmit={handleSubmitCertifPic}>
-                            <label>Certificat médical<input type="file" name="certifPic" accept="application/pdf, image/jpg, image/jpeg" onChange={certPreview}/></label>
-                            <button className="userDel" type="submit">Choisir</button>
-                        </form>
-                        <div className="prevCont">
-                         {imageCert?
-                        <img className="previewC" src={certPicture} />:
-                        <iframe className="previewC" src={certPicture} />
-                         }   
-                        {checkC==true &&
-                            <i className="fa-solid fa-check fa-3x profilCheck"></i>} 
-                            </div>
+                        <CertifMed imageCert={imageCert} checkC={checkC} handleSubmitCertifPic={handleSubmitCertifPic} certPreview={certPreview} certPicture={certPicture}/>
                     </>    
                     }
                     {(demand=="Gestion des profils" && gest.length!=0) &&
-                    <div className="profileCont">
-                        {gest.map((profile)=>{
-                            return(
-                                <div className="profileGest" key={profile.id} onClick={gestProfile}>
-                                    <div className="profCont">
-                                        <p>{profile.name}</p>
-                                    </div>
-                                    <div className="profCont">
-                                        <p>{profile.first_name}</p>
-                                    </div>
-                                    <div className="profContVal">
-                                        {profile.validity==0?
-                                        <button className="profVal" type="button" name="invalide">invalidé</button>:
-                                        <button className="profInv" type="button" name="valide">validé</button>
-                                        }
-                                    </div>
-                                    <div className="profContVal">
-                                        {profile.roles=="admin"?
-                                        <button className="profAdm" type="button" name="admin">{profile.roles}</button>:
-                                        <button className="profUse" type="button" name="user">{profile.roles}</button>
-                                        }
-                                    </div>
-                                    <div className="profCont">
-                                        <button type="button" name="trash"><i className="fa-solid fa-trash"></i></button>
-                                    </div>
-                                </div>
-                            )
-                        })}
-                    </div>}
+                    <>
+                        <GestProfil gest={gest} gestProfile={gestProfile} />
+                    </>
+                    }
                 </div>
             </main>
     )
