@@ -1,6 +1,6 @@
 .userMain{
     margin-top: 10rem;
-    min-height: 62.8vh;
+    min-height: 63.3vh;
     text-align: center;
     @media screen and (min-height:800px) {
         min-height: 69.7vh;
@@ -131,7 +131,7 @@
 .profileGest{
     text-align: center;
     display:flex;
-    justify-content:space-between;
+    justify-content:space-around;
     width:70%;
     margin:0 auto;
     border: 1px solid black;
@@ -142,14 +142,14 @@
 
     .profCont{
         margin-top:1rem;
-        margin-left: 1rem;;
+        margin-right: 3rem;;
         text-align: left;
-        width:10%;
+        width:20%;
         text-transform: uppercase;
         @media screen and (max-width:768px) {
-            width:20%;
+            width:15%;
             font-size: 0.55rem;
-            margin-top: 1rem;
+            // margin-top: 1rem;
         }
     }
     .profCont:last-of-type{
@@ -165,28 +165,48 @@
     }
 }
 .profContVal{
-    margin-top: 1rem;
+    display:flex;
+    align-items: center;
+    // margin-top: 1rem;
     text-align: center;
-    width:7%;
+    width:70px;
     @media screen and (max-width:768px) {
-        width:14%;
-        margin-top: 0.8rem;
+        width:52px;
+        // margin-top: 0.8rem;
     }
 }
 .profVal{
-    width:100%;
+    width:120px;
     background-color: rgb(243, 153, 153);
 }
 .profInv{
-    width:100%;
+    width:120px;
     background-color: rgb(127, 241, 127);
 }
 .profAdm{
-    width:100%;
+    width:120px;
     background-color:$bleu;
     color: $blanc;
 }
 .profUse{
-    width:100%;
+    width:120px;
     background-color: $jaune;
+}
+.profCont-trash{
+    width:40px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+.profCont-cpi{
+    display:flex;
+    flex-direction: column;
+    justify-content:center;
+    .cpi{
+        // display:none;
+        border:1px solid;
+        margin:0.2rem 0 0.2rem 0;
+        padding:0 0.4rem 0 0.4rem;
+        background-color:white;
+    }
 }

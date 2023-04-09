@@ -485,32 +485,22 @@ function User() {
                 <div className="userContent">
                     <ProfilAction handleSubmitUser={handleSubmitUser} role={role}/>
                     {demand=="Modifier vos données" &&
-                    <>
                         <DataMod handleSubmitModify={handleSubmitModify} responseData={responseData}/>
-                    </>
                     }
                     {demand=="Trombinoscope" &&
                         <Trombi trombiD={trombiD} serverBack={serverBack}/>
                     }
                     {demand=="Rechercher un adhérent" &&
-                    <>
                         <AdhSearch trombiImg={trombiImg} handleSubmitSearch={handleSubmitSearch} serverBack={serverBack}/>
-                    </>
                     }
                     {demand=="Modifier photo de profil" &&
-                    <>
-                        <ProfilPic check={check} handleSubmitProfilPic={handleSubmitProfilPic} picPreview={picPreview} profilPicture={profilPicture}/>
-                    </>    
+                        <ProfilPic check={check} handleSubmitProfilPic={handleSubmitProfilPic} picPreview={picPreview} profilPicture={profilPicture}/>   
                     }
                     {demand=="Ajouter certificat médical" &&
-                    <>
-                        <CertifMed imageCert={imageCert} checkC={checkC} handleSubmitCertifPic={handleSubmitCertifPic} certPreview={certPreview} certPicture={certPicture}/>
-                    </>    
+                        <CertifMed imageCert={imageCert} checkC={checkC} handleSubmitCertifPic={handleSubmitCertifPic} certPreview={certPreview} certPicture={certPicture}/>   
                     }
                     {(demand=="Gestion des profils" && gest.length!=0) &&
-                    <>
                         <GestProfil gest={gest} gestProfile={gestProfile} />
-                    </>
                     }
                 </div>
             </main>
