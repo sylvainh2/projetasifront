@@ -13,9 +13,6 @@ function Header() {
   if (roleData) {
     const role = (jwt_decode(roleData)).roles;
     const validity = (jwt_decode(roleData)).validity;
-
-    console.log(validity);
-
     if((role==="admin" || role==="user") && validity=="1"){
       disableNav = "";
      } 

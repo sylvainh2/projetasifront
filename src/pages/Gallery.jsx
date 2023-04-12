@@ -7,52 +7,48 @@ import GalleryDisplay from "../components/GalleryDisplay";
 import GallerySearch from "../components/GallerySearch";
 
 function Gallery () {
-    console.log("debuttttt");
-
+    
+    const jwtData = window.localStorage.getItem('jwt');
     const [images, setImages] = useState([]);
     const [menuDeroul, setMenuDeroul] = useState([]);
     const [serverBack, setServerBack] = useState("http://localhost:8080");
-    const [offTab, setOffTab] = useState({"offs":0,"longP":0});
-    // const [longPic, setLongPic] = useState(0);
-    
-    const jwtData = window.localStorage.getItem('jwt');
     const [role, setRole] = useState(jwt_decode(jwtData).roles);
     const [nombrePhotosTotales,setNombrePhotosTotales] = useState(0);
     const [page,setPage] = useState(0);
     const [gallerySt,setGallery] = useState("");
     const [dateSt,setDate] = useState("");
     const [hasMore,setHasMore] = useState(true);
-    // useEffect(()=>{
-    //     setPage(0);
-    //     setHasMore(true);
-    // },[]);
     useEffect(()=>{
-        console.log("reinit nouvelle galerie",nombrePhotosTotales,hasMore);
+        document.querySelector('.arrow_top').hidden=true;
+    },[]);
+    useEffect(()=>{
         setPage(0);
         setHasMore(true);
+        window.scrollTo(0,550);
     },[gallerySt]);
 
     useEffect(()=>{
         if(page!=0){
-            console.log("scroll infini");
             scrollPictureLoad(page);
         }
     },[page])
     
     useEffect(()=>{
-        console.log("ecouteur d'evenements",hasMore)
         window.addEventListener('scroll',onScroll);
         return () => window.removeEventListener('scroll', onScroll);
     },[images])
     function onScroll(){
+        if(window.scrollY>500){
+            document.querySelector('.arrow_top').hidden=false;
+        }else{
+            document.querySelector('.arrow_top').hidden=true;
+        }
         let windowRelativeBottom = document.documentElement.getBoundingClientRect().bottom;
-        if((windowRelativeBottom<(document.documentElement.clientHeight+700)) && (hasMore==true)){
+        if((windowRelativeBottom<(document.documentElement.clientHeight+700)) && (hasMore==true) && (images.length!=0)){
             setPage(page+1);
         }
     }
     function pushToTop() {
-
-        console.log('hello scroll');
         window.scrollTo(0,0);
     }
     
@@ -67,7 +63,6 @@ function Gallery () {
         })
         const imagesData = await response.json();
         setNombrePhotosTotales((Object.values(imagesData[1]))[0]);
-        console.log("page supplementaire",Math.floor((Object.values(imagesData[1]))[0]/10));
         if(page==Math.floor((Object.values(imagesData[1]))[0]/10)){
             setHasMore(false);
         }
@@ -79,7 +74,7 @@ function Gallery () {
     
     useEffect(() => {
         (async() => {
-            const responseImage = await fetch(`${serverBack}/api/photos/?page=${page}`,{
+            const responseImage = await fetch(`${serverBack}/api/photos/?page=0`,{
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -87,18 +82,16 @@ function Gallery () {
                 }
             })
             const imagesD = await responseImage.json();
-            console.log('image',imagesD[1]);
             const ob=(Object.values(imagesD[1]))[0];
             if(Math.floor(ob/10)==0){
                 setHasMore(false);
             }
             setImages(imagesD[0]);
-            md();
-            console.log("longueur Maxi:",document.body.offsetHeight);
+            menuDeroulant();
             pushToTop();
         })(menuDeroul)
     }, [])
-    const md = async()=>{
+    const menuDeroulant = async()=>{
         const menuData = await fetch(serverBack+'/api/menu',{
             method: "GET",
             headers: {
@@ -107,18 +100,13 @@ function Gallery () {
             }
         })
         const menuDrl = await menuData.json();
-        console.log("mdrl",menuDrl[0]);
         setMenuDeroul(menuDrl[0]);
     }
-    
-    // console.log(menuDeroul);
     const handleSubmitSearch = async (event)=>{
         event.preventDefault();
                 const gallery=(event.target.gallery.value);
                 const date=(event.target.date.value);
                 const pageSbm=0;
-                console.log(gallery,date,page,hasMore);
-                console.log(gallerySt,dateSt,page,hasMore);
                 // if(gallery==""){gallery=false};
                 // if(date==""){date=false};
 
@@ -188,6 +176,7 @@ function Gallery () {
 
                 // }
                 // setImages([]);
+                let imagesData=[];
                 const response = await fetch (`${serverBack}/api/photos/?gallery=${gallery}&date=${date}&page=${pageSbm}`,{
                     method: "GET",
                     headers: {
@@ -195,9 +184,11 @@ function Gallery () {
                         "Authorization": "Bearer "+jwtData
                     }
                 })
-                const imagesData = await response.json();
-                // console.log(nombrePhotosTotales);
-                console.log("page",(Math.floor((Object.values(imagesData[1]))[0]/10)));
+                if(response.length==0 || response.status>=400){
+                    imagesData =[[],{"count(id_pic)": 0}];
+                }else{
+                    imagesData = await response.json();                  
+                }
                 if(Math.floor(((Object.values(imagesData[1]))[0])/10)==0){
                     setHasMore(false);
                 }
@@ -210,9 +201,7 @@ function Gallery () {
                 }else{
                     setHasMore(false);
                 }
-                console.log(gallerySt,dateSt,page,hasMore,imagesData[0].length);
                 setImages(imagesData[0]);
-                // pushToTop();
     };
 
     const handleSubmitPost = async(event)=> {
@@ -272,7 +261,6 @@ function Gallery () {
                     alert("Problème à l'enregistrement de l'image");
                     return;
                 }
-                    // alert("Photo enregistrée");
                     event.target.titreImgUp.value="";
                     event.target.uploadGallery.value="";
                     event.target.imageSubmit.value="";
@@ -290,9 +278,7 @@ function Gallery () {
                 "Authorization": "Bearer "+jwtData
             }
         });
-        console.log("galleryId",galleryId);
         const responseGallery = await galleryId.json(); 
-        console.log(galleryId.status,responseGallery);
         if(!galleryId || galleryId.length==0 || galleryId.status==404){
             // si la galerie n'existe pas on la crée avec un appel fetch en PUT
             const createGallery = await fetch(serverBack+"/api/galleryupload/"+name,{
@@ -306,7 +292,6 @@ function Gallery () {
                 })
             });
             const responseCreateGallery = await createGallery.json();
-            console.log(responseCreateGallery,createGallery);
             if(!responseCreateGallery || responseCreateGallery.length===0){
                 alert("Problème lors de la création de la gallerie");
             } else {
@@ -314,7 +299,6 @@ function Gallery () {
                 // avec un appel fetch en méthode PUT.
                 const gallery_id = responseCreateGallery.id_gall;
                 const user_id = (jwt_decode(jwtData)).id;
-                console.log(picture,gallery_id,user_id,title);
                 const add_picture = await fetch(`${serverBack}/api/photos/?page=${page}`,{
                     method: "PUT",
                     headers:{
@@ -334,17 +318,14 @@ function Gallery () {
                 } 
                 // et on upload l'image
                 const up = await upload(picture);
-                console.log('picture!!!',responseAdd_picture[0]);
                 setImages(responseAdd_picture[0]);
-                pushToTop();
-                console.log("longueur Maxi2:",document.body.offsetHeight);
+                window.scrollTo(0,550);
             }
         } else {
             // si la galerie existe, on enregistre directement les données liées à l'image dans la BDD
             // grace à un appel fetch en méthode PUT  
             const gallery_id = responseGallery.id_gall;
             const user_id = (jwt_decode(jwtData)).id;
-            console.log(picture,gallery_id,user_id,title);
             const add_picture = await fetch(`${serverBack}/api/photos/?page=${page}`,{
                 method: "PUT",
                 headers:{
@@ -364,15 +345,12 @@ function Gallery () {
                 } 
                 // et on upload
                 const up= await upload(picture);
-                console.log('picture!!!',responseAdd_picture[0]);
                 setImages(responseAdd_picture[0]);
-                pushToTop();
-                console.log("longueur Maxi3:",document.body.offsetHeight);
+                window.scrollTo(0,550);
         }
        
     };
     const handleClic = async (picDel) =>{
-        console.log(picDel);
         const imgTDId = picDel.id_pic;
         let supPhoto = window.confirm("êtes vous sûr de vouloir supprimer cette photo");
         if(supPhoto){
@@ -383,10 +361,8 @@ function Gallery () {
             }});
             if(delPhoto){
                 const delPhotoD = await delPhoto.json();
-                console.log("resultat",delPhotoD);
-                // alert("photo supprimée");
                 setImages(delPhotoD[0]);
-                pushToTop();
+                window.scrollTo(0,550);
             }
         }
     }
@@ -394,14 +370,15 @@ function Gallery () {
         console.log('commentaire');
         console.log(picDel);
     }
-    console.log("affichage!!!!",images)
     return(
         <>
             <main className="findGallery">
-                {/* <Arrowmove offtab={offTab}/> */}
-                <GallerySearch handleSubmitSearch={handleSubmitSearch} menuDeroul={menuDeroul}/>
+                <Arrowmove pushToTop={pushToTop}/>
+                <div className="searchPostCont">
+                    <GallerySearch handleSubmitSearch={handleSubmitSearch} menuDeroul={menuDeroul}/>
+                    <PostPicture handleSubmitPost={handleSubmitPost}/>
+                </div>
                 <GalleryDisplay handleClic={handleClic} handleClicCom={handleClicCom} images={images} serverBack={serverBack} role={role}/>
-                <PostPicture handleSubmitPost={handleSubmitPost}/>
             </main>
         </>
     )

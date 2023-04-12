@@ -5,6 +5,7 @@
 const GallerySearch =({handleSubmitSearch, menuDeroul})=>{
     return(
         <>
+            <h2 className="searchTitle">Recherche</h2>
             <form onSubmit={handleSubmitSearch} id="search">
                 <label>Galerie</label>
                 <input className="findInput" type="search" name="gallery" list="searchList" />
@@ -19,9 +20,9 @@ const GallerySearch =({handleSubmitSearch, menuDeroul})=>{
                 <input className="findInput findInputBtn" type="date" name="date" />
                 <button className="findInputBtn" type="submit">Rechercher</button>
             </form>
-            <div className="uplDirectContent">
+            {/* <div className="uplDirectContent">
                 <a className="uplDirect" href="#upl"><i className="fa-sharp fa-solid fa-arrow-down"></i> Poster Une Image <i className="fa-sharp fa-solid fa-arrow-down"></i></a>
-            </div>
+            </div> */}
         </>
     )
 }
