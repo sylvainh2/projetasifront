@@ -10,6 +10,7 @@ import SignupShow from './pages/SignupShow';
 import CgShow from './pages/CgShow';
 import UserShow from './pages/UserShow';
 import PartShow from './pages/PartShow';
+import PicturesComsShow from './pages/PicturesComsShow';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}/>
           <Route path="/photos" element={<PicturesShow />}/>
+          <Route path="/photos-coms" element={<PicturesComsShow />}/>
           <Route path="/login" element={<LoginShow />}/>
           <Route path="/savoir" element={<SavoirShow />}/>
           <Route path="/signup" element={<SignupShow />}/>

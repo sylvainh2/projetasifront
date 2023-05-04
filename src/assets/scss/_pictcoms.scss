@@ -1,0 +1,60 @@
+.pictComs{
+    min-height:100vh;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+.pComs{
+    position:fixed;
+    bottom:5rem;
+    text-align: center;
+}
+.imgComs{
+    margin: 8rem 0 0 0;
+}
+.inputCom{
+    width:90vw;
+    border-radius: 4px;
+}
+.parent{
+    width:90%;
+    background-color: $grisc;
+    border-radius: 15px;
+    padding:1rem 0.5rem 0.5rem 0.5rem;
+    margin-top:1rem;
+}
+.comContenair{
+    width:90%;
+    background-color:rgb(200, 197, 197);
+    border-radius: 10px;
+    display:flex;
+    justify-content: space-between;
+    @media screen and (max-width:768px) {
+        margin-top:-0.5rem;
+    }
+}
+.comCommentaire{
+    margin-right:2rem;
+    background-color: $bleu;
+    color:white;
+    padding:0 0.5rem 0 0.5rem;
+    border-radius: 10px;
+}
+.comCommentaire:hover{
+    cursor:pointer;
+}
+.comReaction{
+    margin-left:2rem;
+    background-color: $bleu;
+    color:white;
+    padding:0 0.5rem 0 0.5rem;
+    border-radius: 10px;
+}
+.comReaction:hover{
+    cursor:pointer;
+}
+.text{
+    @media screen and (max-width:768px) {
+        font-size: 0.7rem;
+    }
+}

@@ -1,14 +1,14 @@
 footer{
     background-color: #9F9D9D;
     padding-top: 1rem;
-    ul{
+    .footerul{
         display:flex;
         justify-content:space-around;
         align-items: center;
-        li{
+        .footerli{
             list-style-type: none;
             
-            a{
+            .footera{
                 color:$noir;
                 text-decoration: none;
                 text-transform: uppercase;
@@ -16,7 +16,7 @@ footer{
                 font-weight: 600;
             }
             @media screen and (min-width:768px){
-                a:hover{
+                .footera:hover{
                     color:$blanc;
                 }                
             }

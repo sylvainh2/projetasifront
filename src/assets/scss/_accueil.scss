@@ -129,12 +129,12 @@
         .textAccueil{
             text-align: center;
             font-family: 'Segoe UI';
-            h2{
+            .accueilTitle{
                 font-size: 1.5rem;
                 font-weight: bold;
                 margin: 1rem 0 1rem;
             }
-            p{
+            .acceuilPara{
                 margin:0 2rem;
                 font-weight: bold;
                 color:$gris;

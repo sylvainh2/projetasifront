@@ -26,6 +26,7 @@ function User() {
     const [checkC,setCheckC] = useState(false);
     const [gest,setGest] = useState([]);
     const [imageCert,setImageCert] = useState(false);
+    const [userList,setUserList] = useState([]);
     const navigate = useNavigate();
     const jwtData = window.localStorage.getItem("jwt");
 
@@ -75,7 +76,7 @@ function User() {
         setdemand(demand);
         console.log("demand",demand);
 
-        if(demand == "Modifier vos données"){
+        if(demand === "Modifier vos données"){
             //we take the id and do fetch call with req.params.id to retrieve data about user
             let response = await getOneUser();
             // we transform utc date to cet date 
@@ -89,46 +90,46 @@ function User() {
             responseData.share_infos = cbox[responseData.share_infos]; 
             setResponseData(responseData);
         }
-        if(demand == "Trombinoscope"){
+        if(demand === "Trombinoscope"){
             setTrombiImg([]);
             // we take all users datas by fetch call
             let responseT = await getAllUsers();
             // we retrieve users datas in array except one which is a ghost user (for a futur soft delete)
             // and we display their pictures
             const responseDataS = await responseT.json();
-            console.log("trombi0",responseDataS,responseDataS.length);
+            // console.log("trombi0",responseDataS,responseDataS.length);
             let trombArray = responseDataS;
-            let index=responseDataS.findIndex(data=>(data.id==0));
-            console.log("trombi1",trombArray);
-            let trombData = trombArray.splice(index,1);
-            console.log("trombi",trombArray);
+            // let index=responseDataS.findIndex(data=>(data.id==0));
+            // console.log("trombi1",trombArray);
+            // let trombData = trombArray.splice(index,1);
+            // console.log("trombi",trombArray);
             setTrombiD(trombArray);
         }
-        if(demand == "Gestion des profils"){
+        if(demand === "Gestion des profils"){
             setTrombiImg([]);
-            // // we take all users datas by fetch call to manage validation user/admin and erasure
+            // we take all users datas by fetch call to manage validation user/admin and erasure
             let responseG = await getAllUsers();
             // we retrieve users datas in array except one whish is a ghost user (for a futur soft delete)
             // and we display it
             const responseDataS = await responseG.json();
-            console.log("gestion0",responseDataS);
+            // console.log("gestion0",responseDataS);
             let gestArray = responseDataS.slice();
-            let index=gestArray.findIndex(data=>(data.id==0));
-            console.log("gestion1",gestArray);
-            let trombData = gestArray.splice(index,1);
-            console.log("gestion",gestArray);
+            // let index=gestArray.findIndex(data=>(data.id==0));
+            // console.log("gestion1",gestArray);
+            // let trombData = gestArray.splice(index,1);
+            // console.log("gestion",gestArray);
             setGest(gestArray);
         }
-        if(demand == "Ajouter certificat médical"){
+        if(demand === "Ajouter certificat médical"){
             setCertPicture("");
-            // // we take the id user by his jwt
+            //  we take the id user by his jwt
             let responseC = await getOneUser();
             let responseData = await responseC.json();
             console.log('oldcertif',responseData.certif_med);
             // we try to display the old saved medical certif (doesn't work, maybe must have useEffect or ...)
             setCertPicture("http://localhost:8080/certifs/"+responseData.certif_med);
         }
-        if(demand == "Modifier photo de profil"){
+        if(demand === "Modifier photo de profil"){
             setProfilPicture ("");
             // // we take the id user by his jwt
             let responseP = await getOneUser();
@@ -136,6 +137,13 @@ function User() {
             console.log('oldpict',responseData.profil_picture);
             // we try to display the old saved medical certif (doesn't work, maybe must have useEffect or ...)
             setProfilPicture("http://localhost:8080/profiles/"+responseData.profil_picture);
+        }
+        if(demand === "Rechercher un adhérent"){
+            // we take all users datas by fetch call
+            let responseAdh = await getAllUsers();
+            let responseData = await responseAdh.json();
+            setUserList(responseData);
+            
         }
     }
     async function getOneUser() {
@@ -210,22 +218,26 @@ function User() {
     const handleSubmitSearch = async(event)=>{
         event.preventDefault();
         const e = event.target;
-        const name = e.nameSearch.value;
-        const first_name = e.first_nameSearch.value;
-
-        if(name && first_name){
-            const responseSearch = await fetch('http://localhost:8080/api/users/user/'+name+"&"+first_name,{
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-            }});
-            if (responseSearch){
-                const responseSearchData = await responseSearch.json();
-                console.log(responseSearchData);
-                setTrombiImg(responseSearchData);
-            }
+        const name = (e.nameSearch.value).split(" ")[0];
+        const first_name = (e.nameSearch.value).split(" ")[1];
+        const trombiImgSearch = userList.find(data=>(data.name===name && data.first_name===first_name));
+        if(trombiImgSearch){
+            setTrombiImg(trombiImgSearch);
         }
+
+        // if(name && first_name){
+        //     const responseSearch = await fetch('http://localhost:8080/api/users/user/'+name+"&"+first_name,{
+        //         method: "GET",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //             "Authorization": "Bearer "+jwtData
+        //     }});
+        //     if (responseSearch){
+        //         const responseSearchData = await responseSearch.json();
+        //         console.log(responseSearchData);
+        //         setTrombiImg(responseSearchData);
+        //     }
+        // }
     }
     const picPreview = async(event)=>{
         event.preventDefault();
@@ -416,15 +428,15 @@ function User() {
         console.log("id",userTDid);
         if(gestionProf!="trash" && gestionProf.length!=0){
             if(jwt_decode(jwtData).id != userTDid){
-                if(gestionProf=="valide" || gestionProf=="invalide"){
+                if(gestionProf==="valide" || gestionProf==="invalide"){
                     gestArray[index].validity=validElement[gestionProf];
-                    if(gestionProf=="valide"){
+                    if(gestionProf==="valide"){
                         gestArray[index].roles="user";
                     }
                 }
-                if(gestionProf=="user" || gestionProf=="admin"){
+                if(gestionProf==="user" || gestionProf==="admin"){
                     gestArray[index].roles=validElement[gestionProf];
-                    if(gestionProf=="user"){
+                    if(gestionProf==="user"){
                         gestArray[index].validity="1";
                     }
                 }
@@ -484,22 +496,22 @@ function User() {
             <main className="userMain">
                 <div className="userContent">
                     <ProfilAction handleSubmitUser={handleSubmitUser} role={role}/>
-                    {demand=="Modifier vos données" &&
+                    {demand==="Modifier vos données" &&
                         <DataMod handleSubmitModify={handleSubmitModify} responseData={responseData}/>
                     }
-                    {demand=="Trombinoscope" &&
+                    {demand==="Trombinoscope" &&
                         <Trombi trombiD={trombiD} serverBack={serverBack}/>
                     }
-                    {demand=="Rechercher un adhérent" &&
-                        <AdhSearch trombiImg={trombiImg} handleSubmitSearch={handleSubmitSearch} serverBack={serverBack}/>
+                    {demand==="Rechercher un adhérent" &&
+                        <AdhSearch trombiImg={trombiImg} userList={userList} handleSubmitSearch={handleSubmitSearch} serverBack={serverBack}/>
                     }
-                    {demand=="Modifier photo de profil" &&
+                    {demand==="Modifier photo de profil" &&
                         <ProfilPic check={check} handleSubmitProfilPic={handleSubmitProfilPic} picPreview={picPreview} profilPicture={profilPicture}/>   
                     }
-                    {demand=="Ajouter certificat médical" &&
+                    {demand==="Ajouter certificat médical" &&
                         <CertifMed imageCert={imageCert} checkC={checkC} handleSubmitCertifPic={handleSubmitCertifPic} certPreview={certPreview} certPicture={certPicture}/>   
                     }
-                    {(demand=="Gestion des profils" && gest.length!=0) &&
+                    {(demand==="Gestion des profils" && gest.length!=0) &&
                         <GestProfil gest={gest} gestProfile={gestProfile} />
                     }
                 </div>

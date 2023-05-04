@@ -18,7 +18,7 @@ const GestProfil = ({gest, gestProfile})=>{
                                 }
                             </div>
                             <div className="profContVal">
-                                {profile.roles=="admin"?
+                                {profile.roles==="admin"?
                                 <button className="profAdm" type="button" name="admin">{profile.roles}</button>:
                                 <button className="profUse" type="button" name="user">{profile.roles}</button>
                                 }

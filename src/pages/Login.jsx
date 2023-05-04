@@ -9,7 +9,7 @@ function Login() {
     const navigate = useNavigate();
     useEffect(()=>{
         const connectData = window.localStorage.getItem("connect");
-        if(connectData == "déconnexion"){
+        if(connectData === "déconnexion"){
             window.localStorage.clear("connect");
             window.localStorage.clear("jwt");
             navigate('/');

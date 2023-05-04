@@ -55,7 +55,7 @@ function Header() {
                       <a className={"nav-link "+disableNav} href="#">Actualités</a>
                     </li>
                     <li className="nav-item ms-lg-auto ">
-                      <a className={"nav-link "+disableNav} href="#">Evenements</a>
+                      <a className={"nav-link "+disableNav} href="#">Evénements</a>
                     </li>
                     <li className="nav-item ms-lg-auto ">
                       <Link to={"/users"} className={"nav-link "+disableNav} href="#">Adhérents</Link>

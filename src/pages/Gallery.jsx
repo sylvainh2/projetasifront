@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import Arrowmove from '../components/Arrowmove';
 import imageCompression from 'browser-image-compression';
@@ -8,6 +9,7 @@ import GallerySearch from "../components/GallerySearch";
 
 function Gallery () {
     
+    const navigate = useNavigate();
     const jwtData = window.localStorage.getItem('jwt');
     const [images, setImages] = useState([]);
     const [menuDeroul, setMenuDeroul] = useState([]);
@@ -63,7 +65,7 @@ function Gallery () {
         })
         const imagesData = await response.json();
         setNombrePhotosTotales((Object.values(imagesData[1]))[0]);
-        if(page==Math.floor((Object.values(imagesData[1]))[0]/10)){
+        if(page===Math.floor((Object.values(imagesData[1]))[0]/10)){
             setHasMore(false);
         }
         if(page!=0){setImages([...images,...imagesData[0]]);}
@@ -83,7 +85,7 @@ function Gallery () {
             })
             const imagesD = await responseImage.json();
             const ob=(Object.values(imagesD[1]))[0];
-            if(Math.floor(ob/10)==0){
+            if(Math.floor(ob/10)===0){
                 setHasMore(false);
             }
             setImages(imagesD[0]);
@@ -184,7 +186,7 @@ function Gallery () {
                         "Authorization": "Bearer "+jwtData
                     }
                 })
-                if(response.length==0 || response.status>=400){
+                if(response.length===0 || response.status>=400){
                     imagesData =[[],{"count(id_pic)": 0}];
                 }else{
                     imagesData = await response.json();                  
@@ -215,7 +217,7 @@ function Gallery () {
             'image/png': 'png'
         }        
         
-        if(name=="" || pictureTemp==""){
+        if(name==="" || pictureTemp===""){
             alert('veuillez remplir le champs gallerie et charger un fichier SVP');
             return;
         }
@@ -231,10 +233,10 @@ function Gallery () {
     
         console.log(title,name,picture); 
 
-        const upload = async()=> {
+        async function upload() {
             const imageFile = event.target.imageSubmit.files[0];
             const options = {
-                maxSizeMB: 0.5,
+                maxSizeMB: 0.25,
                 maxWidthOrHeight: 1080,
                 useWebWorker: true
             }
@@ -269,6 +271,40 @@ function Gallery () {
                 console.log(error);
               }
         }
+
+        async function createUploadImage(responseCreateGallery,picture,title){
+            const gallery_id = responseCreateGallery.id_gall;
+            const user_id = (jwt_decode(jwtData)).id;
+            const add_picture = await fetch(`${serverBack}/api/photos/?page=${page}`,{
+                method: "PUT",
+                headers:{
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+                },
+                body: JSON.stringify({
+                    picture,
+                    gallery_id,
+                    user_id,
+                    title
+                })
+            });
+            const responseAdd_picture = await add_picture.json();
+            if(!responseAdd_picture){
+                alert("Problème à l'upload de la photo");
+            } else {
+                // et on upload l'image
+                const up = await upload(picture);
+                setNombrePhotosTotales((Object.values(responseAdd_picture[1]))[0]);
+                setPage(0);
+                if((Object.values(responseAdd_picture[1]))[0]>10){
+                    setHasMore(true);
+                } else {
+                    setHasMore(false);
+                }
+                setImages(responseAdd_picture[0]);
+                window.scrollTo(0,550);
+            }
+        }
         
         // on fait un appel fetch en GET pour voir si la galerie existe 
         const galleryId= await fetch(serverBack+"/api/galleryupload/"+name,{
@@ -279,7 +315,7 @@ function Gallery () {
             }
         });
         const responseGallery = await galleryId.json(); 
-        if(!galleryId || galleryId.length==0 || galleryId.status==404){
+        if(!galleryId || galleryId.length===0 || galleryId.status===404){
             // si la galerie n'existe pas on la crée avec un appel fetch en PUT
             const createGallery = await fetch(serverBack+"/api/galleryupload/"+name,{
                 method: "PUT",
@@ -297,56 +333,12 @@ function Gallery () {
             } else {
                 //une fois la galerie créée on crée les données liées à l'immage dans la BDD
                 // avec un appel fetch en méthode PUT.
-                const gallery_id = responseCreateGallery.id_gall;
-                const user_id = (jwt_decode(jwtData)).id;
-                const add_picture = await fetch(`${serverBack}/api/photos/?page=${page}`,{
-                    method: "PUT",
-                    headers:{
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer "+jwtData
-                    },
-                    body: JSON.stringify({
-                        picture,
-                        gallery_id,
-                        user_id,
-                        title
-                    })
-                });
-                const responseAdd_picture = await add_picture.json();
-                if(!responseAdd_picture){
-                    alert("Problème à l'upload de la photo");
-                } 
-                // et on upload l'image
-                const up = await upload(picture);
-                setImages(responseAdd_picture[0]);
-                window.scrollTo(0,550);
+                createUploadImage(responseCreateGallery,picture,title);
             }
         } else {
             // si la galerie existe, on enregistre directement les données liées à l'image dans la BDD
             // grace à un appel fetch en méthode PUT  
-            const gallery_id = responseGallery.id_gall;
-            const user_id = (jwt_decode(jwtData)).id;
-            const add_picture = await fetch(`${serverBack}/api/photos/?page=${page}`,{
-                method: "PUT",
-                headers:{
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                },
-                body: JSON.stringify({
-                    picture,
-                    gallery_id,
-                    user_id,
-                    title
-                })
-            });
-            const responseAdd_picture = await add_picture.json();
-                if(!responseAdd_picture){
-                    alert("Problème à l'upload de la photo");
-                } 
-                // et on upload
-                const up= await upload(picture);
-                setImages(responseAdd_picture[0]);
-                window.scrollTo(0,550);
+            createUploadImage(responseGallery,picture,title);
         }
        
     };
@@ -366,9 +358,20 @@ function Gallery () {
             }
         }
     }
-    const handleClicCom = async (picDel)=>{
-        console.log('commentaire');
-        console.log(picDel);
+    const handleClicCom = async (picCom)=>{
+        // mettre en mémoire pos y,galerie,page,date,images,l'objet selectionné avant envoi sur la page des commentaires
+        const parentObject = {
+            position:window.scrollY,
+            gallery:gallerySt,
+            page:page,
+            date:dateSt,
+            hasMore:hasMore,
+            images:images,
+            object:picCom
+        }
+        console.log(parentObject);
+        window.localStorage.setItem("parent",JSON.stringify(parentObject));
+        navigate('/photos-coms');
     }
     return(
         <>
