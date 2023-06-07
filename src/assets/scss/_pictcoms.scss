@@ -5,9 +5,15 @@
     align-items: center;
 }
 .pComs{
+    height:70px;
+    background-color: white;
+    border: 1px solid grey;
+    box-shadow: 3px 3px 4px grey;
     position:fixed;
-    bottom:5rem;
+    z-index: 2;
+    bottom:3rem;
     text-align: center;
+    padding:1rem 0.5rem 1rem 0.5rem;
 }
 .imgComs{
     margin: 8rem 0 0 0;
@@ -20,17 +26,29 @@
     width:90%;
     background-color: $grisc;
     border-radius: 15px;
-    padding:1rem 0.5rem 0.5rem 0.5rem;
-    margin-top:1rem;
+    padding:1rem 0.5rem 0.5rem 0rem;
 }
 .comContenair{
+    margin-top:-1rem;
     width:90%;
     background-color:rgb(200, 197, 197);
     border-radius: 10px;
     display:flex;
     justify-content: space-between;
     @media screen and (max-width:768px) {
-        margin-top:-0.5rem;
+        margin-top:-1.5rem;
+    }
+}
+.comContenairChild{
+    margin-top:-1rem;
+    padding-right: 1rem;
+    width:85%;
+    background-color:rgb(200, 197, 197);
+    border-radius: 10px;
+    display:flex;
+    justify-content: space-between;
+    @media screen and (max-width:768px) {
+        margin-top:-1.5rem;
     }
 }
 .comCommentaire{
@@ -44,6 +62,7 @@
     cursor:pointer;
 }
 .comReaction{
+    position:relative;
     margin-left:2rem;
     background-color: $bleu;
     color:white;
@@ -53,8 +72,66 @@
 .comReaction:hover{
     cursor:pointer;
 }
+.parentReaction{
+    display:none;
+    padding:0 0 0 0.5rem;
+    background-color:$grisc;
+    border: 1px solid black;
+}
+// .comReaction:hover .parentReaction{
+//     display:none;
+// }
 .text{
     @media screen and (max-width:768px) {
         font-size: 0.7rem;
     }
+}
+.child{
+    width:85%;
+    margin-left: 2rem;
+}
+.icone_comsChild{
+    color:grey;
+    width:82%;
+    margin-top:-1.5rem;
+    text-align:end;
+}
+.icone_coms{
+    color: grey;
+    width:82%;
+    margin-top: -1.2rem;
+    transform: translatey(-0.2rem);
+    text-align: end;
+}
+span{
+    margin-right:1rem;
+}
+.parentCom{
+    width:90%;
+    position:relative;
+    z-index: 1;
+    margin-top:1rem;
+    margin-bottom:-1.3rem;
+    font-weight: bold;
+}
+.tabul{
+    width:85%;
+}
+.fa-solid{
+    color:grey;
+}
+.parentReaction{
+    position: absolute;
+    margin-left:2.5rem;
+    margin-top:1.2rem;
+    z-index: 1;
+
+}
+.iconeR{
+    color:black;
+    margin-right:0.5rem;
+}
+.iconeRR{
+    color:red;
+    margin-right:0.5rem;
 }
