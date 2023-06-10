@@ -20,8 +20,12 @@ const PicturesComs = ()=>{
     let index=null;
     // if(jwtData){
         const jwt = jwtDecode(jwtData);
+        console.log("jwt",jwt)
     // }
     const [comsData,setComsData] = useState ([]);
+    const idConnected=jwt.id;
+    const roleConnected=jwt.roles;
+    const validityConnected=jwt.validity;
     // const [reactionDisp,setReactionDisp] = useState ("Réaction");
 
     async function getAllComs(){
@@ -81,7 +85,7 @@ const PicturesComs = ()=>{
             const news_id = null;
             const event_id = null;
             const photo_id = object.object.id_pic
-    
+            console.log("responseCom",responseCom,modify)
             if(modify===false){
                 const response = await fetch(serverBack+"/api/coms",{
                     method: "PUT",
@@ -104,6 +108,12 @@ const PicturesComs = ()=>{
                     event.target.commentaire.value="";
                     const responseData = await response.json();
                     await getAllComs();
+                }
+                if(responseCom && oldTarget){
+                    oldTarget.style.backgroundColor="rgb(68, 144, 231)";
+                    document.querySelector('.inputCom').setAttribute("placeholder","laissez votre commentaire");
+                    responseCom=false;
+                    oldTarget=null;
                 }
             }
             if(modify===true){
@@ -313,7 +323,19 @@ const PicturesComs = ()=>{
         console.log(event.target,data.id_com,data);
         // il faudra ici effacer les commentaires enfants puis le commentaire parent
         // pour des raisons de praticité et d'économie de requêtes on fera ça en back
-
+        let supComChild = window.confirm("êtes vous sûr de vouloir supprimer ce commentaire et ses réponses?");
+        if(supComChild){
+            const response = await fetch(serverBack+"/api/coms/?com="+data.id_com+"&picture="+data.photo_id+"&react="+data.reaction_id,{
+                method: "DELETE",
+                headers:{
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer "+jwtData
+                }
+            })
+            if(response.status<400){
+                await getAllComs();
+            }
+        }
     }
     const deleteChildClick = async(data,event)=>{
         event.preventDefault();
@@ -354,7 +376,15 @@ const PicturesComs = ()=>{
                                 <p className="comCommentaire text" onClick={(event)=>comClick(data,event)}>Répondre</p>
                             </div>
                             <div className="icone_coms">
-                            <i className="fa-solid fa-pen text" onClick={(event)=>modifyClick(data,event)}></i><span></span><i className="fa-solid fa-trash text" onClick={(event)=>deleteClick(data,event)}></i>
+                                {idConnected===data.user_id && validityConnected==="1"?
+                                <i className="fa-solid fa-pen text" onClick={(event)=>modifyClick(data,event)}></i>:
+                                null
+                                }
+                                <span></span>
+                                {roleConnected==="admin" || idConnected===data.user_id?
+                                <i className="fa-solid fa-trash text" onClick={(event)=>deleteClick(data,event)}></i>:
+                                null
+                                }
                             </div>
                         </>
                         }
@@ -364,7 +394,20 @@ const PicturesComs = ()=>{
                             <div className="parent text tabul">
                                 <p>{data.coms}</p>
                             </div>
-                            <div className="comContenairChild"><p className="comReaction text" onClick={(event)=>reactSubmit(data,event)}>Réaction</p><div><i className="fa-solid fa-pen text" onClick={(event)=>modifyClick(data,event)}></i><span></span><i className="fa-solid fa-trash text" onClick={(event)=>deleteChildClick(data,event)}></i></div></div>
+                            <div className="comContenairChild">
+                                <p className="comReaction text" onClick={(event)=>reactSubmit(data,event)}>Réaction</p>
+                                <div>
+                                {idConnected===data.user_id && validityConnected==="1"?
+                                    <i className="fa-solid fa-pen text" onClick={(event)=>modifyClick(data,event)}></i>:
+                                    null
+                                }
+                                <span></span>
+                                {roleConnected==="admin" || idConnected===data.user_id?
+                                <i className="fa-solid fa-trash text" onClick={(event)=>deleteChildClick(data,event)}></i>:
+                                null
+                                }
+                                </div>
+                            </div>
                         </>
                         }
                     </>
