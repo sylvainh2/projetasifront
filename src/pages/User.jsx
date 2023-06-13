@@ -29,6 +29,7 @@ function User() {
     const [userList,setUserList] = useState([]);
     const navigate = useNavigate();
     const jwtData = window.localStorage.getItem("jwt");
+    // let oldDemand = [];
 
     const cbox = {
         "0":"",
@@ -47,8 +48,8 @@ function User() {
                 // console.log("role",roleD);
                 setRole(roleD);
                 // console.log(role!=="admin",role!=="user");
-                // console.log(role !== "admin" && role !== "user");
-                if(roleD !== "admin" && roleD !== "user"){
+                console.log("droit",role !== "admin" || (role !== "user" && validityD!=="1"));
+                if(roleD !== "admin" || (roleD !== "user" && validityD!=="1")){
                   window.alert("Pour accéder à cet espace vous devez être connecté");
                   retourAccueil();
                 } 
@@ -56,7 +57,7 @@ function User() {
                 window.alert("Pour accéder à cet espace vous devez être connecté");
                 retourAccueil();
             }
-        },[jwtData])
+        },[])
 
     function retourAccueil() {
         navigate('/');
@@ -73,6 +74,8 @@ function User() {
         setCheckC(false);
         // we look what is the choiced function
         const demand = event.target.value;
+        // oldDemand=event.target;
+        // console.log("oldDemand",oldDemand);
         setdemand(demand);
         console.log("demand",demand);
 
@@ -210,6 +213,7 @@ function User() {
         // we reset the form datas
         if(responseModData){
             document.getElementById("formulaire").reset();
+            // oldDemand.value = "--------Votre Choix--------";
             alert("Profil Modifié");
             setdemand("");
             setResponseData([]);
