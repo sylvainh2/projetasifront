@@ -1,5 +1,7 @@
 import {useState, useEffect} from "react";
 import jwtDecode from "jwt-decode";
+import ParentComDisplay from "../components/ParentComDisplay";
+import ChildComDisplay from "../components/ChildComDisplay";
 
 const PicturesComs = ()=>{
 
@@ -366,49 +368,52 @@ const PicturesComs = ()=>{
                 return(
                     <>
                         {data.id_parent===null &&
-                        <>
-                            <p className="parentCom text" key={data.id_com}>{data.name} {data.first_name}</p>
-                            <div className="parent text">
-                                <p>{data.coms}</p>
-                            </div>
-                            <div className="comContenair">
-                                <p className="comReaction text" onClick={(event)=>reactSubmit(data,event)}>Réaction</p>
-                                <p className="comCommentaire text" onClick={(event)=>comClick(data,event)}>Répondre</p>
-                            </div>
-                            <div className="icone_coms">
-                                {idConnected===data.user_id && validityConnected==="1"?
-                                <i className="fa-solid fa-pen text" onClick={(event)=>modifyClick(data,event)}></i>:
-                                null
-                                }
-                                <span></span>
-                                {roleConnected==="admin" || idConnected===data.user_id?
-                                <i className="fa-solid fa-trash text" onClick={(event)=>deleteClick(data,event)}></i>:
-                                null
-                                }
-                            </div>
-                        </>
+                            <ParentComDisplay data={data} reactSubmit={reactSubmit} comClick={comClick} modifyClick={modifyClick} deleteClick={deleteClick} idConnected={idConnected} roleConnected={roleConnected} validityConnected={validityConnected} />
+                        //     <>
+                        //     <p className="parentCom text" key={data.id_com}>{data.name} {data.first_name}</p>
+                        //     <div className="parent text">
+                        //         <p>{data.coms}</p>
+                        //     </div>
+                        //     <div className="comContenair">
+                        //         <p className="comReaction text" onClick={(event)=>reactSubmit(data,event)}>Réaction</p>
+                        //         <p className="comCommentaire text" onClick={(event)=>comClick(data,event)}>Répondre</p>
+                        //     </div>
+                        //     <div className="icone_coms">
+                        //         {console.log("recherche",idConnected===data.user_id,validityConnected==="1",roleConnected==="admin",data.user_id)}
+                        //         {(idConnected===data.user_id && validityConnected==="1") &&
+                        //         <>
+                        //         <i className="fa-solid fa-pen text" onClick={(event)=>modifyClick(data,event)}></i>
+                        //         </>
+                        //         }
+                        //         <span></span>
+                        //         {(roleConnected==="admin" || idConnected===data.user_id) &&
+                        //         <i className="fa-solid fa-trash text" onClick={(event)=>deleteClick(data,event)}></i>
+                        //         }
+                        //     </div>
+                        // </>
                         }
                         {data.id_parent!==null &&
-                        <>
-                            <p className="parentCom text tabul" key={data.id_com}>{data.name} {data.first_name}</p>
-                            <div className="parent text tabul">
-                                <p>{data.coms}</p>
-                            </div>
-                            <div className="comContenairChild">
-                                <p className="comReaction text" onClick={(event)=>reactSubmit(data,event)}>Réaction</p>
-                                <div>
-                                {idConnected===data.user_id && validityConnected==="1"?
-                                    <i className="fa-solid fa-pen text" onClick={(event)=>modifyClick(data,event)}></i>:
-                                    null
-                                }
-                                <span></span>
-                                {roleConnected==="admin" || idConnected===data.user_id?
-                                <i className="fa-solid fa-trash text" onClick={(event)=>deleteChildClick(data,event)}></i>:
-                                null
-                                }
-                                </div>
-                            </div>
-                        </>
+                            <ChildComDisplay data={data} reactSubmit={reactSubmit} modifyClick={modifyClick} deleteChildClick={deleteChildClick} idConnected={idConnected} roleConnected={roleConnected} validityConnected={validityConnected} />
+                        //     <>
+                        //     <p className="parentCom text tabul" key={data.id_com}>{data.name} {data.first_name}</p>
+                        //     <div className="parent text tabul">
+                        //         <p>{data.coms}</p>
+                        //     </div>
+                        //     <div className="comContenairChild">
+                        //         <p className="comReaction text" onClick={(event)=>reactSubmit(data,event)}>Réaction</p>
+                        //         <div>
+                        //         {idConnected===data.user_id && validityConnected==="1"?
+                        //             <i className="fa-solid fa-pen text" onClick={(event)=>modifyClick(data,event)}></i>:
+                        //             null
+                        //         }
+                        //         <span></span>
+                        //         {roleConnected==="admin" || idConnected===data.user_id?
+                        //         <i className="fa-solid fa-trash text" onClick={(event)=>deleteChildClick(data,event)}></i>:
+                        //         null
+                        //         }
+                        //         </div>
+                        //     </div>
+                        // </>
                         }
                     </>
                 )

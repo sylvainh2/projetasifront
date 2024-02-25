@@ -1,7 +1,7 @@
 const ProfilAction = ({handleSubmitUser, role})=>{
     return(
         <>
-            <form onChange={handleSubmitUser}>
+            {/* <form onChange={handleSubmitUser}>
                 <label className="userform" htmlFor="userdemand">Action sur profil</label>
                 <select className="userform" type="text" name="userDemand" id="userdemand">
                     <option className="opForm" value="">--------Votre Choix--------</option>
@@ -17,8 +17,19 @@ const ProfilAction = ({handleSubmitUser, role})=>{
                         </>
                     }
                 </select>
-                {/* <button className="userform" type="submit">Ok</button> */}
-            </form>
+                <button className="userform" type="submit">Ok</button>
+            </form> */}
+            <div className="userformContainer">
+                <button className="userButton" onClick={handleSubmitUser}>Modifier vos données</button>
+                <button className="userButton" onClick={handleSubmitUser}>Modifier photo de profil</button>
+                <button className="userButton" onClick={handleSubmitUser}>Ajouter certificat médical</button>
+                <button className="userButton" onClick={handleSubmitUser}>Rechercher un adhérent</button>
+                <button className="userButton" onClick={handleSubmitUser}>Trombinoscope</button>
+                {role=="admin" &&
+                <>
+                    <button className="adminformContainer userButton" onClick={handleSubmitUser}>Gestion des profils</button>
+                </>}
+            </div>
         </>
     )
 }

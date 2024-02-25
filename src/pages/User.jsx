@@ -50,11 +50,11 @@ function User() {
                 // console.log(role!=="admin",role!=="user");
                 console.log("droit",role !== "admin" || (role !== "user" && validityD!=="1"));
                 if(roleD !== "admin" || (roleD !== "user" && validityD!=="1")){
-                  window.alert("Pour accéder à cet espace vous devez être connecté");
+                  window.alert("Pour accéder à cet espace vous devez être connecté et autorisé");
                   retourAccueil();
                 } 
             } else {
-                window.alert("Pour accéder à cet espace vous devez être connecté");
+                window.alert("Pour accéder à cet espace vous devez être connecté et autorisé");
                 retourAccueil();
             }
         },[])
@@ -73,7 +73,7 @@ function User() {
         setCheck(false);
         setCheckC(false);
         // we look what is the choiced function
-        const demand = event.target.value;
+        const demand = event.target.textContent;
         // oldDemand=event.target;
         // console.log("oldDemand",oldDemand);
         setdemand(demand);
@@ -256,7 +256,7 @@ function User() {
         console.log("funcprev",event.target.files[0].name);
         const objectUrl = URL.createObjectURL(event.target.files[0]);
         setCertFile(event.target.files[0].name);
-        event.target.files[0].type=="application/pdf"? setImageCert(false):setImageCert(true);
+        event.target.files[0].type==="application/pdf"? setImageCert(false):setImageCert(true);
         setCheckC(false);
         setCertPicture(objectUrl);
     }
@@ -406,7 +406,7 @@ function User() {
             }
         }
     }
-    const gestProfile = async(event)=>{
+    const gestProfile = async(profileData,event)=>{
         event.preventDefault();
         setTrombiImg([]);
         const validElement ={
@@ -415,20 +415,15 @@ function User() {
             "user":"admin",
             "admin":"user"
         };
-        let gestionProf = event.target.name;
-        let gestionProfName = event.target.parentNode.parentNode.outerText;
-        if(!gestionProf){
-            gestionProf = event.target.parentElement.name;
-            gestionProfName = event.target.parentNode.parentNode.parentNode.outerText;
-        }
-        const GPName= gestionProfName.split('\n\n');
-        const gesPName = GPName[0].toLowerCase();
-        const gesPFName = GPName[1].toLowerCase();
-        console.log("gestprofile",gest);
+        console.log("target",event,profileData);
+        let gestionProf = event.target.name || event.target.parentElement.name;
+        const gesPName = profileData.name.toLowerCase();
+        const gesPFName = profileData.first_name.toLowerCase();
         console.log(gesPName,gesPFName,gestionProf);
         let gestArray=gest.slice();
+        console.log("gestArrayaff",gestArray);
         const index=gestArray.findIndex(data=>(data.name==gesPName && data.first_name==gesPFName));
-        const userTDid = gest[index].id;
+        const userTDid = profileData.id;
         console.log("id",userTDid);
         if(gestionProf!="trash" && gestionProf.length!=0){
             if(jwt_decode(jwtData).id != userTDid){
