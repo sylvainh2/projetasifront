@@ -1,5 +1,5 @@
 import Header from "../components/Header";
-import Signup from "../pages/Signup";
+import Rec from "../pages/Record";
 import Footer from "../components/Footer";
 
 const SignupShow = ()=>{
@@ -7,7 +7,7 @@ const SignupShow = ()=>{
     return(
         <>
             <Header />
-            <Signup />
+            <Rec />
             <Footer />
         </>
     )

@@ -18,7 +18,8 @@
     .modifyForm{
         display:flex;
         flex-direction: column;
-        max-width: 25%;
+        max-width: 50%;
+        min-width:35%;
         margin:0 auto;
         background:linear-gradient(184deg, rgba(183,226,253,1) 0%, rgba(21,165,239,1) 100%);
         margin-bottom: 2rem;
@@ -212,12 +213,13 @@
 }
 .userformContainer{
     display:flex;
+    flex-wrap:wrap;
     justify-content: center;
 }
 .userButton{
     background-color: $grissouris;
     padding:0.5rem;
-    margin:-1rem 0.5rem 0rem 0.5rem;
+    margin:0rem 0.5rem 0rem 0.5rem;
     border: 1px solid $gris;
     border-radius: 10px;
     box-shadow: 2px 2px 3px $gris;

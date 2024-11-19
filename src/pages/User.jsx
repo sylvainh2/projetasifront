@@ -9,6 +9,7 @@ import AdhSearch from "../components/AdhSearch";
 import Trombi from "../components/Trombi";
 import DataMod from "../components/DataMod";
 import ProfilAction from "../components/ProfilAction";
+import Result from "../components/Result";
 
 function User() {
     // we declare all the variables use in the react part
@@ -27,6 +28,8 @@ function User() {
     const [gest,setGest] = useState([]);
     const [imageCert,setImageCert] = useState(false);
     const [userList,setUserList] = useState([]);
+    const [resultDisp,setResultDisp] = useState([]);
+    const [courseForm,setCourseForm] = useState ("");
     const navigate = useNavigate();
     const jwtData = window.localStorage.getItem("jwt");
     // let oldDemand = [];
@@ -40,6 +43,11 @@ function User() {
         "on": "1",
         "checked":"1"
     }
+    function format(dataD){
+        const options = {day:'numeric',month:'numeric', year:'numeric'};
+        return(new Date(dataD).toLocaleDateString([],options));
+    }
+
     // we look if we have the rights to be here and do the functions
     useEffect(()=>{
             if (jwtData) {
@@ -90,6 +98,9 @@ function User() {
             const dateCET = new Date(dateUTC.getTime() + offsetCET * 60 * 60 * 1000);
             const dateTz= (JSON.stringify(dateCET));
             responseData.birthdate = (dateTz).slice(1,11);
+            // console.log(responseData.birthdate);
+            // responseData.birthdate = format(responseData.birthdate);
+            // console.log(responseData.birthdate);
             responseData.share_infos = cbox[responseData.share_infos]; 
             setResponseData(responseData);
         }
@@ -148,6 +159,13 @@ function User() {
             setUserList(responseData);
             
         }
+        if(demand === "Mes résultats"){
+            setCourseForm("");
+            // we take all runs datas of the id user by fetch call
+            let responseResult = await getAllRuns();
+            let responseData = await responseResult.json();
+            setResultDisp(responseData); 
+        }
     }
     async function getOneUser() {
          // we take the id user by his jwt
@@ -173,9 +191,21 @@ function User() {
                 "Authorization": "Bearer "+jwtData
             }
         });
-        // we retrieve users datas in array except one whish is a ghost user (for a futur soft delete)
+        // we retrieve users datas in array except one which is a ghost user (for a futur soft delete)
         // and we display it
         return responseG;
+    }
+    async function getAllRuns() {
+        let id = (jwt_decode(jwtData)).id;
+        const responseC = await fetch('http://localhost:8080/api/users/user/run/'+id,{
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer "+jwtData
+            }
+        })
+        console.log("courses",responseC);
+        return responseC;
     }
     const handleSubmitModify = async(event)=>{
         event.preventDefault();
@@ -490,6 +520,47 @@ function User() {
             }
         }
     }
+    const resultGest = (event)=>{
+        event.preventDefault();
+        console.log("resultgest",event);
+        setCourseForm(event.target.textContent);
+    }
+    const handleSubmitCourse = async(event)=>{
+        event.preventDefault();
+        const e = event.target;
+        const date = e.date.value;
+        const course = e.course.value;
+        const temps = e.temps.value;
+        const distance = e.distance.value;
+        const id=(jwt_decode(jwtData)).id;
+
+        if(date && course && temps && distance){
+            const response = await fetch(serverBack+'/api/users/user/run',{
+                method : "PUT",
+                headers: {
+                    "Content-Type":"application/json",
+                    "Authorization": "Bearer "+jwtData
+                },
+                body:JSON.stringify({
+                    name:course,
+                    user_id:id,
+                    temps:temps,
+                    datecourse:date,
+                    distance:distance
+                })
+            })
+            let responseResult = await getAllRuns();
+            let responseData = await responseResult.json();
+            setResultDisp(responseData);
+            document.querySelector(".resultForm").reset();
+            setCourseForm("");
+
+        }
+
+    }
+    const handleCourseTrash = async(data,event)=>{
+
+    }
 
     return(
             <main className="userMain">
@@ -512,6 +583,9 @@ function User() {
                     }
                     {(demand==="Gestion des profils" && gest.length!=0) &&
                         <GestProfil gest={gest} gestProfile={gestProfile} />
+                    }
+                    {demand==="Mes résultats" &&
+                        <Result resultDisp={resultDisp} resultGest={resultGest} courseForm={courseForm} handleSubmitCourse={handleSubmitCourse} handleCourseTrash={handleCourseTrash}/>
                     }
                 </div>
             </main>

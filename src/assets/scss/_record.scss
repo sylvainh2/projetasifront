@@ -1,0 +1,47 @@
+.signup{
+    margin-top: 9rem;
+    .signupContent{
+        background: linear-gradient(184deg, rgba(183,226,253,1) 0%, rgba(21,165,239,1) 100%);
+        margin: 0 22vw 2rem 22vw;
+        @media screen and (max-width:768px) {
+            margin:0 0 0 0;
+            }
+            padding: 2em;
+    }    
+}
+.labelRecord{
+    display:block;
+}
+.inputsign{
+    width:100%;
+    margin-bottom: 1em;
+}
+.signCity{
+    display:flex;
+}
+.signupBtnContent{
+    display:inline-block;
+    justify-content: center;
+    margin:1em 50% 0;
+    transform: translateX(-50%);
+}
+.recordCp{
+    display:flex;
+    flex-direction: column;
+    width:70%;
+    &.recordCp:first-of-type{
+        width:30%;
+    }
+}
+.recordCpContainer{
+    width:6em;
+}
+.infoSign{
+    display:flex;
+}
+.lineRecord{
+    margin-bottom:1em;
+}
+.lsBox{
+    margin-right:1em;
+}

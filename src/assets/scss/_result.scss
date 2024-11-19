@@ -1,0 +1,59 @@
+.courseCont{
+    background-color: $jaune;
+    display:flex;
+    justify-content: space-around;
+    align-items: center;
+    width:80%;
+    margin:0 auto 0 auto;
+
+}
+.csMarg{
+    margin:1rem auto 0 auto;
+}
+.courseButton{
+    background-color: $grissouris;
+    padding:0.5rem;
+    margin:1rem 0.5rem 1rem 0.5rem;
+    border: 1px solid $gris;
+    // border-radius: 10px;
+    box-shadow: 2px 2px 3px $gris;
+}
+.courseButCont{
+    display:flex;
+}
+.runArray{
+    display:flex;
+    flex-direction: row;
+    width:80%;
+    margin:-1rem auto;
+}
+.rTitle{
+    margin-top: 0;
+}
+.runColumn{
+    width:25%;
+    border: 2px solid black;
+    padding: 0.5rem 0;
+}
+.resultForm input{
+    margin-right: 1rem;
+}
+.ccMarg{
+    margin-bottom:1rem;
+    padding:1rem 0;
+}
+.sectionCourse{
+    margin-bottom: 1rem;
+}
+.relatif{
+    position:relative;
+}
+.absolut{
+    position:absolute;
+}
+.runTrashColumn{
+    left:105%;
+}
+.grad{
+    background:linear-gradient(45deg, rgb(150, 150, 150),rgb(195, 193, 193));
+}
