@@ -1,4 +1,4 @@
-const Result = ({resultDisp, resultGest, courseForm, handleSubmitCourse, handleCourseTrash})=>{
+const Result = ({resultDisp, resultGest, courseForm, handleSubmitCourse, handleCourseTrash, cinq, dix, semi, marathon})=>{
     function format(dateForm) {
         let options = {day:'numeric',month:'numeric', year:'numeric'};
         return new Date(dateForm).toLocaleDateString([],options);
@@ -7,8 +7,8 @@ const Result = ({resultDisp, resultGest, courseForm, handleSubmitCourse, handleC
         <>
             <section className="courseCont csMarg">
                 <div>
-                    <div>5km :</div>
-                    <div>10km:</div>
+                    <div>5km : {cinq.temps}</div>
+                    <div>10km: {dix.temps}</div>
                 </div>
                 <div className="courseButCont">
                     {/* <div className="courseButton">Records</div> */}
@@ -16,8 +16,8 @@ const Result = ({resultDisp, resultGest, courseForm, handleSubmitCourse, handleC
                     <button onClick={resultGest} className="courseButton">Enregistrer Course</button>
                 </div>
                 <div>
-                    <div>semi:</div>
-                    <div>marathon:</div>
+                    <div>semi: {semi.temps}</div>
+                    <div>marathon: {marathon.temps}</div>
                 </div>
             </section>
             <section className="courseCont ccMarg">
@@ -47,9 +47,12 @@ const Result = ({resultDisp, resultGest, courseForm, handleSubmitCourse, handleC
                     <article className="runArray" key={data.id_runs}>
                         <p className="runColumn">{format(data.datecourse)}</p>
                         <p className="runColumn">{data.name}</p>
+                        {((data.temps===cinq.temps) || (data.temps===dix.temps) || (data.temps===semi.temps) || (data.temps===marathon.temps))?
+                        <p className="runColumn red">{data.temps}</p>:
                         <p className="runColumn">{data.temps}</p>
+                    }
                         <p className="runColumn relatif">{data.distance+" Km(s)"}
-                        <button className="runTrashColumn absolut" onClick={(event)=>handleCourseTrash(data, event)}><i className="fa-solid fa-trash"></i></button></p>
+                        <button onClick={(event)=>handleCourseTrash(data, event)} className="runTrashColumn absolut"><i className="fa-solid fa-trash"></i></button></p>
                     </article>
                     )})
                 }

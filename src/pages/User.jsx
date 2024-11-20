@@ -30,6 +30,10 @@ function User() {
     const [userList,setUserList] = useState([]);
     const [resultDisp,setResultDisp] = useState([]);
     const [courseForm,setCourseForm] = useState ("");
+    const [cinq,setCinq] = useState ({});
+    const [dix,setDix] = useState ({});
+    const [semi,setSemi] = useState ({});
+    const [marathon,setMarathon] = useState({});
     const navigate = useNavigate();
     const jwtData = window.localStorage.getItem("jwt");
     // let oldDemand = [];
@@ -164,7 +168,8 @@ function User() {
             // we take all runs datas of the id user by fetch call
             let responseResult = await getAllRuns();
             let responseData = await responseResult.json();
-            setResultDisp(responseData); 
+            setResultDisp(responseData);
+            bestDisplay(responseData);
         }
     }
     async function getOneUser() {
@@ -206,6 +211,12 @@ function User() {
         })
         console.log("courses",responseC);
         return responseC;
+    }
+    function bestDisplay(bestData){
+        setCinq(bestRuns(5,bestData));
+        setDix(bestRuns(10,bestData));
+        setSemi(bestRuns(21.1,bestData));
+        setMarathon(bestRuns(42.195,bestData));
     }
     const handleSubmitModify = async(event)=>{
         event.preventDefault();
@@ -552,6 +563,7 @@ function User() {
             let responseResult = await getAllRuns();
             let responseData = await responseResult.json();
             setResultDisp(responseData);
+            bestDisplay(responseData);
             document.querySelector(".resultForm").reset();
             setCourseForm("");
 
@@ -559,7 +571,31 @@ function User() {
 
     }
     const handleCourseTrash = async(data,event)=>{
-
+        event.preventDefault();
+        const resonse = await fetch(serverBack+"/api/users/user/run/"+data.id_runs,{
+            method : "DELETE",
+            headers: {
+                "Content-Type":"application/json",
+                "Authorization": "Bearer "+jwtData                
+            }
+        });
+        let responseResult = await getAllRuns();
+        let responseData = await responseResult.json();
+        setResultDisp(responseData);
+        bestDisplay(responseData);
+    }
+    function bestRuns (distance,fichier){
+        let distanceArray = [];
+        let best = {};
+        fichier.map((data)=>{
+            if(data.distance === distance){
+                distanceArray.push(data);
+            }
+        })
+        distanceArray.map((data)=>{
+            if(data.temps<best.temps || !(best.temps)){best=data};
+        })
+        return (best);
     }
 
     return(
@@ -585,7 +621,7 @@ function User() {
                         <GestProfil gest={gest} gestProfile={gestProfile} />
                     }
                     {demand==="Mes résultats" &&
-                        <Result resultDisp={resultDisp} resultGest={resultGest} courseForm={courseForm} handleSubmitCourse={handleSubmitCourse} handleCourseTrash={handleCourseTrash}/>
+                        <Result resultDisp={resultDisp} resultGest={resultGest} courseForm={courseForm} handleSubmitCourse={handleSubmitCourse} handleCourseTrash={handleCourseTrash} cinq={cinq} dix={dix} semi={semi} marathon={marathon}/>
                     }
                 </div>
             </main>
