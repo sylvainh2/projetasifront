@@ -25,8 +25,8 @@ const GestProfil = ({gest, gestProfile})=>{
                             </div>
                             <div className="profCont-cpi">
                                 <button onClick={(event)=>gestProfile(profile,event)} className="cpi" type="button" name="medical"><i className="fa-sharp fa-solid fa-file-medical"></i></button>
-                                {/* <div className="cpi"><i class="fa-solid fa-euro-sign"></i></div> */}
                                 <button onClick={(event)=>gestProfile(profile,event)} className="cpi" type="button" name="inscription"><i className="fa-solid fa-file-contract"></i></button>
+                                <button onClick={(event)=>gestProfile(profile,event)} className="cpi" type="button" name="paiement"><i className="fa-solid fa-euro-sign"></i></button>
                             </div>
                             <div className="profCont-trash">
                                 <button onClick={(event)=>gestProfile(profile,event)} className="cpitrash" type="button" name="trash"><i className="fa-solid fa-trash"></i></button>

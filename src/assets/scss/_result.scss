@@ -1,5 +1,11 @@
+@font-face {
+    // font-family: "roboto";
+    // src: url(./assets/fonts/Roboto/Roboto-Regular.ttf);
+    font-family: "comic";
+    src: url(../fonts/Comic_Neue/ComicNeue-Regular.ttf);
+  }
 .courseCont{
-    background-color: $jaune;
+    // background-color: $jaune;
     display:flex;
     justify-content: space-around;
     align-items: center;
@@ -39,11 +45,11 @@
     margin-right: 1rem;
 }
 .ccMarg{
-    margin-bottom:1rem;
+    // margin-bottom:1rem;
     padding:1rem 0;
 }
 .sectionCourse{
-    margin-bottom: 1rem;
+    margin-top: 1rem;
 }
 .relatif{
     position:relative;
@@ -58,5 +64,23 @@
     background:linear-gradient(45deg, rgb(150, 150, 150),rgb(195, 193, 193));
 }
 .red{
-    background-color: $rose;
+    background: linear-gradient(45deg,$rose,rgb(249, 230, 234));
+}
+.blue{
+    background: linear-gradient(45deg,$bleum,rgb(219, 235, 252));
+}
+.grey{
+    background-color:$grisc;    
+}
+.comic{
+    font-family: "comic";
+}
+.bold{
+    font-weight: bold;
+}
+.padDG{
+    padding:0 0.5rem;
+}
+.bordG{
+    border:1px solid $gris;
 }

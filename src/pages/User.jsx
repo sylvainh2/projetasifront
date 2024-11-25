@@ -10,6 +10,7 @@ import Trombi from "../components/Trombi";
 import DataMod from "../components/DataMod";
 import ProfilAction from "../components/ProfilAction";
 import Result from "../components/Result";
+import { x } from "joi";
 
 function User() {
     // we declare all the variables use in the react part
@@ -34,6 +35,9 @@ function User() {
     const [dix,setDix] = useState ({});
     const [semi,setSemi] = useState ({});
     const [marathon,setMarathon] = useState({});
+    const [modale,setModale] = useState(false);
+    const [dataModale,setDataModale] = useState ({});
+    const [eventModale,setEventModale] = useState ({});
     const navigate = useNavigate();
     const jwtData = window.localStorage.getItem("jwt");
     // let oldDemand = [];
@@ -534,7 +538,11 @@ function User() {
     const resultGest = (event)=>{
         event.preventDefault();
         console.log("resultgest",event);
-        setCourseForm(event.target.textContent);
+        if(courseForm===event.target.textContent){
+            setCourseForm("");
+        } else {
+            setCourseForm(event.target.textContent);
+        }
     }
     const handleSubmitCourse = async(event)=>{
         event.preventDefault();
@@ -542,7 +550,7 @@ function User() {
         const date = e.date.value;
         const course = e.course.value;
         const temps = e.temps.value;
-        const distance = e.distance.value;
+        const distance = parseInt(e.distance.value);
         const id=(jwt_decode(jwtData)).id;
 
         if(date && course && temps && distance){
@@ -572,17 +580,31 @@ function User() {
     }
     const handleCourseTrash = async(data,event)=>{
         event.preventDefault();
-        const resonse = await fetch(serverBack+"/api/users/user/run/"+data.id_runs,{
-            method : "DELETE",
-            headers: {
-                "Content-Type":"application/json",
-                "Authorization": "Bearer "+jwtData                
+        console.log("trash",data,event);
+        if(!modale){
+            setDataModale(data);
+            setEventModale(event);
+            setModale(true);
+        } else {
+            if(event.target.innerText==="Annuler"){
+                setModale(false);
             }
-        });
-        let responseResult = await getAllRuns();
-        let responseData = await responseResult.json();
-        setResultDisp(responseData);
-        bestDisplay(responseData);
+            if(event.target.innerText==="Oui"){
+                    const resonse = await fetch(serverBack+"/api/users/user/run/"+dataModale.id_runs,{
+                        method : "DELETE",
+                        headers: {
+                            "Content-Type":"application/json",
+                            "Authorization": "Bearer "+jwtData                
+                        }
+                    });
+                    let responseResult = await getAllRuns();
+                    let responseData = await responseResult.json();
+                    setModale(false);
+                    setResultDisp(responseData);
+                    bestDisplay(responseData);
+
+            }
+        }
     }
     function bestRuns (distance,fichier){
         let distanceArray = [];
@@ -621,7 +643,7 @@ function User() {
                         <GestProfil gest={gest} gestProfile={gestProfile} />
                     }
                     {demand==="Mes résultats" &&
-                        <Result resultDisp={resultDisp} resultGest={resultGest} courseForm={courseForm} handleSubmitCourse={handleSubmitCourse} handleCourseTrash={handleCourseTrash} cinq={cinq} dix={dix} semi={semi} marathon={marathon}/>
+                        <Result resultDisp={resultDisp} resultGest={resultGest} courseForm={courseForm} handleSubmitCourse={handleSubmitCourse} handleCourseTrash={handleCourseTrash} cinq={cinq} dix={dix} semi={semi} marathon={marathon} modale={modale} dataModale={dataModale} eventModale={eventModale}/>
                     }
                 </div>
             </main>
