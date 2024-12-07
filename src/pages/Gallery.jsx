@@ -222,7 +222,6 @@ function Gallery () {
             return;
         }
         let pictureTps = pictureTemp.split(' ').join('_');
-        console.log("ici",event.target.imageSubmit.files[0].type);
         const extension = MIME_TYPES[event.target.imageSubmit.files[0].type];
        
         // on enlève l'extension qui sera traitée par la suite
@@ -231,8 +230,6 @@ function Gallery () {
         // on rajoute un time devant le nom pour le rendre quasi unique et l'extension
         const picture = Date.now()+pictureTps+"."+extension;
     
-        console.log(title,name,picture); 
-
         async function upload() {
             const imageFile = event.target.imageSubmit.files[0];
             const options = {
@@ -369,7 +366,6 @@ function Gallery () {
             images:images,
             object:picCom
         }
-        console.log(parentObject);
         window.localStorage.setItem("parent",JSON.stringify(parentObject));
         navigate('/photos-coms');
     }

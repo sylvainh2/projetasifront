@@ -1,4 +1,3 @@
-// import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 function Accueil() {
@@ -49,9 +48,6 @@ function Accueil() {
         </section>
     </main>
     {window.scrollTo(0,0)}
-    {/* {console.log("longueur Maxi Accueil:",document.body.offsetHeight)}
-    {console.log(window.innerHeight+window.pageYOffset)}
-    {console.log(window.pageYOffset)} */}
     </>
   );
 }

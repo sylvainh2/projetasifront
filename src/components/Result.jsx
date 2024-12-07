@@ -1,5 +1,5 @@
-import {useRef, useEffect} from "react";
-const Result = ({resultDisp, resultGest, courseForm, handleSubmitCourse, handleCourseTrash, cinq, dix, semi, marathon, modale, dataModale,eventModale})=>{
+import {useRef} from "react";
+const Result = ({resultDisp, resultGest, courseForm, handleSubmitCourse, handleCourseTrash, cinq, dix, semi, marathon, modale, dataModale})=>{
     const dialogRef = useRef(null)
     const dialog = dialogRef.current;
     if ((modale===true)) {

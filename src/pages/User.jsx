@@ -10,7 +10,7 @@ import Trombi from "../components/Trombi";
 import DataMod from "../components/DataMod";
 import ProfilAction from "../components/ProfilAction";
 import Result from "../components/Result";
-import { x } from "joi";
+import ModaleInscription from "../components/ModaleInscription";
 
 function User() {
     // we declare all the variables use in the react part
@@ -38,6 +38,7 @@ function User() {
     const [modale,setModale] = useState(false);
     const [dataModale,setDataModale] = useState ({});
     const [eventModale,setEventModale] = useState ({});
+    const [modaleInscript,setModaleInscript] = useState(0);
     const navigate = useNavigate();
     const jwtData = window.localStorage.getItem("jwt");
     // let oldDemand = [];
@@ -61,10 +62,7 @@ function User() {
             if (jwtData) {
                 const roleD=(jwt_decode(jwtData)).roles;
                 const validityD=(jwt_decode(jwtData)).validity;
-                // console.log("role",roleD);
                 setRole(roleD);
-                // console.log(role!=="admin",role!=="user");
-                console.log("droit",role !== "admin" || (role !== "user" && validityD!=="1"));
                 if(roleD !== "admin" || (roleD !== "user" && validityD!=="1")){
                   window.alert("Pour accéder à cet espace vous devez être connecté et autorisé");
                   retourAccueil();
@@ -90,8 +88,6 @@ function User() {
         setCheckC(false);
         // we look what is the choiced function
         const demand = event.target.textContent;
-        // oldDemand=event.target;
-        // console.log("oldDemand",oldDemand);
         setdemand(demand);
         console.log("demand",demand);
 
@@ -102,13 +98,9 @@ function User() {
             let responseData = await response.json();
             const dateUTC = new Date(responseData.birthdate);
             const offsetCET = -(new Date().getTimezoneOffset())/60;
-            console.log(offsetCET);
             const dateCET = new Date(dateUTC.getTime() + offsetCET * 60 * 60 * 1000);
             const dateTz= (JSON.stringify(dateCET));
             responseData.birthdate = (dateTz).slice(1,11);
-            // console.log(responseData.birthdate);
-            // responseData.birthdate = format(responseData.birthdate);
-            // console.log(responseData.birthdate);
             responseData.share_infos = cbox[responseData.share_infos]; 
             setResponseData(responseData);
         }
@@ -119,12 +111,9 @@ function User() {
             // we retrieve users datas in array except one which is a ghost user (for a futur soft delete)
             // and we display their pictures
             const responseDataS = await responseT.json();
-            // console.log("trombi0",responseDataS,responseDataS.length);
             let trombArray = responseDataS;
             // let index=responseDataS.findIndex(data=>(data.id==0));
-            // console.log("trombi1",trombArray);
             // let trombData = trombArray.splice(index,1);
-            // console.log("trombi",trombArray);
             setTrombiD(trombArray);
         }
         if(demand === "Gestion des profils"){
@@ -134,12 +123,7 @@ function User() {
             // we retrieve users datas in array except one whish is a ghost user (for a futur soft delete)
             // and we display it
             const responseDataS = await responseG.json();
-            // console.log("gestion0",responseDataS);
             let gestArray = responseDataS.slice();
-            // let index=gestArray.findIndex(data=>(data.id==0));
-            // console.log("gestion1",gestArray);
-            // let trombData = gestArray.splice(index,1);
-            // console.log("gestion",gestArray);
             setGest(gestArray);
         }
         if(demand === "Ajouter certificat médical"){
@@ -147,7 +131,6 @@ function User() {
             //  we take the id user by his jwt
             let responseC = await getOneUser();
             let responseData = await responseC.json();
-            console.log('oldcertif',responseData.certif_med);
             // we try to display the old saved medical certif (doesn't work, maybe must have useEffect or ...)
             setCertPicture("http://localhost:8080/certifs/"+responseData.certif_med);
         }
@@ -156,7 +139,6 @@ function User() {
             // // we take the id user by his jwt
             let responseP = await getOneUser();
             let responseData = await responseP.json();
-            console.log('oldpict',responseData.profil_picture);
             // we try to display the old saved medical certif (doesn't work, maybe must have useEffect or ...)
             setProfilPicture("http://localhost:8080/profiles/"+responseData.profil_picture);
         }
@@ -179,7 +161,6 @@ function User() {
     async function getOneUser() {
          // we take the id user by his jwt
          let id = (jwt_decode(jwtData)).id;
-         console.log("le jwt",jwtData);
          //we take user data by fetch call
          const responseP = await fetch('http://localhost:8080/api/users/'+id,{
              method: "GET",
@@ -191,6 +172,18 @@ function User() {
 
          return responseP;
     }
+    async function getOneUserId(id) {
+        //we take user data by fetch call
+        const responseP = await fetch('http://localhost:8080/api/users/'+id,{
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer "+jwtData
+            }
+        });
+
+        return responseP;
+   }
     async function getAllUsers() {
          // we take all users datas by fetch call to manage validation user/admin and erasure
          const responseG = await fetch('http://localhost:8080/api/users/',{
@@ -213,7 +206,6 @@ function User() {
                 "Authorization": "Bearer "+jwtData
             }
         })
-        console.log("courses",responseC);
         return responseC;
     }
     function bestDisplay(bestData){
@@ -273,24 +265,9 @@ function User() {
         if(trombiImgSearch){
             setTrombiImg(trombiImgSearch);
         }
-
-        // if(name && first_name){
-        //     const responseSearch = await fetch('http://localhost:8080/api/users/user/'+name+"&"+first_name,{
-        //         method: "GET",
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //             "Authorization": "Bearer "+jwtData
-        //     }});
-        //     if (responseSearch){
-        //         const responseSearchData = await responseSearch.json();
-        //         console.log(responseSearchData);
-        //         setTrombiImg(responseSearchData);
-        //     }
-        // }
     }
     const picPreview = async(event)=>{
         event.preventDefault();
-        console.log(event.target.files[0].name);
         const objectUrl = URL.createObjectURL(event.target.files[0]);
         setProfilFile(event.target.files[0].name);
         setCheck(false);
@@ -298,7 +275,6 @@ function User() {
     }
     const certPreview = async(event)=>{
         event.preventDefault();
-        console.log("funcprev",event.target.files[0].name);
         const objectUrl = URL.createObjectURL(event.target.files[0]);
         setCertFile(event.target.files[0].name);
         event.target.files[0].type==="application/pdf"? setImageCert(false):setImageCert(true);
@@ -308,7 +284,6 @@ function User() {
     const handleSubmitProfilPic = async(event)=>{
         event.preventDefault();
         const pictureTemp = event.target.profilePic.files[0].name;
-        console.log('nom de fichier:',pictureTemp);
         if(pictureTemp){
             const response = await getOneUser();
             let responseData = await response.json();
@@ -326,7 +301,6 @@ function User() {
             pictureTps = pictureTp[0];
             // first we add date/time to the picture name to make it unique and the extension
             const picture = Date.now()+pictureTps+"."+extension;
-            console.log(event.target.profilePic.files[0]);
             const imageFile = event.target.profilePic.files[0];
             //if it needs we compress image file
             const options = {
@@ -340,13 +314,10 @@ function User() {
                 console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
             
                 let body = new FormData();
-                console.log(event.target.profilePic.files[0]);
+                console.log(event.target.certifPic.files[0]);
                 // the filename is put in the body by formData format
                 body.append('file', compressedFile,picture);
-                console.log(body);
                 // we save the profile picture by a fetch call
-                console.log("jwt",jwtData);
-                console.log("body",body);
                 const responseProPic = await fetch('http://localhost:8080/api/profile/',{
                     method: "POST",
                     headers: {
@@ -374,13 +345,9 @@ function User() {
     const handleSubmitCertifPic = async(event)=>{
         event.preventDefault();
         const certifTemp = event.target.certifPic.files[0].name;
-        console.log('certifTemp',certifTemp);
         async function Change (body, oldNameC){
-            console.log(body);
             // ici on mettra la partie se chargeant du nom et de l'extension du fichier
             // ainsi que la partie s'occupant de compresser l'image (browser-image-compression sur npm)
-            console.log("jwt",jwtData);
-            console.log("body",body);
             const responseCertPic = await fetch(serverBack+'/api/certif/',{
                 method: "POST",
                 headers: {
@@ -418,7 +385,6 @@ function User() {
             certifTps = certifTp[0];
             // on rajoute un time devant le nom pour le rendre quasi unique et l'extension
             const picture = Date.now()+certifTps+"."+extension;
-            console.log("nom de fichier",event.target.certifPic.files[0]);
             const imageFile = event.target.certifPic.files[0];
             const options = {
                 maxSizeMB: 2,
@@ -444,7 +410,6 @@ function User() {
                     Change(body,oldNameC);
                     setImageCert(false);
                 }
-            console.log('checkc');    
             setCheckC(true);
             } catch (error) {
                 console.log(error);
@@ -460,17 +425,13 @@ function User() {
             "user":"admin",
             "admin":"user"
         };
-        console.log("target",event,profileData);
         let gestionProf = event.target.name || event.target.parentElement.name;
         const gesPName = profileData.name.toLowerCase();
         const gesPFName = profileData.first_name.toLowerCase();
-        console.log(gesPName,gesPFName,gestionProf);
         let gestArray=gest.slice();
-        console.log("gestArrayaff",gestArray);
         const index=gestArray.findIndex(data=>(data.name==gesPName && data.first_name==gesPFName));
         const userTDid = profileData.id;
-        console.log("id",userTDid);
-        if(gestionProf!="trash" && gestionProf.length!=0){
+        if((gestionProf!="trash" && gestionProf!="medical" && gestionProf!="inscription" && gestionProf!="paiement")&& gestionProf.length!=0){
             if(jwt_decode(jwtData).id != userTDid){
                 if(gestionProf==="valide" || gestionProf==="invalide"){
                     gestArray[index].validity=validElement[gestionProf];
@@ -484,8 +445,6 @@ function User() {
                         gestArray[index].validity="1";
                     }
                 }
-                console.log(index,gestArray[index].validity,gestArray[index].roles);
-                console.log(userTDid,gesPName,gesPFName,)
                 const responseVal = await fetch('http://localhost:8080/api/users/user',{
                     method: "PATCH",
                     headers: {
@@ -505,7 +464,7 @@ function User() {
                 alert('Vous ne pouvez pas modifier les status de votre propre compte, passez par un administrateur');
             }
         }
-        if(gestionProf=="trash"){
+        if(gestionProf==="trash"){
             if(jwt_decode(jwtData).id != userTDid){
                 let suppress = window.confirm("êtes vous sûr de vouloir supprimer "+gesPName+" "+gesPFName);
                 if(suppress){
@@ -526,23 +485,86 @@ function User() {
                     });
                 }
                 let index=gest.findIndex(data=>(data.id==userTDid));
-                console.log("avant",gestArray);
                 let trombData = gestArray.splice(index,1);
-                console.log('delete',gestArray);
                 setGest(gestArray);
             } else {
                 alert('Vous ne pouvez pas supprimer votre propre compte, passez par un administrateur');
             }
         }
+        if(gestionProf==="medical"){
+            // On affiche le certificat médical
+            let responseC = await getOneUserId(userTDid);
+            let responseData = await responseC.json();
+            setCertPicture("http://localhost:8080/certifs/"+responseData.certif_med);
+            setImageCert(false);
+            setDataModale(responseData);
+            // we try to display the old saved medical certif
+            setModaleInscript(1);
+            // On demande la validation du certificat médical
+            // On met à jour la BDD et on colorise en fonction l'icone médical
+        }
+        if(gestionProf==="inscription"){
+            // On affiche le dossier d'inscription
+            // On demande la validation du dossier d'inscription
+            // On met à jour la BDD et on colorise en fonction l'icone dossier d'inscription
+        }
+        if(gestionProf==="paiement"){
+            // On demande la validation du paiement
+            // On met à jour la BDD et on colorise en fonction l'icone paiement
+        }
     }
     const resultGest = (event)=>{
         event.preventDefault();
-        console.log("resultgest",event);
         if(courseForm===event.target.textContent){
             setCourseForm("");
         } else {
             setCourseForm(event.target.textContent);
         }
+    }
+    const gestModaleMedicale = async (event,responseData)=>{
+        event.preventDefault();
+        let inscription = JSON.parse(responseData.inscription);
+        let modaleResponse = event.target.textContent;
+        if(modaleResponse==="Je ne valide pas"){
+            //on renseigne l'objet inscription ici
+            if(!inscription){
+                inscription = {med:false,ins:false,pay:false};
+            } else {
+                inscription.med = false;
+            }
+            const response = await fetch(serverBack+'/api/users/user/inscription/'+responseData.id,{
+                method: "PATCH",
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":"Bearer "+jwtData
+                },
+                body:JSON.stringify({
+                    inscription:inscription
+                })
+            })
+        }
+        if(modaleResponse==="Je valide le certificat"){
+            //on renseigne l'objet inscription ici
+            if(!inscription){
+                inscription = {med:true,ins:false,pay:false};
+            } else {
+                inscription.med = true;
+            }
+            const response = await fetch(serverBack+'/api/users/user/inscription/'+responseData.id,{
+                method: "PATCH",
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":"Bearer "+jwtData
+                },
+                body:JSON.stringify({
+                    inscription:inscription
+                })
+            })
+        }
+        setModaleInscript(0);
+        let dataAff = await getAllUsers();
+        let dataAffDisp = await dataAff.json();
+        setGest(dataAffDisp);
     }
     const handleSubmitCourse = async(event)=>{
         event.preventDefault();
@@ -580,7 +602,6 @@ function User() {
     }
     const handleCourseTrash = async(data,event)=>{
         event.preventDefault();
-        console.log("trash",data,event);
         if(!modale){
             setDataModale(data);
             setEventModale(event);
@@ -624,6 +645,7 @@ function User() {
             <main className="userMain">
                 <div className="userContent">
                     <ProfilAction handleSubmitUser={handleSubmitUser} role={role}/>
+                    <ModaleInscription modaleInscript={modaleInscript} imageCert={imageCert} certPicture={certPicture} gestModaleMedicale={gestModaleMedicale} dataModale={dataModale}/>
                     {demand==="Modifier vos données" &&
                         <DataMod handleSubmitModify={handleSubmitModify} responseData={responseData}/>
                     }
@@ -640,10 +662,10 @@ function User() {
                         <CertifMed imageCert={imageCert} checkC={checkC} handleSubmitCertifPic={handleSubmitCertifPic} certPreview={certPreview} certPicture={certPicture}/>   
                     }
                     {(demand==="Gestion des profils" && gest.length!=0) &&
-                        <GestProfil gest={gest} gestProfile={gestProfile} />
+                        <GestProfil gest={gest} gestProfile={gestProfile}/>
                     }
                     {demand==="Mes résultats" &&
-                        <Result resultDisp={resultDisp} resultGest={resultGest} courseForm={courseForm} handleSubmitCourse={handleSubmitCourse} handleCourseTrash={handleCourseTrash} cinq={cinq} dix={dix} semi={semi} marathon={marathon} modale={modale} dataModale={dataModale} eventModale={eventModale}/>
+                        <Result resultDisp={resultDisp} resultGest={resultGest} courseForm={courseForm} handleSubmitCourse={handleSubmitCourse} handleCourseTrash={handleCourseTrash} cinq={cinq} dix={dix} semi={semi} marathon={marathon} modale={modale} dataModale={dataModale}/>
                     }
                 </div>
             </main>

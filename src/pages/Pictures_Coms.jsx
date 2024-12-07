@@ -22,7 +22,6 @@ const PicturesComs = ()=>{
     let index=null;
     // if(jwtData){
         const jwt = jwtDecode(jwtData);
-        console.log("jwt",jwt)
     // }
     const [comsData,setComsData] = useState ([]);
     const idConnected=jwt.id;
@@ -54,11 +53,9 @@ const PicturesComs = ()=>{
                     const childDatas = await childComs.json();
                     // const comsArray= coms.concat(childDatas);
                     allComs= allComs.concat([data],childDatas);
-                    console.log("tous les sous coms",allComs);
                     setComsData(allComs);
                 } else {
                     allComs=allComs.concat([data]);
-                    console.log("juste les coms",allComs);
                     setComsData(allComs);
                 }
             })
@@ -73,7 +70,6 @@ const PicturesComs = ()=>{
 
     const handleComSubmit = async(event)=>{
         event.preventDefault();
-        console.log(event.target.commentaire.value);
         if(event.target.commentaire.value.length>0){
             let id_parent = null;
             if(responseCom){
@@ -87,7 +83,6 @@ const PicturesComs = ()=>{
             const news_id = null;
             const event_id = null;
             const photo_id = object.object.id_pic
-            console.log("responseCom",responseCom,modify)
             if(modify===false){
                 const response = await fetch(serverBack+"/api/coms",{
                     method: "PUT",
@@ -105,7 +100,6 @@ const PicturesComs = ()=>{
                     })
                 });
                 idParentContainer=null;
-                console.log("status:",response.status)
                 if(response.status<400){
                     event.target.commentaire.value="";
                     const responseData = await response.json();
@@ -135,7 +129,6 @@ const PicturesComs = ()=>{
                     })
                 });
                 idParentContainer=null;
-                console.log("status:",response.status)
                 if(response.status<400){
                     event.target.commentaire.value="";
                     document.querySelector('.inputCom').setAttribute("placeholder","laissez votre commentaire");
@@ -149,10 +142,8 @@ const PicturesComs = ()=>{
     }
     const comClick = (data,event)=>{
         event.preventDefault();
-        console.log("evenement",event);
         //on met à zero le système de modification du commentaire et de reaction
         if(index>=0){
-            console.log("modify ok")
             if(oldReaction && oldChar[index]!=="comReaction text"){
                 oldReaction.innerHTML="Réaction "+'<i class="'+reaction[index]+'"></i>';
                 oldChar[index] = reaction[index];
@@ -184,23 +175,17 @@ const PicturesComs = ()=>{
             oldTarget=event.target;
             idParentContainer=data.id_com;
         }
-        console.log("id_com",idParentContainer);
     }
     const modifyClick = async(data,event)=>{
         event.preventDefault();
-        console.log("modify",oldReaction,index,oldChar[index],reaction)
         if(index>=0){
-            console.log("modify ok")
             if(oldReaction && oldChar[index]!=="comReaction text"){
                 oldReaction.innerHTML="Réaction "+'<i class="'+reaction[index]+'"></i>';
                 oldChar[index] = reaction[index];
                 // oldIndex=null;
             }
         }
-        console.log("mod clic",oldModifyTarget,modify)
-        console.log("mod clac",(oldModifyTarget!==event.target))
         // remise à zero reponse et mise en place de modification
-        console.log("oldtarget",oldTarget)
         if(responseCom && oldTarget){
             oldTarget.style.backgroundColor="rgb(68, 144, 231)";
             responseCom=false;
@@ -212,7 +197,6 @@ const PicturesComs = ()=>{
             oldModifyTarget=event.target;
             modify=!modify;
         }
-        console.log(event.target,data.id_com,data);
         modify=!modify;
         if(modify){
             document.querySelector('.inputCom').value=data.coms;
@@ -227,18 +211,6 @@ const PicturesComs = ()=>{
             idModify=null;
         }
     }
-    // const reactOver = (event)=>{
-    //     // event.preventDefault();
-    //     // console.log(event.target);
-    //     reaction=event.target;
-    //     reactionHtml = reaction.innerHTML;
-    //     event.target.innerHTML='<i class="fa-solid fa-thumbs-up iconeR"></i><i class="fa-solid fa-heart iconeRR"></i><i class="fa-solid fa-face-grin-tears iconeR"></i><i class="fa-solid fa-face-surprise iconeR"></i><i class="fa-solid fa-face-sad-tear iconeR"></i><i class="fa-sharp fa-solid fa-face-angry iconeR"></i>';
-    // }
-    // const reactOut = (event)=>{
-    //     // event.preventDefault();
-    //     // console.log(event.target);
-    //     reaction.innerHTML=reactionHtml;
-    // }
     const reactSubmit = (data,event)=>{
         event.preventDefault();
         const reactions = {
@@ -249,12 +221,8 @@ const PicturesComs = ()=>{
             "fa-solid fa-face-sad-tear iconeR":"pleurs",
             "fa-sharp fa-solid fa-face-angry iconeR":"colère"
         }
-        // console.log(event.target.className);
-        // console.log(data);
         const reactionChar = event.target.className;
         //on remet à zero le système de réponse au commentaire
-        // console.log("oldtargetcomp",responseCom && oldTarget);
-        // console.log("oldtarget",oldTarget);
         if(responseCom && oldTarget){
             oldTarget.style.backgroundColor="rgb(68, 144, 231)";
             document.querySelector('.inputCom').value="";
@@ -268,12 +236,8 @@ const PicturesComs = ()=>{
             oldModifyTarget.style.color="grey";
             idModify=null;
         }
-        // console.log(reactionChar);
         index = comsData.findIndex((el)=>el.id_com===data.id_com);
-        console.log("old",oldIndex,"index",index);
-        console.log("reactionOld",reaction[oldIndex]);
         if(oldReaction && oldChar[oldIndex]!=="comReaction text" && oldIndex!=index){
-            console.log("on remet l'ancien")
             oldReaction.innerHTML="Réaction "+'<i class="'+reaction[oldIndex]+'"></i>';
             oldChar[oldIndex] = reaction[oldIndex];
             oldIndex=index;
@@ -281,48 +245,38 @@ const PicturesComs = ()=>{
         if(!oldIndex || oldIndex==index){
             oldReaction = event.target;
             if(!(oldChar[index]) && (!oldIndex)){
-                console.log("pas de old"); 
                 event.target.innerHTML='Réaction <i class="fa-solid fa-thumbs-up iconeR"></i><i class="fa-solid fa-heart iconeRR"></i><i class="fa-solid fa-face-grin-tears iconeR"></i><i class="fa-solid fa-face-surprise iconeR"></i><i class="fa-solid fa-face-sad-tear iconeR"></i><i class="fa-sharp fa-solid fa-face-angry iconeR"></i>';
                 oldChar[index] = "all";
                 oldIndex = index;
             } else if(oldChar[index]==="all" && reactionChar==="comReaction text"){
                 if(!reaction[index]){
-                    console.log("on remet en pas de old");
                     event.target.innerHTML="Réaction";
                     oldChar[index] = null;
-                    // oldIndex = null;
                 }else if(reaction[index]){
                     console.log("on reaffiche la reaction");
                     event.target.innerHTML="Réaction "+'<i class="'+reaction[index]+'"></i>';
                     oldChar[index] = reaction[index];
-                    // oldIndex=null;
                 }
             } else if(oldChar[index] === "all" && reactionChar!=="comReaction text" && oldChar[index]!==reactionChar){
                 //on ecrira la reaction en BDD et à l'ecran
-                console.log("on ecrit le reaction",event.target);
                 event.target.parentNode.innerHTML="Réaction "+'<i class="'+reactionChar+'"></i>';
                 oldChar[index]=reactionChar;
-                // oldIndex = null;
                 reaction[index]=reactionChar;
             } else if(oldChar[index]!=="all" && reactionChar==="comReaction text"){
-                console.log("on modifie la reaction");
                 event.target.innerHTML='Réaction <i class="fa-solid fa-thumbs-up iconeR"></i><i class="fa-solid fa-heart iconeRR"></i><i class="fa-solid fa-face-grin-tears iconeR"></i><i class="fa-solid fa-face-surprise iconeR"></i><i class="fa-solid fa-face-sad-tear iconeR"></i><i class="fa-sharp fa-solid fa-face-angry iconeR"></i>';
                 oldChar[index]="all";
                 oldIndex = index;
             } else if(oldChar[index]!=="all" && oldChar[index]===reactionChar){
                 // on affiche toutes les reactions possibles à l'endroit cliqué et on dévalide les 
                 // anciennes reactions à l'endroit cliqué précédement.
-                console.log("on annule la reaction");
                 event.target.parentNode.innerHTML="Réaction";
                 oldChar[index] = null;
-                // oldIndex = null;
                 reaction[index]=null;
             }
         }
     }
     const deleteClick = async(data,event)=>{
         event.preventDefault();
-        console.log(event.target,data.id_com,data);
         // il faudra ici effacer les commentaires enfants puis le commentaire parent
         // pour des raisons de praticité et d'économie de requêtes on fera ça en back
         let supComChild = window.confirm("êtes vous sûr de vouloir supprimer ce commentaire et ses réponses?");
@@ -341,7 +295,6 @@ const PicturesComs = ()=>{
     }
     const deleteChildClick = async(data,event)=>{
         event.preventDefault();
-        console.log(event.target,data.id_com,data);
         let supComChild = window.confirm("êtes vous sûr de vouloir supprimer ce commentaire?");
         if(supComChild){
             const response = await fetch(serverBack+"/api/coms/?com="+data.id_com+"&picture=null&react="+data.reaction_id,{
@@ -369,51 +322,9 @@ const PicturesComs = ()=>{
                     <>
                         {data.id_parent===null &&
                             <ParentComDisplay data={data} reactSubmit={reactSubmit} comClick={comClick} modifyClick={modifyClick} deleteClick={deleteClick} idConnected={idConnected} roleConnected={roleConnected} validityConnected={validityConnected} />
-                        //     <>
-                        //     <p className="parentCom text" key={data.id_com}>{data.name} {data.first_name}</p>
-                        //     <div className="parent text">
-                        //         <p>{data.coms}</p>
-                        //     </div>
-                        //     <div className="comContenair">
-                        //         <p className="comReaction text" onClick={(event)=>reactSubmit(data,event)}>Réaction</p>
-                        //         <p className="comCommentaire text" onClick={(event)=>comClick(data,event)}>Répondre</p>
-                        //     </div>
-                        //     <div className="icone_coms">
-                        //         {console.log("recherche",idConnected===data.user_id,validityConnected==="1",roleConnected==="admin",data.user_id)}
-                        //         {(idConnected===data.user_id && validityConnected==="1") &&
-                        //         <>
-                        //         <i className="fa-solid fa-pen text" onClick={(event)=>modifyClick(data,event)}></i>
-                        //         </>
-                        //         }
-                        //         <span></span>
-                        //         {(roleConnected==="admin" || idConnected===data.user_id) &&
-                        //         <i className="fa-solid fa-trash text" onClick={(event)=>deleteClick(data,event)}></i>
-                        //         }
-                        //     </div>
-                        // </>
                         }
                         {data.id_parent!==null &&
                             <ChildComDisplay data={data} reactSubmit={reactSubmit} modifyClick={modifyClick} deleteChildClick={deleteChildClick} idConnected={idConnected} roleConnected={roleConnected} validityConnected={validityConnected} />
-                        //     <>
-                        //     <p className="parentCom text tabul" key={data.id_com}>{data.name} {data.first_name}</p>
-                        //     <div className="parent text tabul">
-                        //         <p>{data.coms}</p>
-                        //     </div>
-                        //     <div className="comContenairChild">
-                        //         <p className="comReaction text" onClick={(event)=>reactSubmit(data,event)}>Réaction</p>
-                        //         <div>
-                        //         {idConnected===data.user_id && validityConnected==="1"?
-                        //             <i className="fa-solid fa-pen text" onClick={(event)=>modifyClick(data,event)}></i>:
-                        //             null
-                        //         }
-                        //         <span></span>
-                        //         {roleConnected==="admin" || idConnected===data.user_id?
-                        //         <i className="fa-solid fa-trash text" onClick={(event)=>deleteChildClick(data,event)}></i>:
-                        //         null
-                        //         }
-                        //         </div>
-                        //     </div>
-                        // </>
                         }
                     </>
                 )

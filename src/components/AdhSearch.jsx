@@ -4,7 +4,6 @@ const AdhSearch = ({trombiImg, userList, handleSubmitSearch, serverBack})=>{
             <form className="searchForm" id="formulsearch" onSubmit={handleSubmitSearch}>
                 <div className="userDelCont">
                 <label className="userDel">Adhérent:<input className="userDelLab" type="search" name="nameSearch" list="searchList"/></label>
-                {/* <label className="userDel">Prénom:<input type="text" name="first_nameSearch" /></label> */}
                 <datalist id="searchList">
                     {userList.map((user)=>{
                         return(

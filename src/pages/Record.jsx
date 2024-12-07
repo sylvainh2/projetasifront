@@ -1,10 +1,6 @@
-// import { useEffect , useState } from "react";
 import { useNavigate } from "react-router";
 
 function Rec() {
-
-    // const [error, setError] = useState(null);
-
 
     const navigate = useNavigate();
 
@@ -22,14 +18,11 @@ function Rec() {
         const city = event.target.city.value;
         const tel = event.target.tel.value;
         let share_infos = event.target.share_infos.value;
-        console.log('partage:',event.target.share_infos.value);
         if(event.target.share_infos.value==="on"){
             share_infos=1;
         } else {
             share_infos=0;
         }
-        
-        // console.log(email,password,repassword,name,first_name,birthdate,address,postcode,city,tel,share_infos);
         
         const responseSign = await fetch('http://localhost:8080/api/signup',{
             method: "POST",
