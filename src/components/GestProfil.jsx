@@ -22,18 +22,33 @@ const GestProfil = ({gest, gestProfile})=>{
                                 }
                             </div>
                             <div className="profCont-cpi">
-                                {profile.inscription && console.log("Affichage",profile.inscription)}
                                 {(profile.inscription && JSON.parse(profile.inscription).med) &&
                                 <button onClick={(event)=>gestProfile(profile,event)} className="cpi medical greenbg" type="button" name="medical"><i className="fa-sharp fa-solid fa-file-medical"></i></button>
                                 }
                                 {(profile.inscription && !(JSON.parse(profile.inscription).med)) &&
-                                <button onClick={(event)=>gestProfile(profile,event)} className="cpi medical redbg" type="button" name="medical"><i className="fa-sharp fa-solid fa-file-medical"></i></button>
+                                <button onClick={(event)=>gestProfile(profile,event)} className="cpi medical whitebg" type="button" name="medical"><i className="fa-sharp fa-solid fa-file-medical"></i></button>
                                 }
                                 {(!(profile.inscription) || profile.inscription.length===0) &&
                                 <button onClick={(event)=>gestProfile(profile,event)} className="cpi medical whitebg" type="button" name="medical"><i className="fa-sharp fa-solid fa-file-medical"></i></button>
                                 }
-                                <button onClick={(event)=>gestProfile(profile,event)} className="cpi inscription" type="button" name="inscription"><i className="fa-solid fa-file-contract"></i></button>
-                                <button onClick={(event)=>gestProfile(profile,event)} className="cpi paiement" type="button" name="paiement"><i className="fa-solid fa-euro-sign"></i></button>
+                                {(profile.inscription && JSON.parse(profile.inscription).ins) &&
+                                <button onClick={(event)=>gestProfile(profile,event)} className="cpi inscription greenbg" type="button" name="inscription"><i className="fa-solid fa-file-contract"></i></button>
+                                }
+                                {(profile.inscription && !(JSON.parse(profile.inscription).ins)) &&
+                                <button onClick={(event)=>gestProfile(profile,event)} className="cpi inscription whitebg" type="button" name="inscription"><i className="fa-solid fa-file-contract"></i></button>
+                                }
+                                {(!(profile.inscription) || profile.inscription.length===0) &&
+                                <button onClick={(event)=>gestProfile(profile,event)} className="cpi inscription whitebg" type="button" name="inscription"><i className="fa-solid fa-file-contract"></i></button>
+                                }
+                                {(profile.inscription && JSON.parse(profile.inscription).pay) &&
+                                <button onClick={(event)=>gestProfile(profile,event)} className="cpi paiement greenbg" type="button" name="paiement"><i className="fa-solid fa-euro-sign"></i></button>
+                                }
+                                {(profile.inscription && !(JSON.parse(profile.inscription).pay)) &&
+                                <button onClick={(event)=>gestProfile(profile,event)} className="cpi paiement whitebg" type="button" name="paiement"><i className="fa-solid fa-euro-sign"></i></button>
+                                }
+                                {(!(profile.inscription) || profile.inscription.length===0) &&
+                                <button onClick={(event)=>gestProfile(profile,event)} className="cpi paiement whitebg" type="button" name="paiement"><i className="fa-solid fa-euro-sign"></i></button>
+                                }
                             </div>
                             <div className="profCont-trash">
                                 <button onClick={(event)=>gestProfile(profile,event)} className="cpitrash" type="button" name="trash"><i className="fa-solid fa-trash"></i></button>

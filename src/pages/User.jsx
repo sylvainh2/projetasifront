@@ -39,6 +39,7 @@ function User() {
     const [dataModale,setDataModale] = useState ({});
     const [eventModale,setEventModale] = useState ({});
     const [modaleInscript,setModaleInscript] = useState(0);
+    const [modaleInscriptText,setModaleInscriptText] = useState("");
     const navigate = useNavigate();
     const jwtData = window.localStorage.getItem("jwt");
     // let oldDemand = [];
@@ -498,6 +499,7 @@ function User() {
             setCertPicture("http://localhost:8080/certifs/"+responseData.certif_med);
             setImageCert(false);
             setDataModale(responseData);
+            setModaleInscriptText("Je valide le certificat");
             // we try to display the old saved medical certif
             setModaleInscript(1);
             // On demande la validation du certificat médical
@@ -505,12 +507,40 @@ function User() {
         }
         if(gestionProf==="inscription"){
             // On affiche le dossier d'inscription
+            let responseC = await getOneUserId(userTDid);
+            let responseData = await responseC.json();
+            setCertPicture("http://localhost:8080/certifs/"+responseData.inscript_certif);
+            setImageCert(false);
+            setDataModale(responseData);
+            setModaleInscriptText("Je valide le dossier");
+            // we try to display the old saved medical certif
+            setModaleInscript(1);
             // On demande la validation du dossier d'inscription
             // On met à jour la BDD et on colorise en fonction l'icone dossier d'inscription
         }
         if(gestionProf==="paiement"){
-            // On demande la validation du paiement
+            // On fait la validation/devalidation du paiement
+            let responseC = await getOneUserId(userTDid);
+            let responseData = await responseC.json();
+            let inscription = JSON.parse(responseData.inscription);
+            if(!inscription){
+                inscription = {med:false,ins:false,pay:false};
+            }
+            inscription.pay = !inscription.pay;
             // On met à jour la BDD et on colorise en fonction l'icone paiement
+            const response = await fetch(serverBack+'/api/users/user/inscription/'+responseData.id,{
+                method: "PATCH",
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":"Bearer "+jwtData
+                },
+                body:JSON.stringify({
+                    inscription:inscription
+                })
+            })
+            let dataAff = await getAllUsers();
+            let dataAffDisp = await dataAff.json();
+            setGest(dataAffDisp);
         }
     }
     const resultGest = (event)=>{
@@ -530,7 +560,12 @@ function User() {
             if(!inscription){
                 inscription = {med:false,ins:false,pay:false};
             } else {
-                inscription.med = false;
+                    if(modaleInscriptText==="Je valide le certificat"){
+                        inscription.med = false;
+                    }
+                    if(modaleInscriptText==="Je valide le dossier"){
+                        inscription.ins = false;
+                    }
             }
             const response = await fetch(serverBack+'/api/users/user/inscription/'+responseData.id,{
                 method: "PATCH",
@@ -543,12 +578,21 @@ function User() {
                 })
             })
         }
-        if(modaleResponse==="Je valide le certificat"){
+        if(modaleResponse==="Je valide le certificat" || modaleResponse==="Je valide le dossier"){
             //on renseigne l'objet inscription ici
-            if(!inscription){
-                inscription = {med:true,ins:false,pay:false};
-            } else {
-                inscription.med = true;
+            if(modaleResponse==="Je valide le certificat"){
+                if(!inscription){
+                    inscription = {med:true,ins:false,pay:false};
+                } else {
+                    inscription.med = true;
+                }
+            }
+            if(modaleResponse==="Je valide le dossier"){
+                if(!inscription){
+                    inscription = {med:false,ins:true,pay:false};
+                } else {
+                    inscription.ins = true;
+                }
             }
             const response = await fetch(serverBack+'/api/users/user/inscription/'+responseData.id,{
                 method: "PATCH",
@@ -645,7 +689,7 @@ function User() {
             <main className="userMain">
                 <div className="userContent">
                     <ProfilAction handleSubmitUser={handleSubmitUser} role={role}/>
-                    <ModaleInscription modaleInscript={modaleInscript} imageCert={imageCert} certPicture={certPicture} gestModaleMedicale={gestModaleMedicale} dataModale={dataModale}/>
+                    <ModaleInscription modaleInscript={modaleInscript} imageCert={imageCert} certPicture={certPicture} gestModaleMedicale={gestModaleMedicale} dataModale={dataModale} modaleInscriptText={modaleInscriptText}/>
                     {demand==="Modifier vos données" &&
                         <DataMod handleSubmitModify={handleSubmitModify} responseData={responseData}/>
                     }

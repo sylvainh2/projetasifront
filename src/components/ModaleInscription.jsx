@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-const ModaleInscription = ({modaleInscript,imageCert,certPicture,gestModaleMedicale,dataModale})=>{
+const ModaleInscription = ({modaleInscript,imageCert,certPicture,gestModaleMedicale,dataModale,modaleInscriptText})=>{
     const dialogInscript = useRef(null);
     const dialogI = dialogInscript.current;
     if ((modaleInscript>0)) {
@@ -11,7 +11,7 @@ const ModaleInscription = ({modaleInscript,imageCert,certPicture,gestModaleMedic
     return(
         <>
             <dialog ref={dialogInscript} className="modale">
-                <button onClick={(event)=>gestModaleMedicale(event,dataModale)}>Je valide le certificat</button>
+                <button onClick={(event)=>gestModaleMedicale(event,dataModale)}>{modaleInscriptText}</button>
                 <span></span>
                 <button onClick={(event)=>gestModaleMedicale(event,dataModale)}>Je ne valide pas</button>
             <div className="prevCont">
