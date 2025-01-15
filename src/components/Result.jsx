@@ -39,7 +39,7 @@ const Result = ({resultDisp, resultGest, courseForm, handleSubmitCourse, handleC
                     <label>Temps</label>
                     <input type="time" name="temps" step="1"></input>
                     <label>Distance</label>
-                    <input type="search" name="distance" step="0.001" list="distanceList"></input>
+                    <input type="search" name="distance" step="0.001" list="distanceList" placeholder="click / double click"></input>
                     <datalist id="distanceList">
                         <option value="5">5</option>
                         <option value="10">10</option>

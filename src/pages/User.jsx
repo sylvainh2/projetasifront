@@ -132,15 +132,24 @@ function User() {
             //  we take the id user by his jwt
             let responseC = await getOneUser();
             let responseData = await responseC.json();
-            // we try to display the old saved medical certif (doesn't work, maybe must have useEffect or ...)
+            // we try to display the old saved medical certif
             setCertPicture("http://localhost:8080/certifs/"+responseData.certif_med);
+        }
+        if(demand === "Ajouter dossier inscription"){
+            console.log("je passe par ici");
+            setCertPicture("");
+            //  we take the id user by his jwt
+            let responseC = await getOneUser();
+            let responseData = await responseC.json();
+            // we try to display the old saved inscription
+            setCertPicture("http://localhost:8080/inscript/"+responseData.inscript_certif);
         }
         if(demand === "Modifier photo de profil"){
             setProfilPicture ("");
             // // we take the id user by his jwt
             let responseP = await getOneUser();
             let responseData = await responseP.json();
-            // we try to display the old saved medical certif (doesn't work, maybe must have useEffect or ...)
+            // we try to display the old saved medical certif
             setProfilPicture("http://localhost:8080/profiles/"+responseData.profil_picture);
         }
         if(demand === "Rechercher un adhérent"){
@@ -349,30 +358,60 @@ function User() {
         async function Change (body, oldNameC){
             // ici on mettra la partie se chargeant du nom et de l'extension du fichier
             // ainsi que la partie s'occupant de compresser l'image (browser-image-compression sur npm)
-            const responseCertPic = await fetch(serverBack+'/api/certif/',{
-                method: "POST",
-                headers: {
-                    "Authorization": "Bearer "+jwtData
-                },
-                body: body
-            });
-            const responseCertPicDel = await fetch(serverBack+'/api/certif/',{
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "+jwtData
-                },
-                body:JSON.stringify({
-                    oldNameC
-                })
-            });
+            if (demand === "Ajouter certificat médical"){
+                const responseCertPic = await fetch(serverBack+'/api/certif/',{
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer "+jwtData
+                    },
+                    body: body
+                });
+                const responseCertPicDel = await fetch(serverBack+'/api/certif/',{
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer "+jwtData
+                    },
+                    body:JSON.stringify({
+                        oldNameC
+                    })
+                });
+            }
+            if (demand === "Ajouter dossier inscription"){
+                const responseCertPic = await fetch(serverBack+'/api/inscript/',{
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer "+jwtData
+                    },
+                    body: body
+                });
+                const responseCertPicDel = await fetch(serverBack+'/api/inscript/',{
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer "+jwtData
+                    },
+                    body:JSON.stringify({
+                        oldNameC
+                    })
+                });
+            }
             return
         }
         if(certifTemp){
             const response = await getOneUser();
 
             let responseData = await response.json();
-            const oldNameC = responseData.certif_med;
+            console.log("ici la demande",demand);
+            let oldNameC = "";
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            if(demand==="Ajouter certificat médical"){
+                oldNameC = responseData.certif_med;
+            }
+            if(demand==="Ajouter dossier inscription"){
+                oldNameC = responseData.inscript_certif;
+
+            }
             const MIME_TYPES = {
                 'image/jpg': 'jpg',
                 'image/jpeg': 'jpg',
@@ -509,7 +548,7 @@ function User() {
             // On affiche le dossier d'inscription
             let responseC = await getOneUserId(userTDid);
             let responseData = await responseC.json();
-            setCertPicture("http://localhost:8080/certifs/"+responseData.inscript_certif);
+            setCertPicture("http://localhost:8080/inscript/"+responseData.inscript_certif);
             setImageCert(false);
             setDataModale(responseData);
             setModaleInscriptText("Je valide le dossier");
@@ -702,8 +741,8 @@ function User() {
                     {demand==="Modifier photo de profil" &&
                         <ProfilPic check={check} handleSubmitProfilPic={handleSubmitProfilPic} picPreview={picPreview} profilPicture={profilPicture}/>   
                     }
-                    {demand==="Ajouter certificat médical" &&
-                        <CertifMed imageCert={imageCert} checkC={checkC} handleSubmitCertifPic={handleSubmitCertifPic} certPreview={certPreview} certPicture={certPicture}/>   
+                    {(demand==="Ajouter certificat médical" || demand==="Ajouter dossier inscription") &&
+                        <CertifMed imageCert={imageCert} checkC={checkC} handleSubmitCertifPic={handleSubmitCertifPic} certPreview={certPreview} certPicture={certPicture} demand={demand}/>   
                     }
                     {(demand==="Gestion des profils" && gest.length!=0) &&
                         <GestProfil gest={gest} gestProfile={gestProfile}/>
