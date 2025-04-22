@@ -60,19 +60,19 @@ function User() {
 
     // we look if we have the rights to be here and do the functions
     useEffect(()=>{
-            if (jwtData) {
-                const roleD=(jwt_decode(jwtData)).roles;
-                const validityD=(jwt_decode(jwtData)).validity;
-                setRole(roleD);
-                if(roleD !== "admin" || (roleD !== "user" && validityD!=="1")){
-                  window.alert("Pour accéder à cet espace vous devez être connecté et autorisé");
-                  retourAccueil();
-                } 
-            } else {
+        if (jwtData) {
+            const roleD=(jwt_decode(jwtData)).roles;
+            const validityD=(jwt_decode(jwtData)).validity;
+            setRole(roleD);
+            if(roleD !== "admin" || (roleD !== "user" && validityD!=="1")){
                 window.alert("Pour accéder à cet espace vous devez être connecté et autorisé");
                 retourAccueil();
-            }
-        },[])
+            } 
+        } else {
+            window.alert("Pour accéder à cet espace vous devez être connecté et autorisé");
+            retourAccueil();
+        }
+    },[])
 
     function retourAccueil() {
         navigate('/');

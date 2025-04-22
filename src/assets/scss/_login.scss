@@ -16,7 +16,7 @@
         background: linear-gradient(184deg, rgba(183,226,253,1) 0%, rgba(21,165,239,1) 100%);
         display:flex;
         flex-direction: column;
-        height:250px;
+        height:350px;
         padding: 0 1rem 0 1rem;
         .inputLog:nth-child(2n+1){
             margin-top:1rem;
@@ -26,12 +26,21 @@
     }
     .loginBtn{
         position:absolute;
-        bottom:10%;
+        bottom:5%;
         left:50%;
         transform:translate(-50%,0);
         // margin-left: 3.2rem;
-        width:6rem;
-    
+        // width:6rem;
+    }
+    .loginBtnBox{
+        display:flex;
+        flex-direction: row;
+        gap:1rem;
+    }
+    .passModifyBtn{
+        text-align: center;
+        font-size: 0.7rem;
+        margin-top:3rem;
     }
     .loginError{
         margin-top:15rem;
