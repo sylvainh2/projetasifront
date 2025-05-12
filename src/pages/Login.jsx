@@ -89,6 +89,7 @@ function Login() {
                 },
 
             })
+            console.log("code suite");
             const responseId = await response.json();
             if(!responseId.id){
                 setNoEmail(true);
@@ -97,17 +98,17 @@ function Login() {
             // reste à créer les conditions suivant l'appel fetch
             if (email && message && sujet){
                 //traitement envoi email//
-                // const emailSender = await fetch("http://localhost:8080/api/send-emailcode",{
-                //     method: "POST",
-                //     headers: {
-                //         "Content-Type": "application/json"
-                //     },
-                //     body: JSON.stringify({
-                //         email,
-                //         sujet,
-                //         message
-                //     })
-                // })
+                const emailSender = await fetch("http://localhost:8080/api/emailcode",{
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email,
+                        sujet,
+                        message
+                    })
+                })
             setCodeSend(true);
             // document.querySelector(".loginForm").reset();
             setTimeout(()=>{
