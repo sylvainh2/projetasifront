@@ -16,6 +16,7 @@ function User() {
     // we declare all the variables use in the react part
     const [role,setRole] = useState("");
     const [demand,setdemand] = useState("");
+    const [validityDisplay,setValidityDisplay] = useState(false);
     const [responseData,setResponseData]=useState([]);
     const [serverBack,setServerBack] = useState("http://localhost:8080");
     const [trombiD,setTrombiD] = useState([]);
@@ -63,13 +64,23 @@ function User() {
         if (jwtData) {
             const roleD=(jwt_decode(jwtData)).roles;
             const validityD=(jwt_decode(jwtData)).validity;
+            console.log(roleD,validityD);
+            console.log(roleD!=="admin" && (roleD !== "user" && validityD!="1"));
+            console.log(roleD!=="admin");
             setRole(roleD);
-            if(roleD !== "admin" || (roleD !== "user" && validityD!=="1")){
+            if(roleD !== "admin" && (roleD !== "user" && validityD!="1")){
+            // if(roleD !== "admin" && roleD !== "user"){
+            
                 window.alert("Pour accéder à cet espace vous devez être connecté et autorisé");
+                // window.alert("Pour accéder à cet espace vous devez être connecté");
                 retourAccueil();
-            } 
+            } else if((roleD === "user" && validityD==="1") || roleD === "admin"){
+                setValidityDisplay(true);
+            }
         } else {
             window.alert("Pour accéder à cet espace vous devez être connecté et autorisé");
+            // window.alert("Pour accéder à cet espace vous devez être connecté");
+
             retourAccueil();
         }
     },[])
@@ -163,9 +174,12 @@ function User() {
             setCourseForm("");
             // we take all runs datas of the id user by fetch call
             let responseResult = await getAllRuns();
-            let responseData = await responseResult.json();
-            setResultDisp(responseData);
-            bestDisplay(responseData);
+            console.log(responseResult);
+            if(responseResult.status<400){
+                let responseData = await responseResult.json();
+                setResultDisp(responseData);
+                bestDisplay(responseData);
+            }
         }
     }
     async function getOneUser() {
@@ -727,7 +741,7 @@ function User() {
     return(
             <main className="userMain">
                 <div className="userContent">
-                    <ProfilAction handleSubmitUser={handleSubmitUser} role={role}/>
+                    <ProfilAction handleSubmitUser={handleSubmitUser} role={role} validityDisplay={validityDisplay}/>
                     <ModaleInscription modaleInscript={modaleInscript} imageCert={imageCert} certPicture={certPicture} gestModaleMedicale={gestModaleMedicale} dataModale={dataModale} modaleInscriptText={modaleInscriptText}/>
                     {demand==="Modifier vos données" &&
                         <DataMod handleSubmitModify={handleSubmitModify} responseData={responseData}/>
@@ -744,7 +758,7 @@ function User() {
                     {(demand==="Ajouter certificat médical" || demand==="Ajouter dossier inscription") &&
                         <CertifMed imageCert={imageCert} checkC={checkC} handleSubmitCertifPic={handleSubmitCertifPic} certPreview={certPreview} certPicture={certPicture} demand={demand}/>   
                     }
-                    {(demand==="Gestion des profils" && gest.length!=0) &&
+                    {(demand==="Gestion des profils" && gest.length!==0) &&
                         <GestProfil gest={gest} gestProfile={gestProfile}/>
                     }
                     {demand==="Mes résultats" &&

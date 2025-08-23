@@ -1,4 +1,4 @@
-import { useEffect , useState } from "react";
+import { useEffect , useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 
 function Login() {
@@ -9,10 +9,12 @@ function Login() {
     const [codeSend,setCodeSend] = useState(false);
     const [tempsDepasse, setTempsDepasse] = useState(false);
     const [noEmail, setNoEmail] = useState(false);
-    let codeValidation = "";
-
-
+    let codeValidation;
+    let timerValidCode;
+    console.log("reset variables");
+    
     const navigate = useNavigate();
+
     useEffect(()=>{
         const connectData = window.localStorage.getItem("connect");
         if(connectData === "déconnexion"){
@@ -33,6 +35,14 @@ function Login() {
 
     const handlePassModifySend = async (event)=>{
         event.preventDefault();
+    }
+
+    const cancelValid = ()=>{
+        setCodeSend(false);
+        setLoginModify(true);
+        setAuthPassModify(false);
+        timerValidCode = window.localStorage.getItem("timerV");
+        clearTimeout(timerValidCode);
     }
 
     const handleSubmitAuth = async (event)=>{
@@ -71,29 +81,104 @@ function Login() {
         }else{
             setAuthPassModify(true);
         }
+        if(loginModify && codeSend){
+            //gestion de la mise en bdd du nouveau mot de passe si code valide
+            timerValidCode = window.localStorage.getItem("timerV");
+            const response = await fetch(`http://localhost:8080/api/signup/${email}`,{
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            const responseId = await response.json();
+            const responseCode = await fetch(`http://localhost:8080/api/code/${responseId}`,{
+                method: "GET",
+                headers: {
+                "Content-Type": "application/json"
+                }
+            })
+            codeValidation = await responseCode.json();
+            //on remet à zero le timer de validatioon de code
+            clearTimeout(timerValidCode);
+            //on compare le code de depart et celui entré
+            const password = event.target.password.value;
+            const repassword = event.target.repassword.value;
+            const codeValid = event.target.code.value;
+            console.log("pass",password,"repass",repassword);
+            if(password !== repassword){
+                alert("mot de passe et validation de mot de passe différents");
+                event.target.password.value="";
+                event.target.repassword.value="";
+                cancelValid();
+            } else {
+            //si le code est ok, on met en bdd le nouveau mot de passe
+            console.log("code3",codeValid,"codeV3",codeValidation);
+            if(codeValid == codeValidation){
+                //reste à faire la partie back-end de cet appel fetch
+                const responseSign = await fetch('http://localhost:8080/api/signup',{
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        password,
+                        id:responseId
+                    })
+                })
+                if(responseSign){
+                    if(responseSign.status>=400){
+                        const erreur = await responseSign.json();
+                        if((erreur.message)==undefined){
+                            alert(erreur[0].message);
+                        } else {
+                            alert(erreur.message);
+                        }
+                    } else {
+                    const responseSignData = await responseSign.json();
+                    alert("nouveau MOT DE PASSE enregistré");
+                    // on obtient ici le token... à voir si on peut en avoir besoin par la suite
+                    // mais vu qu'il faut que le compte soit validé par un admin pour etre actif...
+                    // mais sait-on jamais si une nouvelle fonctionnalité n'ayant pas besoin de validation est implantée...
+                    navigate('/');
+                }}
+            }
+            //si le code est erroné on envoi un message et on renvoit un code de validation
+            if(codeValid != codeValidation){
+                alert("Code de validation erroné");
+            }
+            cancelValid();
+            }
+        }
         if(loginModify & !codeSend){
             // on crée un code et on envoie
             let codeTemp = (Math.floor(Math.random()*999999)).toString();
             const codeZero = "000000";
             codeValidation = codeZero.substr(0,6-(codeTemp.length))+codeTemp;
-            console.log("code:",codeValidation);
-            event.preventDefault();
+            // event.preventDefault();
             let email= event.target.email.value;
             let message = codeValidation;
             let sujet = "code valable 3min";
             // appel fetch pour voir l'existence de l'adresse mail et valider la suite (à créer)
-            const response = await fetch('http://localhost:8080/api/signup/'+email,{
+            const response = await fetch(`http://localhost:8080/api/signup/${email}`,{
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
-                },
-
+                }
             })
-            console.log("code suite");
             const responseId = await response.json();
             if(!responseId.id){
                 setNoEmail(true);
             }else{
+                const responseCode = await fetch('http://localhost:8080/api/code',{
+                    method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    codeValidation,
+                    id: responseId.id
+                })
+            })
                 setNoEmail(false);
             // reste à créer les conditions suivant l'appel fetch
             if (email && message && sujet){
@@ -110,19 +195,27 @@ function Login() {
                     })
                 })
             setCodeSend(true);
-            // document.querySelector(".loginForm").reset();
-            setTimeout(()=>{
-                codeValidation = "";
+
+            timerValidCode =(setTimeout(async()=>{
+                const responseCode = await fetch('http://localhost:8080/api/code',{
+                    method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    code:"",
+                    id: responseId.id
+                })
+            })
                 setCodeSend(false);
-                // setTimeout(()=>{
                     setAuthPassModify(false);
                     setTempsDepasse(true);
-                    // document.querySelector(".codeSended").value="";
-                // },300)
-            },180000);
+            },180000));
+            window.localStorage.setItem("timerV",timerValidCode);
             }
             }
         }
+
 
     }
 

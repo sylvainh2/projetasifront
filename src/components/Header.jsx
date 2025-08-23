@@ -4,7 +4,8 @@ import {useState,useEffect} from "react";
 
 function Header() {
   
-  let disableNav = 'disabled'
+  let disableNav = 'disabled';
+  let disableNav2 = 'disabled';
   
   const [roleData, setRoleData] = useState(window.localStorage.getItem("jwt"));
   let connectData = window.localStorage.getItem("connect");
@@ -15,7 +16,11 @@ function Header() {
     const validity = (jwt_decode(roleData)).validity;
     if((role==="admin" || role==="user") && validity=="1"){
       disableNav = "";
-     } 
+      disableNav2 = "";
+     } else if(role==="user"){
+      disableNav = "disabled";
+      disableNav2 = "";
+     }
   }
   if (!connectData){
     connectData = "connexion";
@@ -58,7 +63,7 @@ function Header() {
                       <a className={"nav-link "+disableNav} href="#">Evénements</a>
                     </li>
                     <li className="nav-item ms-lg-auto ">
-                      <Link to={"/users"} className={"nav-link "+disableNav} href="#">Adhérents</Link>
+                      <Link to={"/users"} className={"nav-link "+disableNav2} href="#">Adhérents</Link>
                     </li>
                     <li className="nav-item ms-lg-auto ">
                       <div className="nav-connex">
