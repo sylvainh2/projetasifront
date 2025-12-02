@@ -9,7 +9,6 @@ function Login() {
     const [codeSend,setCodeSend] = useState(false);
     const [tempsDepasse, setTempsDepasse] = useState(false);
     const [noEmail, setNoEmail] = useState(false);
-    let codeValidation;
     let timerValidCode;
     console.log("reset variables");
     
@@ -91,20 +90,13 @@ function Login() {
                 }
             })
             const responseId = await response.json();
-            const responseCode = await fetch(`http://localhost:8080/api/code/${responseId}`,{
-                method: "GET",
-                headers: {
-                "Content-Type": "application/json"
-                }
-            })
-            codeValidation = await responseCode.json();
+
             //on remet à zero le timer de validatioon de code
             clearTimeout(timerValidCode);
             //on compare le code de depart et celui entré
             const password = event.target.password.value;
             const repassword = event.target.repassword.value;
             const codeValid = event.target.code.value;
-            console.log("pass",password,"repass",repassword);
             if(password !== repassword){
                 alert("mot de passe et validation de mot de passe différents");
                 event.target.password.value="";
@@ -112,51 +104,42 @@ function Login() {
                 cancelValid();
             } else {
             //si le code est ok, on met en bdd le nouveau mot de passe
-            console.log("code3",codeValid,"codeV3",codeValidation);
-            if(codeValid == codeValidation){
-                //reste à faire la partie back-end de cet appel fetch
-                const responseSign = await fetch('http://localhost:8080/api/signup',{
-                    method: "PATCH",
+                const responseCode = await fetch("http://localhost:8080/api/code",{
+                    method: "PUT",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         password,
-                        id:responseId
+                        codeValid,
+                        id:responseId.id
                     })
                 })
-                if(responseSign){
-                    if(responseSign.status>=400){
-                        const erreur = await responseSign.json();
+                if(responseCode){
+                    if(responseCode.status>=400){
+                        const erreur = await responseCode.json();
                         if((erreur.message)==undefined){
                             alert(erreur[0].message);
+                            cancelValid();
                         } else {
                             alert(erreur.message);
+                            cancelValid();
                         }
                     } else {
-                    const responseSignData = await responseSign.json();
+                    const responseSignData = await responseCode.json();
                     alert("nouveau MOT DE PASSE enregistré");
                     // on obtient ici le token... à voir si on peut en avoir besoin par la suite
                     // mais vu qu'il faut que le compte soit validé par un admin pour etre actif...
                     // mais sait-on jamais si une nouvelle fonctionnalité n'ayant pas besoin de validation est implantée...
                     navigate('/');
-                }}
-            }
-            //si le code est erroné on envoi un message et on renvoit un code de validation
-            if(codeValid != codeValidation){
-                alert("Code de validation erroné");
-            }
-            cancelValid();
+                    }
+                }
             }
         }
         if(loginModify & !codeSend){
-            // on crée un code et on envoie
-            let codeTemp = (Math.floor(Math.random()*999999)).toString();
-            const codeZero = "000000";
-            codeValidation = codeZero.substr(0,6-(codeTemp.length))+codeTemp;
             // event.preventDefault();
-            let email= event.target.email.value;
-            let message = codeValidation;
+            let email = event.target.email.value;
+            let message = true;
             let sujet = "code valable 3min";
             // appel fetch pour voir l'existence de l'adresse mail et valider la suite (à créer)
             const response = await fetch(`http://localhost:8080/api/signup/${email}`,{
@@ -175,7 +158,7 @@ function Login() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    codeValidation,
+                    message,
                     id: responseId.id
                 })
             })
@@ -191,7 +174,7 @@ function Login() {
                     body: JSON.stringify({
                         email,
                         sujet,
-                        message
+                        id: responseId.id
                     })
                 })
             setCodeSend(true);
@@ -203,13 +186,13 @@ function Login() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    code:"",
+                    message:false,
                     id: responseId.id
                 })
             })
                 setCodeSend(false);
-                    setAuthPassModify(false);
-                    setTempsDepasse(true);
+                setAuthPassModify(false);
+                setTempsDepasse(true);
             },180000));
             window.localStorage.setItem("timerV",timerValidCode);
             }
@@ -260,7 +243,7 @@ function Login() {
                         <button className="">Connexion</button>
                         <button className="" onClick={handleCancel}>Annuler</button>
                     </div>
-                    <button className="passModifyBtn red" onClick={handlePassModify}>Mot de passe perdu/oublié</button>
+                    <button className="passModifyBtn red" onClick={handlePassModify}>Mot de passe perdu/oublié/à changer</button>
                     </>
                     }                    
                 </form>

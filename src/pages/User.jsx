@@ -669,7 +669,7 @@ function User() {
         const date = e.date.value;
         const course = e.course.value;
         const temps = e.temps.value;
-        const distance = parseInt(e.distance.value);
+        const distance = parseFloat(e.distance.value);
         const id=(jwt_decode(jwtData)).id;
 
         if(date && course && temps && distance){

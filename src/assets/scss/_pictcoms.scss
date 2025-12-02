@@ -11,6 +11,7 @@
     box-shadow: 3px 3px 4px grey;
     position:fixed;
     z-index: 2;
+    opacity: 0.85;
     bottom:3rem;
     text-align: center;
     padding:1rem 0.5rem 1rem 0.5rem;
@@ -30,6 +31,7 @@
 }
 .comContenair{
     margin-top:-1rem;
+    padding-bottom: 0.5rem;
     width:90%;
     background-color:rgb(200, 197, 197);
     border-radius: 10px;
@@ -100,7 +102,8 @@
     color: grey;
     width:82%;
     margin-top: -1.2rem;
-    transform: translatey(-0.2rem);
+    padding-bottom:0.5rem;
+    transform: translatey(-0.4rem);
     text-align: end;
 }
 span{

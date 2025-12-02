@@ -6,7 +6,7 @@ function Accueil() {
      <>
       <main className="accueil">
         <section>
-            <h1 className="titrePageAccueil">bienvenue sur le site de l'asi course pedestre</h1>
+            <h1 className="titrePageAccueil">bienvenue sur le site de Run'illac</h1>
             <div className="container">
                 <div className="row col-md-12">
                     <div className="imageAccueil">

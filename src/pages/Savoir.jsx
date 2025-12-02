@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 function Savoir() {
+    useEffect(()=>{
+        window.scrollTo(0,2);
+    },[]);
 
 
     return(
